@@ -277,4 +277,95 @@ This is a personal hobby project that brings me joy to build and develop. I welc
 
 ---
 
-*Note: This README is for v0.6-beta and subject to change as the system evolves.* 
+*Note: This README is for v0.6-beta and subject to change as the system evolves.*
+
+# Chrome Extension Scraper
+
+A Python tool for scraping Chrome Web Store extensions and their details.
+
+## Overview
+
+This tool allows you to search for Chrome extensions on the Chrome Web Store and extract detailed information about each extension, including:
+
+- Name
+- Website URL
+- Rating
+- Number of reviews
+- Number of users
+- Version
+- Size
+- Developer
+- Updated date
+- Number of languages
+
+The scraper navigates through search results, loads more extensions by clicking the "Load more" button, and visits each extension's detail page to collect information.
+
+## Requirements
+
+- Python 3.6 or higher
+- Chrome browser installed
+- Internet connection
+
+## Installation
+
+1. Clone this repository or download the script files.
+
+2. Install the required Python packages:
+
+```bash
+pip install selenium beautifulsoup4 pandas webdriver-manager
+```
+
+Note: The script will automatically attempt to install `openpyxl` if needed for Excel output functionality.
+
+## Usage
+
+1. Run the script:
+
+```bash
+python chrome_extension_scraper.py
+```
+
+2. Enter the search term for Chrome extensions when prompted (e.g., "text to speech").
+
+3. Optionally, enter the maximum number of extensions to scrape or press Enter to scrape all available extensions.
+
+4. The script will:
+   - Search for extensions matching your query
+   - Click "Load more" to load additional results (if available)
+   - Visit each extension's detail page
+   - Extract the requested information
+   - Save the data to both CSV and Excel files (if possible)
+
+## Output
+
+The scraper outputs two files:
+- `chrome_extensions_[search_term].csv` - CSV file with all scraped data
+- `chrome_extensions_[search_term].xlsx` - Excel file with all scraped data (the script will automatically attempt to install openpyxl if it's not already installed)
+
+## Notes
+
+- The scraper uses a headless Chrome browser, so you won't see the actual browsing happening.
+- It includes a 1-second delay between requests to be respectful to the Chrome Web Store servers.
+- Some extensions may not have all the requested information available, in which case those fields will be set to `None`.
+
+## Customization
+
+You can modify the `ChromeExtensionScraper` class to:
+- Change the search parameters
+- Extract additional information
+- Adjust the delay between requests
+- Save the data in different formats
+
+## Troubleshooting
+
+If you encounter issues:
+
+1. Make sure Chrome is installed on your system
+2. Check that you have the required dependencies installed
+3. Verify your internet connection
+4. The Chrome Web Store layout may change over time, requiring updates to the CSS selectors and XPath expressions used in the scraper
+
+## Legal Considerations
+
+Web scraping may be subject to terms of service of the website being scraped. This tool is provided for educational purposes only. Ensure you're familiar with and adhere to the Chrome Web Store's terms of service and robots.txt file.
