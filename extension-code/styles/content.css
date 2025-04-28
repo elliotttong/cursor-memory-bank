@@ -5,18 +5,19 @@
     bottom: 20px;
     right: 20px;
     z-index: 99999; 
-    background-color: #f0f0f0;
+    background-color: rgba(240, 240, 240, 0.9);
     border: 1px solid #ccc;
     border-radius: 5px;
-    padding: 10px;
+    padding: 8px 12px;
     box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
     font-family: sans-serif;
+    font-size: 14px;
     display: flex;
     align-items: center;
-    gap: 10px;
 }
 
 #kokoro-tts-widget button {
+    margin-right: 10px;
     padding: 5px 10px;
     cursor: pointer;
 }
@@ -28,8 +29,8 @@
 }
 
 .kokoro-highlight-word {
-    background-color: rgba(255, 255, 0, 0.6); /* Yellow */
-    box-shadow: 0 0 0 1px rgba(255, 215, 0, 0.8); /* Gold outline */
-    border-radius: 2px;
-    transition: background-color 0.05s ease-in-out, box-shadow 0.05s ease-in-out;
+    background-color: yellow; /* Simple yellow background */
+    color: black; /* Ensure text is readable */
+    /* Add transition for smoother effect if desired */
+    /* transition: background-color 0.1s ease-in-out; */ 
 } 

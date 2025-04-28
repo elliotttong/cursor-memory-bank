@@ -4,21 +4,26 @@
 
 - [x] **T01:** Set up basic Chrome Extension structure (Manifest V3, background worker, content script placeholder).
 - [x] **T02:** Establish communication channel between background and content script.
-- [x] **T03:** Integrate Kokoro-82M TTS (via Replicate API).
-    - [x] Define request format.
-    - [x] Handle API response (audio URL).
-- [x] **T04:** Implement basic audio playback in the content script (using HTML5 Audio or Web Audio API).
+- [x] **T03:** Integrate Kokoro-82M TTS (Switched to Deep Infra API).
+    - [x] Define request format (Sentence-by-sentence, requesting timestamps).
+    - [x] Handle API response (Audio Data URL + Timestamps).
+- [x] **T04:** Implement basic audio playback in the content script.
+    - [x] Basic HTML5 Audio playback (handling Data URLs).
+    - [x] Sentence queuing/pre-fetching logic.
 - [x] **T05:** Set up basic UI/widget placeholder (floating button or similar).
 
 ## Phase 2: Highlighting & Synchronization
 
 - [x] **T06:** Implement basic text processing/segmentation (sentences, words) in the content script.
-- [ ] **T07:** Develop highlighting mechanism (e.g., wrapping text in spans).
-- [ ] **T08:** Integrate timing information from TTS (if available) or develop a strategy for sync. *(Creative Phase Done: Prioritize checking Kokoro timing data, fallback to polling/estimation. See `.memory_bank/creative_phase_sync_logic.md`)*
-- [ ] **T09:** Implement core synchronization logic between audio playback and text highlighting. *(Creative Phase Done: Follow recommended approach from `.memory_bank/creative_phase_sync_logic.md`)*
+- [x] **T07:** Develop highlighting mechanism (finding/wrapping text nodes in spans). *(Partially done: Wrapping logic implemented, needs testing/refinement)*
+- [x] **T08:** Timing Strategy. *(Solved: Using precise word timestamps from Deep Infra API)*.
+- [x] **T09:** Implement core synchronization logic between audio playback and text highlighting. *(Using precise API timestamps)*
 
 ## Phase 3: Refinement & Testing
 
-- [ ] **T10:** Refine synchronization accuracy.
+- [ ] **T10:** Refine synchronization accuracy (should be good with API timings).
 - [ ] **T11:** Basic testing on a few sample web pages.
-- [ ] **T12:** Add simple play/pause controls. 
+- [ ] **T12:** Add simple play/pause controls.
+- [ ] **T13:** Refactor text extraction to use Offscreen Document.
+- [ ] **T14:** Refine highlighting (target specific element, fix wrapping errors).
+- [ ] **T15:** Update API Key storage/UI for Deep Infra token. 
