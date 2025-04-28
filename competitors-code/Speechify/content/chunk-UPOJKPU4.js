@@ -1,0 +1,2 @@
+import{h as s,o as g}from"./chunk-NUN3A7RC.js";g();s();var i=e=>{let t=new Image;return t.src=e,t},h=(e,t,n)=>new Promise(u=>{e.onload=()=>{let r=document.createElement("canvas");r.width=t,r.height=n;let c=r.getContext("2d");c.drawImage(e,0,0);let o=c.getImageData(0,0,t,n).data,m=0;for(let a=0;a<o.length;a+=4){let l=o[a]+o[a+1]+o[a+2]/3;m+=l}let d=Math.floor(m/(t*n));u(d>175.5?"light":"dark")}}),x=(e,t,n)=>h(i(e),t,n);export{x as a};
+//# sourceMappingURL=chunk-UPOJKPU4.js.map

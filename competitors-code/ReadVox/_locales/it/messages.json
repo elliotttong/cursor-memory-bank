@@ -1,0 +1,11 @@
+{
+  "name": {
+    "message": "Da Testo a Voce TTS AI | Readvox"
+  },
+  "description": {
+    "message": "Leggi articoli web, Google Docs, Kindle, PDF con voci naturali e realistiche. TTS AI di alta qualità per la conversione da testo a voce."
+  },
+  "contextMenu": {
+    "message": "Leggi il testo selezionato | Readvox"
+  }
+}

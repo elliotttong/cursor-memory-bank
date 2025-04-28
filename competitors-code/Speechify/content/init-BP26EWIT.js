@@ -1,0 +1,2 @@
+import{b as n}from"./chunk-6VFX2JNU.js";import"./chunk-LUKOAFYK.js";import"./chunk-O77QQVYU.js";import"./chunk-35EEQS33.js";import"./chunk-BGIN6QNH.js";import"./chunk-UQBFOPQH.js";import"./chunk-6HLOLWYC.js";import"./chunk-NORECDYR.js";import"./chunk-RQERJHUS.js";import{h as t,o as i}from"./chunk-NUN3A7RC.js";i();t();function a(){try{let o=window.location.hostname;n("/analytics/log-visit-anonymously",{domain:o})}catch{}}export{a as default};
+//# sourceMappingURL=init-BP26EWIT.js.map

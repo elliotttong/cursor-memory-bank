@@ -1,0 +1,11 @@
+{
+  "name": {
+    "message": "Texto a Voz TTS IA | Readvox"
+  },
+  "description": {
+    "message": "Lee en voz alta artículos web, documentos de Google, Kindle, PDF con voces naturales y realistas. Hermosa inteligencia artificial de texto a voz TTS."
+  },
+  "contextMenu": {
+    "message": "Leer texto seleccionado | Readvox"
+  }
+}

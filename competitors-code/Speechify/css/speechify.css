@@ -1,0 +1,104 @@
+@font-face {
+  font-family: 'Recoleta';
+  src: url('chrome-extension://__MSG_@@extension_id__/fonts/Recoleta-Variable.otf') format('truetype-variations');
+  font-weight: 1 999;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'SFProText';
+  src: url('chrome-extension://__MSG_@@extension_id__/fonts/SFProText-Variable.otf') format('truetype-variations');
+  font-weight: 1 999;
+  font-display: swap;
+}
+
+@supports (font-variation-settings: normal) {
+  @font-face {
+      font-family: 'ABCDiatype';
+      src: url('chrome-extension://__MSG_@@extension_id__/fonts/ABCDiatype-Regular.otf') format('truetype-variations');
+      font-weight: 300 400 500 600 700;
+      font-display: swap;
+  }
+}
+
+@font-face {
+  font-family: 'Open-Dyslexic';
+  src: url('chrome-extension://__MSG_@@extension_id__/fonts/Open-Dyslexic.woff') format('truetype-variations');
+  font-weight: 1 999;
+  font-display: swap;
+}
+
+/* Variables */
+
+:root,
+#speechify-header-hover-button-container,
+#speechify-player,
+#speechify-listening-nudge,
+#speechify-feedback-form {
+  --speechify-primary-color: #2137fc;
+  --font-family: ABCDiatype;
+  --transitions: none;
+}
+
+speechify-selection {
+  display: inline;
+}
+
+#speechify-player,
+#speechify-mobile-player {
+  font-family: var(--font-family) !important;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0) !important;
+  transition: var(--transitions);
+  color: #333 !important;
+}
+
+#speechify-player {
+  pointer-events: none;
+}
+
+#speechify-mobile-player {
+  touch-action: none !important;
+}
+
+#speechify-header-hover-button-container,
+#speechify-player,
+#speechify-mobile-player,
+#speechify-listening-nudge,
+#speechify-feedback-form {
+  all: initial;
+}
+
+#speechify-listening-nudge {
+  z-index: 99999;
+}
+
+/* Hover Popup */
+
+#speechify-header-hover-button-container {
+  display: none;
+  position: absolute;
+  z-index: 99999;
+  will-change: transform;
+  border: none;
+  box-sizing: border-box;
+}
+
+/* Disable smooth scroll for scrolling algo */
+
+*,
+html {
+  scroll-behavior: auto !important;
+}
+
+/* Disable inner backgrounds on elements being highlighted */
+
+*[data-speechify-no-background='true'] * {
+  background: none !important;
+}
+
+/* Hide all Speechify containers when in print mode */
+@media print {
+  [id^='speechify-'] {
+    display: none;
+  }
+}

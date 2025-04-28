@@ -1,0 +1,11 @@
+{
+  "name": {
+    "message": "Texte en Parole IA TTS | Readvox"
+  },
+  "description": {
+    "message": "Lisez à haute voix des articles Web, Google Docs, Kindle, PDF avec des voix naturelles et réalistes. Magnifique IA de synthèse vocale TTS."
+  },
+  "contextMenu": {
+    "message": "Lire le texte sélectionné | Readvox"
+  }
+}

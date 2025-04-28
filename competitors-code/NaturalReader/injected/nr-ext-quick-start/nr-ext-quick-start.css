@@ -1,0 +1,368 @@
+@font-face {
+  font-family: "Poppins";
+  font-weight: 300;
+  font-style: normal;
+  src: url(chrome-extension://__MSG_@@extension_id__/assets/css/poppins/Poppins-Light.ttf);
+}
+@font-face {
+  font-family: "Poppins";
+  font-weight: 300;
+  font-style: italic;
+  src: url(chrome-extension://__MSG_@@extension_id__/assets/css/poppins/Poppins-LightItalic.ttf);
+}
+@font-face {
+  font-family: "Poppins";
+  font-weight: 400;
+  font-style: normal;
+  src: url(chrome-extension://__MSG_@@extension_id__/assets/css/poppins/Poppins-Regular.ttf);
+}
+@font-face {
+  font-family: "Poppins";
+  font-weight: 400;
+  font-style: italic;
+  src: url(chrome-extension://__MSG_@@extension_id__/assets/css/poppins/Poppins-Italic.ttf);
+}
+@font-face {
+  font-family: "Poppins";
+  font-weight: 500;
+  font-style: normal;
+  src: url(chrome-extension://__MSG_@@extension_id__/assets/css/poppins/Poppins-Medium.ttf);
+}
+@font-face {
+  font-family: "Poppins";
+  font-weight: 500;
+  font-style: italic;
+  src: url(chrome-extension://__MSG_@@extension_id__/assets/css/poppins/Poppins-MediumItalic.ttf);
+}
+@font-face {
+  font-family: "Poppins";
+  font-weight: 600;
+  font-style: normal;
+  src: url(chrome-extension://__MSG_@@extension_id__/assets/css/poppins/Poppins-SemiBold.ttf);
+}
+@font-face {
+  font-family: "Poppins";
+  font-weight: 600;
+  font-style: italic;
+  src: url(chrome-extension://__MSG_@@extension_id__/assets/css/poppins/Poppins-SemiBoldItalic.ttf);
+}
+@font-face {
+  font-family: "Poppins";
+  font-weight: 700;
+  font-style: normal;
+  src: url(chrome-extension://__MSG_@@extension_id__/assets/css/poppins/Poppins-Bold.ttf);
+}
+@font-face {
+  font-family: "Poppins";
+  font-weight: 700;
+  font-style: italic;
+  src: url(chrome-extension://__MSG_@@extension_id__/assets/css/poppins/Poppins-BoldItalic.ttf);
+}
+.nr-ext {
+
+  font-family: 'Poppins' !important;
+  font-size: 14px !important;
+  line-height: 20px;
+  font-weight: 400;
+  color: #ffffff;
+
+  z-index: 9999999999999 !important;
+}
+
+.nr-ext *,
+.nr-ext *::before,
+.nr-ext *::after {
+  box-sizing: border-box;
+  font-family: "Poppins" !important;
+}
+.nr-ext .nr-ext-quick-bar {
+  position: fixed;
+  top: 120px;
+  right: 40px;
+  transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+  z-index: 9999999999999 !important;
+}
+
+
+.nr-btn-icon {
+  box-sizing: border-box;
+  position: relative;
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: pointer;
+  outline: none;
+  border: none;
+  -webkit-tap-highlight-color: transparent;
+  display: inline-block;
+  white-space: nowrap;
+  text-decoration: none;
+  vertical-align: middle;
+  text-align: center;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+
+  width: 14px;
+  height: 14px;
+}
+
+.nr-btn-icon svg {
+  transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.nr-icon-14 {
+  width: 14px;
+  height: 14px;
+  line-height: 14px
+}
+.nr-icon-18 {
+  width: 18px;
+  height: 18px;
+  line-height: 18px
+}
+
+.nr-ext-max {
+  min-width: 70px;
+  height: 56px;
+  border-radius: 10px;
+  background: rgba(23, 21, 21, 0.80);
+  border: 1px solid rgba(188, 193, 204, 0.50);
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  box-shadow: 0px 4.843px 4.843px 0px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(4px);
+  transition: background 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  position: relative;
+}
+
+.nr-ext-mouseleave .nr-ext-max {
+  background: rgba(23, 21, 21, 0.5);
+}
+
+.nr-ext-mouseleave .nr-ext-controls-close {
+  display: none;
+}
+
+.nr-ext-controls .nr-ext-drag {
+  width: 18px;
+  height: 18px;
+  cursor: grab;
+}
+
+.nr-ext-controls-top {
+  position: absolute;
+  top: -20px;
+  left: 0;
+  width: 100%;
+  height: 20px;
+}
+
+.nr-ext-controls-close {
+  width: 20px;
+  height: 20px;
+  margin-left: calc(100% - 21px);
+}
+
+.nr-ext-controls-close svg {
+  fill: black;
+  fill-opacity: 0.6;
+}
+
+.nr-ext-controls .btn-play {
+  position: relative;
+  display: block;
+}
+
+.nr-ext-controls .btn-play,
+.nr-ext-controls .btn-play .ext-icon-play {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+}
+
+.nr-ext-controls .nr-ext-subTrigger {
+  display: none;
+  width: 26px;
+  height: 54px;
+}
+
+.nr-ext-controls .nr-ext-subTrigger .ext-icon-arrow-left {
+  vertical-align: middle;
+  width: 24px;
+  height: 36px;
+}
+
+.nr-ext-controls:hover .nr-ext-subTrigger {
+  display: block;
+}
+
+
+.nr-ext-menu {
+  width: 262px;
+  max-height: min(500px, 65vh);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0px 1px 1px 0px rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(4px);
+  font-size: 14px;
+}
+.nr-ext-menu-header {
+  width: 100%;
+  height: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  border-radius: 10px 10px 0px 0px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.20);
+  background: rgba(23, 21, 21, 0.60);
+}
+
+.nr-ext-menu-body {
+  width: 100%;
+  border-radius: 0px 0px 10px 10px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: rgba(23, 21, 21, 0.87);
+  text-align: center;
+}
+
+.nr-ext-menu-close {
+  width: 24px;
+  height: 24px;
+  padding: 4px;
+}
+
+.nr-ext-menu-title {
+  width: calc(100% - 48px);
+  text-transform: uppercase;
+  text-align: center;
+  font-weight: 500;
+  padding-left: 6px;
+  padding-right: 6px;
+  letter-spacing: 0.05px;
+  font-size: 12px;
+}
+
+.nr-ext-menu-title.no-left {
+  width: calc(100% - 24px);
+  padding-left: 30px;
+}
+
+.nr-ext-btn-flat {
+  box-sizing: border-box;
+  position: relative;
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: pointer;
+  outline: none;
+  border: none;
+  -webkit-tap-highlight-color: transparent;
+  display: inline-block;
+  white-space: nowrap;
+  text-decoration: none;
+  vertical-align: baseline;
+  text-align: center;
+  margin: 0;
+  padding: 0 12px;
+  border-radius: 6px;
+  overflow: visible;
+  background-color: #0078D4;
+  color: #ffffff;
+  font-family: "Poppins" !important;
+  min-width: 64px;
+  font-size: 13px;
+  line-height: 30px;
+  height: 32px;
+  font-weight: 500;
+  transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.nr-ext-btn-flat:disabled {
+  background: #E3F2FD;
+}
+
+.nr-ext-btn-flat:not(:disabled):hover {
+  background: #134DCD;
+  color: rgba(255, 255, 255, 0.87);
+  transition: background, color 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.nr-ext-btn-flat:not(:disabled):active {
+  color: white;
+  background: #1a7bf9;
+  transition: background 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.nr-ext-btn-underline {
+  box-sizing: border-box;
+  position: relative;
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: pointer;
+  outline: none;
+  border: none;
+  -webkit-tap-highlight-color: transparent;
+  display: inline-block;
+  white-space: nowrap;
+  text-decoration: none;
+  vertical-align: baseline;
+  text-align: center;
+  margin: 0;
+  padding: 0 12px;
+  border-radius: 6px;
+  overflow: visible;
+  color: white;
+  background-color: transparent;
+  font-family: "Poppins" !important;
+  min-width: 64px;
+  font-size: 13px;
+  line-height: 30px;
+  text-decoration: underline;
+  height: 32px;
+  font-weight: 500;
+  transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.nr-ext-btn-underline:not(:disabled):hover {
+  border-color: #6ABEFF;
+  color: #6ABEFF;
+}
+
+.nr-ext-btn-underline:not(:disabled):active {
+  border-color: #94D0FF;
+  color: #94D0FF;
+}
+
+.nr-ext-quick-start-exit-options {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: 123;
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+
+.nr-ext-quick-start-exit-options-header {
+  font-size: 16px;
+  font-weight: 700;
+  padding-bottom: 12px;
+}
+
+.nr-ext-quick-start-exit-options-footer {
+  display: block;
+  margin: 12px auto;
+  cursor: pointer;
+}
+.nr-ext-quick-start-exit-options-footer label {
+  cursor: pointer;
+}
+.nr-ext-quick-start-exit-options-box button {
+  margin-bottom: 1em;
+}

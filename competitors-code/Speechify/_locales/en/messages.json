@@ -1,0 +1,10 @@
+{
+  "appName": {
+    "message": "Speechify Text to Speech Voice Reader",
+    "description": "The title of the extension, displayed in the Web Store."
+  },
+  "appDesc": {
+    "message": "Read aloud any Google Doc, PDF, webpage, or book with text to speech (TTS). Natural sounding voices in 30+ languages & 130 voices.",
+    "description": "The description of the extension, displayed in the web store."
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "name": {
+    "message": "Text zu Sprache TTS KI | Readvox"
+  },
+  "description": {
+    "message": "Lesen Sie Webartikel, Google Docs, Kindle, PDF mit natürlichen, lebensechten Stimmen vor. Hochwertige Text-zu-Sprache KI TTS."
+  },
+  "contextMenu": {
+    "message": "Markierten Text vorlesen | Readvox"
+  }
+}

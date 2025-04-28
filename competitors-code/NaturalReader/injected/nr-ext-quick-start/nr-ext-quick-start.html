@@ -1,0 +1,129 @@
+<div class="nr-ext" id="nr-ext-quick-start">
+    <!-- id="nr-ext-quick-controls"  -->
+    <div class="nr-ext-controls  nr-ext-mouseleave nr-ext-quick-bar" id="nr-ext-quick-bar">
+        <!-- id="nr-ext-quick-bar" -->
+        <div class="nr-ext-max">
+            <div class="nr-ext-controls-top">
+                <button class="nr-btn-icon nr-ext-controls-close" id="nr-ext-quick-exit">
+                    <svg class="nr-icon-14">
+                        <use xlink:href="#ext_close_outline"></use>
+                    </svg>
+                </button>
+            </div>
+
+            <button class="nr-btn-icon nr-ext-drag" id="nr-ext-quick-drag">
+                <svg class="nr-icon-18">
+                    <use xlink:href="#ext_drag_indicator"></use>
+                </svg>
+            </button>
+
+            <!-- <div class="nr-ext-progress"> -->
+            <button class="nr-btn-icon btn-play" id="nr-ext-quick-play">
+                <svg class="ext-icon-play">
+                    <use xlink:href="#ext_play"></use>
+                </svg>
+            </button>
+            <!-- </div> -->
+            <button class="nr-btn-icon nr-ext-subTrigger" id="nr-ext-quick-subTrigger">
+                <svg class="ext-icon-arrow-left">
+                    <use xlink:href="#ext_arrow_left"></use>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <div class="nr-ext-quick-start-exit-options" id="nr-ext-qcuik-start-exit-options">
+        <div class="nr-ext-menu">
+            <div class="nr-ext-menu-header">
+                <div class="nr-ext-menu-title no-left">Hide quickstart widget?</div>
+                <button class="nr-btn-icon nr-ext-menu-close" id="nr-ext-quick-exit-cancel">
+                    <svg class="nr-icon-14">
+                        <use xlink:href="#ext_close"></use>
+                    </svg>
+                </button>
+            </div>
+            <div class="nr-ext-menu-body">
+                <h4 class="nr-ext-quick-start-exit-options-header">Turn off NaturalReader?</h4>
+                <p>You can change this feature in  <b>"More Settings"</b>.
+                    <!-- the <b>“Reader”</b> section of -->
+                    <!-- <div class="nr-ext-quick-start-exit-options-box">
+                        <div class="nr-ext-quick-start-exit-options-cell">
+                            <input type="radio" name="quick-start-exit-options" id="nr-quick-start-exit-once" value="exit-once"
+                                checked="true">
+                            <label for="nr-quick-start-exit-once">Hide just once only</label>
+                        </div>
+                        <div class="nr-ext-quick-start-exit-options-cell">
+                            <input type="radio" name="quick-start-exit-options" id="nr-quick-start-exit-this-page"
+                                value="exit-page">
+                            <label for="nr-quick-start-exit-this-page">Hide on this website indefinitely until you unhide
+                                it</label>
+                        </div>
+                        <div class="nr-ext-quick-start-exit-options-cell">
+                            <input type="radio" name="quick-start-exit-options" id="nr-quick-start-exit-forever"
+                                value="exit-forever">
+                            <label for="nr-quick-start-exit-forever">Hide indefinitely on all pages that you visit</label>
+                        </div>
+                    </div> -->
+                <div class="nr-ext-quick-start-exit-options-box">
+                    <button class="nr-ext-btn-flat" id="nr-quick-start-exit-this-page">
+                        Hide on THIS website ONLY
+                    </button>
+    
+                    <button class="nr-ext-btn-underline" id="nr-quick-start-exit-all">
+                        Hide on ALL websites
+                    </button>
+                </div>
+    
+                <!-- <div class="nr-ext-quick-start-exit-options-footer">
+                    <button class="nr-btn btn-link-blue" id="nr-ext-quick-exit-cancel">Cancel</button>
+                    <button class="nr-btn btn-flat-blue" id="nr-ext-quick-start-exit-confirm">Confirm</button>
+                </div> -->
+                <div class="nr-ext-quick-start-exit-options-footer">
+                    <input type="checkbox" id="nr-ext-quick-start-option-checkbox">
+                    <label for="nr-ext-quick-start-option-checkbox">Don't ask me again</label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<svg width="0" height="0" style="display: none; visibility: hidden;">
+    <symbol fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 44 44" id="ext_play">
+        <path
+            d="M43.5849 21.9528C43.5849 33.9884 33.8281 43.7453 21.7925 43.7453C9.75682 43.7453 0 33.9884 0 21.9528C0 9.91716 9.75682 0.160339 21.7925 0.160339C33.8281 0.160339 43.5849 9.91716 43.5849 21.9528Z"
+            fill="#0078D4"></path>
+        <path
+            d="M32.052 21.8697C32.3717 22.112 32.3717 22.5925 32.052 22.8347L17.3153 34.0017C16.9166 34.3038 16.3444 34.0195 16.3444 33.5193L16.3444 11.1851C16.3444 10.6849 16.9166 10.4006 17.3153 10.7027L32.052 21.8697Z"
+            fill="white"></path>
+    </symbol>
+    <symbol xmlns="http://www.w3.org/2000/svg" width="15" height="17" viewBox="0 0 15 17" fill="none"
+        id="ext_drag_indicator">
+        <path
+            d="M6.74359 12.5488C6.74359 13.3157 6.19185 13.9431 5.51749 13.9431C4.84313 13.9431 4.29138 13.3157 4.29138 12.5488C4.29138 11.7819 4.84313 11.1545 5.51749 11.1545C6.19185 11.1545 6.74359 11.7819 6.74359 12.5488ZM5.51749 6.97156C4.84313 6.97156 4.29138 7.599 4.29138 8.36587C4.29138 9.13275 4.84313 9.76018 5.51749 9.76018C6.19185 9.76018 6.74359 9.13275 6.74359 8.36587C6.74359 7.599 6.19185 6.97156 5.51749 6.97156ZM5.51749 2.78864C4.84313 2.78864 4.29138 3.41607 4.29138 4.18295C4.29138 4.94982 4.84313 5.57726 5.51749 5.57726C6.19185 5.57726 6.74359 4.94982 6.74359 4.18295C6.74359 3.41607 6.19185 2.78864 5.51749 2.78864ZM9.19581 5.57726C9.87016 5.57726 10.4219 4.94982 10.4219 4.18295C10.4219 3.41607 9.87016 2.78864 9.19581 2.78864C8.52145 2.78864 7.9697 3.41607 7.9697 4.18295C7.9697 4.94982 8.52145 5.57726 9.19581 5.57726ZM9.19581 6.97156C8.52145 6.97156 7.9697 7.599 7.9697 8.36587C7.9697 9.13275 8.52145 9.76018 9.19581 9.76018C9.87016 9.76019 10.4219 9.13275 10.4219 8.36588C10.4219 7.599 9.87016 6.97157 9.19581 6.97156ZM9.19581 11.1545C8.52145 11.1545 7.9697 11.7819 7.9697 12.5488C7.9697 13.3157 8.52145 13.9431 9.19581 13.9431C9.87016 13.9431 10.4219 13.3157 10.4219 12.5488C10.4219 11.7819 9.87016 11.1545 9.19581 11.1545Z"
+            fill="white"></path>
+    </symbol>
+    <symbol fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 15" id="ext_close_outline">
+        <path
+            d="M14.1114 0.944052C13.5304 0.365205 12.5916 0.365129 12.0105 0.943824C12.0104 0.9439 12.0103 0.943976 12.0103 0.944052L7.52435 5.40434L3.03771 0.934192C2.45665 0.355269 1.51762 0.355269 0.936558 0.934192C0.354481 1.51413 0.354481 2.45288 0.936558 3.03282L5.42023 7.5L0.936559 11.9672C0.354481 12.5471 0.354481 13.4859 0.936558 14.0658C1.51762 14.6447 2.45665 14.6447 3.03771 14.0658L7.52399 9.59603L12.0103 14.0658C12.5913 14.6447 13.5304 14.6447 14.1114 14.0658C14.6935 13.4859 14.6935 12.5471 14.1114 11.9672L9.62774 7.5L14.1114 3.03282L13.7585 2.67861L14.1114 3.03282C14.6836 2.46274 14.6836 1.51413 14.1114 0.944052L13.7585 1.29826L14.1114 0.944052Z"
+            fill="black" fill-opacity="0.6" stroke="white"></path>
+    </symbol>
+    <symbol xmlns="http://www.w3.org/2000/svg" width="24" height="36" viewBox="0 0 24 36" fill="none"
+        id="ext_arrow_left">
+        <g clip-path="url(#clip0_4208_497)">
+            <path
+                d="M14.7099 12.18L10.8299 18L14.7099 23.82C15.0999 24.405 15.0999 25.35 14.7099 25.935C14.3199 26.52 13.6899 26.52 13.2999 25.935L8.70994 19.05C8.31994 18.465 8.31994 17.52 8.70994 16.935L13.2999 10.05C13.6899 9.465 14.3199 9.465 14.7099 10.05C15.0899 10.635 15.0999 11.595 14.7099 12.18Z"
+                fill="white" />
+        </g>
+        <defs>
+            <clipPath id="clip0_4208_497">
+                <rect width="36" height="24" fill="white" transform="matrix(0 1 -1 0 24 0)" />
+            </clipPath>
+        </defs>
+    </symbol>
+    <symbol xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" id="ext_close">
+        <path d="M0 0h24v24H0V0z" fill="none"></path>
+        <path
+            d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z">
+        </path>
+    </symbol>
+</svg>

@@ -1,0 +1,11 @@
+{
+  "name": {
+    "message": "Text to Speech TTS AI | Readvox"
+  },
+  "description": {
+    "message": "Read aloud Web articles, Google Docs, Kindle, PDF with natural, lifelike voices. Beautiful text to speech AI TTS."
+  },
+  "contextMenu": {
+    "message": "Read selected text | Readvox"
+  }
+}

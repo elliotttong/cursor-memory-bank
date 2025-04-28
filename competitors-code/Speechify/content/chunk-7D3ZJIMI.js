@@ -1,0 +1,2 @@
+import{wa as s,ya as u}from"./chunk-6VFX2JNU.js";import{a as r,b as n,f as d}from"./chunk-RQERJHUS.js";import{h as t,o}from"./chunk-NUN3A7RC.js";o();t();d();function g(e){let[c,l]=r(!1);return n(()=>{let m=globalThis.getComputedStyle(e??document.documentElement),a=s(m.getPropertyValue("background-color"));l(u(a))},[e??document.documentElement]),{isDarkBackground:c}}export{g as a};
+//# sourceMappingURL=chunk-7D3ZJIMI.js.map

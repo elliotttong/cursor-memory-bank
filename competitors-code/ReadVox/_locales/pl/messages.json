@@ -1,0 +1,11 @@
+{
+  "name": {
+    "message": "Tekst na Mowę TTS AI | Readvox"
+  },
+  "description": {
+    "message": "Czytaj na głos artykuły internetowe, dokumenty Google, Kindle, PDF naturalnymi, realistycznymi głosami. Piękna sztuczna inteligencja zamieniająca tekst na mowę."
+  },
+  "contextMenu": {
+    "message": "Przeczytaj zaznaczony tekst | Readvox"
+  }
+}

@@ -1,0 +1,2 @@
+import{a}from"./chunk-437XFN2F.js";import"./chunk-XP57BQDH.js";import"./chunk-VYK2SFTV.js";import"./chunk-MQX2TL35.js";import"./chunk-SWWFND36.js";import"./chunk-6VFX2JNU.js";import"./chunk-LUKOAFYK.js";import"./chunk-O77QQVYU.js";import"./chunk-35EEQS33.js";import"./chunk-BGIN6QNH.js";import"./chunk-UQBFOPQH.js";import"./chunk-6HLOLWYC.js";import"./chunk-NORECDYR.js";import"./chunk-RQERJHUS.js";import"./chunk-NUN3A7RC.js";export{a as resetExtensionLifecycle};
+//# sourceMappingURL=main.js.map

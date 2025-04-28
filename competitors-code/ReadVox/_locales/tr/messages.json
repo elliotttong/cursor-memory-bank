@@ -1,0 +1,11 @@
+{
+  "name": {
+    "message": "Metinden Sese TTS AI | Readvox"
+  },
+  "description": {
+    "message": "Web makaleleri, Google Dokümanlar, Kindle, PDF'leri doğal, gerçekçi seslerle sesli okuyun. Güzel metinden sese AI TTS."
+  },
+  "contextMenu": {
+    "message": "Seçili metni oku | Readvox"
+  }
+}

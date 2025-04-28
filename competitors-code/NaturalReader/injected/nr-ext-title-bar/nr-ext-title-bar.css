@@ -1,0 +1,107 @@
+
+.nr-ext-title-bar {
+    width: 62px;
+    height: 19px;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 18px;
+    background: white;
+    color: #272727;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    border: 0.5px solid #272727;
+    border-radius: 30px 5px 5px 30px;
+}
+
+.nr-ext-title-bar svg {
+    width: 18px;
+    height: 18px;
+    vertical-align: middle;
+}
+
+.nr-ext-title-bar .nr-ext-quick-pause {
+    display: none;
+}
+
+.nr-ext-title-bar[data-play="play"] .nr-ext-quick-play {
+    display: none;
+}
+
+.nr-ext-title-bar[data-play="play"] .nr-ext-quick-pause {
+    display: inline-block;
+}
+
+.nr-ext-quick-start-exit-options {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3);
+    z-index: 123;
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+.nr-ext-quick-start-exit-options .nr-ext-quick-start-exit-options-content {
+    width: 438px;
+    padding: 16px;
+    background-color: white;
+    color: #323232;
+    font-size: 13px;
+    line-height: 20px;
+    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.08);
+    border-radius: 8px;
+}
+
+.nr-ext-quick-start-exit-options .nr-ext-quick-start-exit-options-content .nr-ext-quick-start-exit-options-header {
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0.5rem 0;
+}
+
+.nr-ext-quick-start-exit-options .nr-ext-quick-start-exit-options-content .nr-ext-quick-start-exit-options-footer {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.nr-ext-quick-start-exit-options .nr-ext-quick-start-exit-options-content .nr-ext-quick-start-exit-options-footer button {
+    margin: 0 8px;
+}
+
+.nr-ext-quick-start-exit-options .nr-ext-quick-start-exit-options-content .nr-ext-quick-start-exit-options-box {
+    padding: 5px 0 20px;
+}
+
+.nr-ext-quick-start-exit-options .nr-ext-quick-start-exit-options-content .nr-ext-quick-start-exit-options-box .nr-ext-quick-start-exit-options-cell {
+    width: 100%;
+    height: 32px;
+    display: flex;
+    align-items: center;
+}
+
+.nr-ext-quick-start-exit-options .nr-ext-quick-start-exit-options-content .nr-ext-quick-start-exit-options-box .nr-ext-quick-start-exit-options-cell>label {
+    margin-left: 8px;
+    margin-bottom: 0 !important;
+    cursor: pointer;
+}
+
+
+[ext-theme="dark"] .nr-ext-title-bar {
+    background: #272727;
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+[ext-theme="dark"] .nr-ext-quick-start-exit-options {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+[ext-theme="dark"] .nr-ext-quick-start-exit-options .nr-ext-quick-start-exit-options-content {
+    background-color: #272727;
+    color: #e0e6ef;
+}
