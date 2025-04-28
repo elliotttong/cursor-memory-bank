@@ -1,0 +1,35 @@
+/* Placeholder styles for the floating widget and highlights */
+
+#kokoro-tts-widget-container {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 99999; 
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    font-family: sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#kokoro-tts-widget button {
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+/* Example highlight styles */
+.kokoro-highlight-sentence {
+    background-color: rgba(173, 216, 230, 0.5); /* Light blue */
+    transition: background-color 0.1s ease-in-out;
+}
+
+.kokoro-highlight-word {
+    background-color: rgba(255, 255, 0, 0.6); /* Yellow */
+    box-shadow: 0 0 0 1px rgba(255, 215, 0, 0.8); /* Gold outline */
+    border-radius: 2px;
+    transition: background-color 0.05s ease-in-out, box-shadow 0.05s ease-in-out;
+} 

@@ -17,15 +17,15 @@ This file tracks the analysis progress for each planned feature of the target TT
 - [x] **M05: Playback Speed Control**
   - *Goal: Understand how speed adjustment (especially the high speeds advertised by Speechify) is achieved while maintaining sync. Is it an API parameter, or client-side manipulation of audio playback rate? How is sync preserved at high speeds?*
   - *Status: done*
-- [ ] **M06: Text Extraction (Web)**
+- [x] **M06: Text Extraction (Web)**
   - *Goal: Analyze the methods used to identify and extract the main readable content from diverse web pages (articles, blogs, potentially Gmail). Look for common patterns, potential use of libraries (like Readability.js), or custom heuristics/selectors.Do they have serparate files for different sites like wikepedia, reddit etc, how do they make it specific to each page?*
-- [ ] **M07: Floating Widget UI**
+- [x] **M07: Floating Widget UI**
   - *Goal: Examine the implementation of the persistent floating player. How is it injected onto the page? What technologies might be used (if discernible)? How does it handle different website layouts and scrolling?*
-- [ ] **M08: State Management (Basic)**
+- [x] **M08: State Management (Basic)**
   - *Goal: Identify how the extension tracks the current essential playback state (e.g., playing/paused, current audio position, current text segment index/reference) during an active reading session on a single page.*
-- [ ] **M09: Activation Control**
+- [x] **M09: Activation Control**
   - *Goal: Analyze how the user initiates TTS (icon click, context menu on selection, shortcut) and how the extension determines the scope of text to read (e.g., user-selected text vs. auto-detected main content).*
-- [ ] **M10: Voice Management & Selection**
+- [x] **M10: Voice Management & Selection**
   - *Goal: Understand how the list of available voices (especially premium/cloud-based ones) is fetched, presented to the user in the UI, and how user selection translates to parameters for the TTS API calls.*
 
 ---
