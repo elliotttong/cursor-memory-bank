@@ -6,18 +6,19 @@ This file tracks the analysis progress for each planned feature of the target TT
 
 ## MUST HAVE Features
 
-- [ ] **M01: Cloud TTS API Integration**
+- [x] **M01: Cloud TTS API Integration**
   - *Goal: Analyze how premium TTS voices are accessed. Identify potential APIs used (like Play.ht, ElevenLabs, Google, AWS Polly), authentication methods, and how voice selection maps to API calls, especially for Speechify.*
 - [ ] **M02: Audio Streaming Playback**
   - *Goal: Investigate how audio data received from the API is handled. Is it streamed progressively? Buffered? What audio formats are likely used? How is playback controlled (e.g., HTML5 `<audio>`, Web Audio API)?*
-- [ ] **M03: Highlighting (Word & Sentence)**
+- [x] **M03: Highlighting (Word & Sentence)**
   - *Goal: Detail the mechanism for visually highlighting text on the webpage as it's spoken. How are specific words and sentences identified and styled dynamically? (e.g., wrapping in `<span>`s, applying CSS classes). Focus on achieving both word and sentence level like Speechify.*
-- [ ] **M04: Audio-Highlight Sync**
+- [x] **M04: Audio-Highlight Sync**
   - *Goal: Determine the core technique used to synchronize the precise audio playback position with the correct word and sentence highlight. Analyze potential use of API timing data/metadata, `speechSynthesis` boundary events (if applicable), or other custom timing mechanisms.*
-- [ ] **M05: Playback Speed Control**
+- [x] **M05: Playback Speed Control**
   - *Goal: Understand how speed adjustment (especially the high speeds advertised by Speechify) is achieved while maintaining sync. Is it an API parameter, or client-side manipulation of audio playback rate? How is sync preserved at high speeds?*
+  - *Status: done*
 - [ ] **M06: Text Extraction (Web)**
-  - *Goal: Analyze the methods used to identify and extract the main readable content from diverse web pages (articles, blogs, potentially Gmail). Look for common patterns, potential use of libraries (like Readability.js), or custom heuristics/selectors.*
+  - *Goal: Analyze the methods used to identify and extract the main readable content from diverse web pages (articles, blogs, potentially Gmail). Look for common patterns, potential use of libraries (like Readability.js), or custom heuristics/selectors.Do they have serparate files for different sites like wikepedia, reddit etc, how do they make it specific to each page?*
 - [ ] **M07: Floating Widget UI**
   - *Goal: Examine the implementation of the persistent floating player. How is it injected onto the page? What technologies might be used (if discernible)? How does it handle different website layouts and scrolling?*
 - [ ] **M08: State Management (Basic)**

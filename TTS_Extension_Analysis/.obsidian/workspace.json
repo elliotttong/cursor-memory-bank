@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "00_Meta/_Feature_Analysis_Tracker.md",
+                "file": "02_Features_Analysis/MUST_HAVE/M10_Voice_Management_Selection.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "_Feature_Analysis_Tracker"
+              "title": "M10_Voice_Management_Selection"
             }
           }
         ]
@@ -94,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "00_Meta/_Feature_Analysis_Tracker.md",
+                "file": "02_Features_Analysis/MUST_HAVE/M10_Voice_Management_Selection.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for _Feature_Analysis_Tracker"
+              "title": "Backlinks for M10_Voice_Management_Selection"
             }
           },
           {
@@ -113,12 +113,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "00_Meta/_Feature_Analysis_Tracker.md",
+                "file": "02_Features_Analysis/MUST_HAVE/M10_Voice_Management_Selection.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from _Feature_Analysis_Tracker"
+              "title": "Outgoing links from M10_Voice_Management_Selection"
             }
           },
           {
@@ -142,13 +142,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "00_Meta/_Feature_Analysis_Tracker.md",
+                "file": "02_Features_Analysis/MUST_HAVE/M10_Voice_Management_Selection.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of _Feature_Analysis_Tracker"
+              "title": "Outline of M10_Voice_Management_Selection"
             }
           }
         ]
@@ -170,6 +170,25 @@
   },
   "active": "b9d2585268ff3c7d",
   "lastOpenFiles": [
+    "02_Features_Analysis/MUST_HAVE/M09_Activation_Control.md",
+    "02_Features_Analysis/MUST_HAVE/M10_Voice_Management_Selection.md",
+    "02_Features_Analysis/MUST_HAVE/M08_State_Management_Basic.md",
+    "02_Features_Analysis/MUST_HAVE/M07_Floating_Widget_UI.md",
+    "02_Features_Analysis/MUST_HAVE/M06_Text_Extraction_Web.md",
+    "02_Features_Analysis/MUST_HAVE/M05_Playback_Speed_Control.md",
+    "03_Features_Analysis/COULD_HAVE/C06_Focus_Mode.md",
+    "03_Features_Analysis/COULD_HAVE",
+    "03_Features_Analysis",
+    "02_Features_Analysis/MUST_HAVE/M03_Highlighting_Word_Sentence.md",
+    "02_Features_Analysis/MUST_HAVE/M02_Audio_Streaming_Playback.md",
+    "02_Features_Analysis/MUST_HAVE/M04_Audio-Highlight_Sync.md",
+    "02_Features_Analysis/MUST_HAVE/M04_Keyboard_Shortcuts.md",
+    "02_Features_Analysis/MUST_HAVE/M01_Cloud_TTS_API_Integration.md",
+    "01_Competitors/Speechify/_Overview.md",
+    "02_Features_Analysis/MUST_HAVE",
+    "02_Features_Analysis",
+    "01_Competitors/ReadVox/_Overview.md",
+    "00_Meta/_Feature_Analysis_Tracker.md",
     "01_Competitors/NaturalReader/_Overview.md"
   ]
 }
