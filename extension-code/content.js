@@ -44,6 +44,8 @@ let currentHighlightedSentenceId = null;
 
 let createdHighlightSpans = []; // T07 state
 
+let scrollTrackingFrameId = null; // ID for the persistent scroll tracking loop
+
 // --- T05: UI Placeholder Injection ---
 function injectWidget() {
   console.log("Attempting to inject widget...");
@@ -81,12 +83,49 @@ function injectWidget() {
   console.log("Widget Injected.");
 }
 
-// --- Wait for DOM ready before injecting ---
+// --- Wait for DOM ready before injecting & START SCROLL TRACKING ---
 if (document.readyState === 'loading') {  // Check if loading already complete
-    document.addEventListener('DOMContentLoaded', injectWidget);
+    document.addEventListener('DOMContentLoaded', () => {
+        injectWidget();
+        startScrollTrackingLoop(); // Start tracking scroll after DOM is ready
+    });
 } else {  // Handle cases where script runs after DOMContentLoaded
     injectWidget();
+    startScrollTrackingLoop(); // Start tracking scroll immediately
 }
+
+// --- NEW: Persistent Scroll Tracking Loop ---
+function scrollTrackingLoop() {
+    const targetElement = document.body; // Or potentially a more specific container
+    try {
+        const currentScrollX = window.scrollX;
+        const currentScrollY = window.scrollY;
+        targetElement.style.setProperty('--kokoroScrollX', currentScrollX);
+        targetElement.style.setProperty('--kokoroScrollY', currentScrollY);
+        // console.log(`[Scroll Tracker] Updated scroll: X=${currentScrollX}, Y=${currentScrollY}`); // DEBUG (very noisy)
+    } catch (e) {
+        // Avoid error spam if body isn't ready yet, loop will retry
+        // console.error("[Scroll Tracker] Error setting scroll offset properties:", e);
+    }
+    scrollTrackingFrameId = requestAnimationFrame(scrollTrackingLoop);
+}
+
+function startScrollTrackingLoop() {
+    console.log("Starting persistent scroll tracking loop.");
+    if (scrollTrackingFrameId === null) {
+        scrollTrackingLoop(); // Start the loop
+    }
+}
+
+// Optional: Stop scroll tracking if the script context is invalidated
+// window.addEventListener('unload', () => {
+//     if (scrollTrackingFrameId !== null) {
+//         cancelAnimationFrame(scrollTrackingFrameId);
+//         scrollTrackingFrameId = null;
+//         console.log("Stopped persistent scroll tracking loop on unload.");
+//     }
+// });
+// ----------------------------------------
 
 // --- T02/T04/T12: Playback Control & Sentence Logic --- 
 
@@ -767,21 +806,8 @@ function pollingLoop() {
         return;
     }
 
-    // --- UPDATE SCROLL OFFSET ---
-    const targetElement = document.body; // Assuming this is still the target
-    try {
-        const currentScrollX = window.scrollX;
-        const currentScrollY = window.scrollY;
-        targetElement.style.setProperty('--kokoroScrollX', currentScrollX);
-        targetElement.style.setProperty('--kokoroScrollY', currentScrollY);
-        // Optional debug log (can be noisy)
-        // console.log(`[PollingLoop] Updated scroll offsets: X=${currentScrollX}, Y=${currentScrollY}`);
-    } catch (e) {
-        console.error("[PollingLoop] Error setting scroll offset properties:", e);
-    }
-    // --------------------------
-
     // --- UPDATE SENTENCE COORDINATES ---
+    const targetElement = document.body; // Still need targetElement here for other updates
     try {
         updateSentenceHighlightCoordinates(currentSentenceIndex);
     } catch (e) {
