@@ -18,7 +18,8 @@
 *   ~(T17): Define CSS using `paint()` and custom properties.~ (Done)
 *   ~(T18): Implement coordinate calculation and dynamic CSS variable updates for sentence/word highlighting.~ (Done)
 *   ~(T19): Implement hover highlighting using coordinate calculation and CSS variables.~ *(Done)*
-*   **(T20):** Test all Houdini-based highlighting and interactions. *(Current)*
+*   ~(T20): Implement click-to-play (uses existing spans/IDs).~ *(Done)*
+*   **(T21):** Test all Houdini-based highlighting and interactions. *(Current)*
 
 **Key Focus Areas:**
 
@@ -35,5 +36,5 @@
 4.  ~~Implement T18: Coordinate calculation & dynamic updates.~~
 5.  ~~Implement T19: Hover logic.~~
 6.  ~~Implement T20: Click-to-play.~~
-7.  Test T21. *(Next)*
-8.  Address Phase 3 tasks (T10-T15) concurrently or afterwards.
+7.  ~~Test T21.~~
+8.  Address Phase 3 tasks (T10-T15). *(Next)*
