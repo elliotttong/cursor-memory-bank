@@ -43,8 +43,73 @@ let currentHighlightedWord = null; // Stores the element of the currently highli
 let currentHighlightedSentenceId = null; 
 
 let createdHighlightSpans = []; // T07 state
+let isStoppingOnError = false; // Flag to prevent error handling loops
+let isInitialized = false; // <<< Add initialization flag
 
-let scrollTrackingFrameId = null; // ID for the persistent scroll tracking loop
+// --- NEW: Initialization Function ---
+function initializeExtensionFeatures() {
+    console.log(">>> ENTERED initializeExtensionFeatures function."); // <<< STEP 1: Confirm Entry
+
+    isInitialized = false; 
+    const playPauseButton = document.getElementById('kokoro-play-pause-button');
+    
+    // <<< STEP 2: Check Button Access
+    if (!playPauseButton) {
+        console.error("[Initialize] Play/Pause button not found immediately. Widget injection might be delayed or failed.");
+        // Optionally retry initialization after a short delay
+        // setTimeout(initializeExtensionFeatures, 200);
+        // return; // Stop if button not found yet
+    } else {
+        console.log("[Initialize] Play/Pause button found.");
+        playPauseButton.disabled = true; // Disable button during init
+    }
+    // ---------------------------
+    
+    let textToRead = null;
+    let targetElement = null;
+    try {
+        console.log(">>> ENTERED initializeExtensionFeatures TRY block."); // <<< STEP 3: Log Try Entry
+
+        // Get text first
+        const extractionResult = getTextToRead(); 
+        textToRead = extractionResult.textToRead;
+        targetElement = extractionResult.targetElement;
+
+        if (!textToRead || !targetElement) { 
+            console.warn("Initialization: No text found or target element missing. Listeners won't be attached yet.");
+            return; // Stop initialization if no text
+        }
+        
+        // Process and store segments globally
+        const { cleanedSentences, allSegments } = processText(textToRead, false); // Not test mode
+        segmentedText = allSegments;
+        sentenceSegments = cleanedSentences;
+
+        if (sentenceSegments.length === 0) {
+            console.warn("Initialization: No sentences found after processing text. Listeners won't be attached.");
+            return; // Stop if no sentences
+        }
+
+        // Setup highlighting spans and ATTACH LISTENERS
+        setupHighlighting(segmentedText, targetElement, false);
+        console.log("Initialization complete. Spans created and listeners attached.");
+        isInitialized = true; // <<< Set flag to true on SUCCESS
+        if(playPauseButton) playPauseButton.disabled = false; // <<< Enable button on success
+
+    } catch (error) {
+        console.error("Error during extension feature initialization:", error);
+        // Reset state in case of partial failure
+        segmentedText = [];
+        sentenceSegments = [];
+        createdHighlightSpans = [];
+        isInitialized = false; // <<< Ensure flag is false on error
+        if(playPauseButton) { // <<< Keep button disabled on error
+             playPauseButton.textContent = "Init Error";
+             playPauseButton.disabled = true;
+        }
+    }
+}
+// --------------------------------
 
 // --- T05: UI Placeholder Injection ---
 function injectWidget() {
@@ -78,66 +143,50 @@ function injectWidget() {
 
   const playPauseButton = document.getElementById('kokoro-play-pause-button');
   if (playPauseButton) {
+      playPauseButton.disabled = true; // <<< Start disabled
       playPauseButton.addEventListener('click', handlePlayPauseClick);
   }
   console.log("Widget Injected.");
 }
 
-// --- Wait for DOM ready before injecting & START SCROLL TRACKING ---
-if (document.readyState === 'loading') {  // Check if loading already complete
+// --- Wait for DOM ready before injecting & Initializing ---
+if (document.readyState === 'loading') { 
     document.addEventListener('DOMContentLoaded', () => {
+        console.log("DOMContentLoaded listener: START");
+        console.log("DOMContentLoaded listener: Calling injectWidget...");
         injectWidget();
-        startScrollTrackingLoop(); // Start tracking scroll after DOM is ready
+        console.log("DOMContentLoaded listener: injectWidget finished.");
+        console.log("DOMContentLoaded listener: Calling initializeExtensionFeatures...");
+        initializeExtensionFeatures(); 
+        console.log("DOMContentLoaded listener: initializeExtensionFeatures finished (or call initiated).");
+        console.log("DOMContentLoaded listener: END");
     });
-} else {  // Handle cases where script runs after DOMContentLoaded
+} else {  
+    console.log("DOMContentLoaded already fired: START");
+    console.log("DOMContentLoaded already fired: Calling injectWidget...");
     injectWidget();
-    startScrollTrackingLoop(); // Start tracking scroll immediately
+    console.log("DOMContentLoaded already fired: injectWidget finished.");
+    console.log("DOMContentLoaded already fired: Calling initializeExtensionFeatures...");
+    initializeExtensionFeatures();
+    console.log("DOMContentLoaded already fired: initializeExtensionFeatures finished (or call initiated).");
+    console.log("DOMContentLoaded already fired: END");
 }
-
-// --- NEW: Persistent Scroll Tracking Loop ---
-function scrollTrackingLoop() {
-    const targetElement = document.body; // Or potentially a more specific container
-    try {
-        const currentScrollX = window.scrollX;
-        const currentScrollY = window.scrollY;
-        targetElement.style.setProperty('--kokoroScrollX', currentScrollX);
-        targetElement.style.setProperty('--kokoroScrollY', currentScrollY);
-        // console.log(`[Scroll Tracker] Updated scroll: X=${currentScrollX}, Y=${currentScrollY}`); // DEBUG (very noisy)
-    } catch (e) {
-        // Avoid error spam if body isn't ready yet, loop will retry
-        // console.error("[Scroll Tracker] Error setting scroll offset properties:", e);
-    }
-    scrollTrackingFrameId = requestAnimationFrame(scrollTrackingLoop);
-}
-
-function startScrollTrackingLoop() {
-    console.log("Starting persistent scroll tracking loop.");
-    if (scrollTrackingFrameId === null) {
-        scrollTrackingLoop(); // Start the loop
-    }
-}
-
-// Optional: Stop scroll tracking if the script context is invalidated
-// window.addEventListener('unload', () => {
-//     if (scrollTrackingFrameId !== null) {
-//         cancelAnimationFrame(scrollTrackingFrameId);
-//         scrollTrackingFrameId = null;
-//         console.log("Stopped persistent scroll tracking loop on unload.");
-//     }
-// });
-// ----------------------------------------
 
 // --- T02/T04/T12: Playback Control & Sentence Logic --- 
 
 function handlePlayPauseClick() {
   console.log("Play/Pause clicked");
+  if (!isInitialized) {
+      console.warn("[handlePlayPauseClick] Ignored - Not initialized yet.");
+      return;
+  }
   const button = document.getElementById('kokoro-play-pause-button');
   
   if (!isPlaying) {
       // --- Start playing --- 
       if (currentSentenceIndex === -1) {
-           // Start from the beginning
-           initiateTTS(); // This will extract text and request sentence 0
+           // Start from the beginning - text should already be processed
+           initiateTTS(0); // <<< Call simplified initiateTTS
       } else {
           // Resume playback (if audioPlayer exists and is paused)
           if (audioPlayer && audioPlayer.paused) {
@@ -158,61 +207,40 @@ function handlePlayPauseClick() {
   }
 }
 
-function initiateTTS() {
-  console.log("Initiating TTS sequence...");
-  try { // T21 Debug: Wrap clearHighlights call
-      stopPlaybackAndResetState(); 
-  } catch (e) {
-      console.error("[DEBUG] Error during stopPlaybackAndResetState() in initiateTTS:", e);
-      return; // Stop if state reset failed
-  }
-  
-  let testModeActive = false;
-  let textToRead = null;
-  let targetElement = null;
+// Modified: Only sets index and requests audio
+function initiateTTS(startIndex = 0) { 
+  console.log(`Requesting TTS start from index: ${startIndex}`);
 
-  if (USE_TEST_SENTENCES) { // (Step 2)
-      console.log("--- TOKENIZER TEST MODE ACTIVE ---");
-      testModeActive = true;
-      // Use test sentences directly, join them to simulate a single block of text
-      textToRead = TOKENIZER_TEST_SENTENCES.join('\n\n'); // Join with double newline for separation
-      targetElement = document.body; // Still need a dummy target for setupHighlighting
-      console.log("Using predefined test sentences for tokenization test.");
-  } else {
-      // Normal operation: Extract text from page
-      const extractionResult = getTextToRead(); 
-      textToRead = extractionResult.textToRead;
-      targetElement = extractionResult.targetElement;
-  }
-
-  if (!textToRead || !targetElement) { 
-      console.log("No text found or target element missing.");
-      return;
-  }
-  
-  // Process and store segments (Pass testModeActive flag)
-  const { cleanedSentences, allSegments } = processText(textToRead, testModeActive);
-  // Store all segments for highlighting/sync logic
-  segmentedText = allSegments;
-  // Use the cleaned sentences array for iterating/requesting audio
-  sentenceSegments = cleanedSentences;
-
+  // Ensure initialization happened and we have segments
   if (sentenceSegments.length === 0) {
-      console.error("No sentences found after processing text.");
-      stopPlaybackAndResetState(); 
-      return;
+      console.error("[initiateTTS] No sentences available. Initialization might have failed. Trying to re-initialize...");
+      // Attempt re-initialization as a fallback
+      initializeExtensionFeatures();
+      if (sentenceSegments.length === 0) {
+          console.error("[initiateTTS] Re-initialization failed. Cannot start TTS.");
+          stopPlaybackAndResetState(); // Ensure clean state
+          return;
+      }
+      console.log("[initiateTTS] Re-initialization successful.");
   }
 
-  // Setup highlighting spans using the correct allSegments array
-  setupHighlighting(segmentedText, targetElement, testModeActive);
+  // Stop any existing playback first (safer)
+  stopPlaybackAndResetState();
+  
+  // Set target index and request audio
+  if (startIndex < 0 || startIndex >= sentenceSegments.length) {
+      console.warn(`[initiateTTS] Invalid startIndex ${startIndex}. Defaulting to 0.`);
+      startIndex = 0;
+  }
+  currentSentenceIndex = startIndex; 
 
   const playPauseButton = document.getElementById('kokoro-play-pause-button');
-  if(playPauseButton) playPauseButton.textContent = "Loading Test...";
-  if(playPauseButton) playPauseButton.disabled = true;
+  if(playPauseButton) {
+       playPauseButton.textContent = "Loading..."; 
+       playPauseButton.disabled = true;
+  }
 
-  // Start the sequence by requesting the FIRST sentence
-  currentSentenceIndex = 0;
-  requestSentenceAudio(currentSentenceIndex);
+  requestSentenceAudio(currentSentenceIndex); // Request the target start index
 }
 
 // New function to request audio for a specific sentence index
@@ -261,6 +289,8 @@ function handleReceivedAudio(index, dataUrl, timestamps) {
     console.log(`Received audio data and ${timestamps?.length || 0} timestamps for sentence index ${index}`);
     // --- DEBUG LOG: Log the received timestamps array --- 
     console.log(`[DEBUG] Timestamps received for sentence ${index}:`, JSON.parse(JSON.stringify(timestamps)));
+    // --- DEBUG LOG: Log the beginning of the dataUrl --- 
+    console.log(`[DEBUG] Received dataUrl (start): ${dataUrl?.substring(0, 50)}...`);
     // -------------------------------------------------
     
     if (!dataUrl || !timestamps) {
@@ -347,6 +377,15 @@ function handleAudioEnded() {
 
 function handleAudioError(event) {
     console.error(`Audio playback error during sentence ${currentSentenceIndex}:`, event);
+
+    // --- Prevent Recursive Error Handling --- 
+    if (isStoppingOnError) {
+        console.warn("[handleAudioError] Already stopping due to a previous error. Ignoring recursive call.");
+        return;
+    }
+    isStoppingOnError = true;
+    // ----------------------------------------
+
     stopSyncLoop(); // Stop polling on error
     
     // Log details from the standard audio error event if available
@@ -363,63 +402,45 @@ function handleAudioError(event) {
     stopPlaybackAndResetState(); 
     const playPauseButton = document.getElementById('kokoro-play-pause-button');
     if (playPauseButton) playPauseButton.textContent = "Error";
+    
+    // --- Reset the flag AFTER attempting to stop --- 
+    // isStoppingOnError = false; // Moved reset to end of stopPlaybackAndResetState
+    // --------------------------------------------
 }
 
 // --- The function that uses the handlers ---
 function playAudio(audioDataUrl, timestamps) {
   console.log(`playAudio called for sentence ${currentSentenceIndex} with ${timestamps.length} timestamps.`);
   
-  if (!audioPlayer) { 
-    console.log("Creating new Audio element...");
-    audioPlayer = new Audio(); 
-    console.log(" -> Audio element created.");
-    
-    // Attach listeners ONLY when the element is first created
-    audioPlayer.addEventListener('ended', handleAudioEnded);
-    console.log(" -> Added 'ended' listener.");
-    audioPlayer.addEventListener('error', handleAudioError);
-    console.log(" -> Added 'error' listener.");
-    audioPlayer.addEventListener('play', handleAudioPlay); 
-    console.log(" -> Added 'play' listener.");
-    audioPlayer.addEventListener('pause', handleAudioPause);
-    console.log(" -> Added 'pause' listener.");
-
-    // --- REMOVE timeupdate listeners - we will use polling --- 
-    // audioPlayer.addEventListener('timeupdate', handleTimeUpdate); 
-    // console.log(" -> Added 'timeupdate' listener (handleTimeUpdate).");
-    // audioPlayer.addEventListener('timeupdate', () => { 
-    //     console.log("[timeupdate event fired!] Current time:", audioPlayer?.currentTime);
-    // });
-    // console.log(" -> Added 'timeupdate' listener (inline test log).");
-    // ----------------------------------------------------------
-
-    audioPlayer.addEventListener('loadstart', () => { console.log(`Audio event: loadstart for sentence ${currentSentenceIndex}`); });
-    console.log(" -> Added 'loadstart' listener.");
-    audioPlayer.addEventListener('loadeddata', () => { console.log(`Audio event: loadeddata for sentence ${currentSentenceIndex}`); });
-    console.log(" -> Added 'loadeddata' listener.");
-    audioPlayer.addEventListener('canplay', () => { console.log(`Audio event: canplay for sentence ${currentSentenceIndex}`); });
-    console.log(" -> Added 'canplay' listener.");
-    audioPlayer.addEventListener('canplaythrough', () => { console.log(`Audio event: canplaythrough for sentence ${currentSentenceIndex}`); });
-    console.log(" -> Added 'canplaythrough' listener.");
-    
-    console.log(" -> Finished adding listeners inside if block.");
-  } else {
-      console.log(`Reusing existing audioPlayer for sentence ${currentSentenceIndex}.`);
-  }
+  // --- Always create a NEW Audio element --- 
+  console.log("Creating new Audio element for playback...");
+  audioPlayer = new Audio(); // Create fresh element
+  console.log(" -> New Audio element created.");
+  
+  // Attach listeners to the new element
+  audioPlayer.addEventListener('ended', handleAudioEnded);
+  console.log(" -> Added 'ended' listener.");
+  audioPlayer.addEventListener('error', handleAudioError);
+  console.log(" -> Added 'error' listener.");
+  audioPlayer.addEventListener('play', handleAudioPlay); 
+  console.log(" -> Added 'play' listener.");
+  audioPlayer.addEventListener('pause', handleAudioPause);
+  console.log(" -> Added 'pause' listener.");
+  audioPlayer.addEventListener('loadstart', () => { console.log(`Audio event: loadstart for sentence ${currentSentenceIndex}`); });
+  console.log(" -> Added 'loadstart' listener.");
+  audioPlayer.addEventListener('loadeddata', () => { console.log(`Audio event: loadeddata for sentence ${currentSentenceIndex}`); });
+  console.log(" -> Added 'loadeddata' listener.");
+  // Add other listeners if needed ('canplay', etc.)
+  console.log(" -> Finished adding listeners.");
+  // -----------------------------------------
   
   // Store the precise timings for the currently playing sentence
   currentWordTimestamps = timestamps;
   
-  // --- Revert back to using the actual audioDataUrl --- 
-  // const testAudioUrl = "https://interactive-examples.mdn.mozilla.net/media/cc0-audio/t-rex-roar.wav"; 
-  // console.log(`[DEBUG] Setting audioPlayer.src to TEST URL: ${testAudioUrl}`);
-  // audioPlayer.src = testAudioUrl; // TEMP OVERRIDE
   console.log(`Setting audioPlayer.src for sentence ${currentSentenceIndex}`);
-  audioPlayer.src = audioDataUrl; // Use the actual Data URL
-  // ---------------------------------------------------
+  audioPlayer.src = audioDataUrl; 
   
-  console.log(`Calling audioPlayer.load() for sentence ${currentSentenceIndex}`);
-  audioPlayer.load();
+  // --- REMOVE EXPLICIT LOAD CALL (Still removed) --- 
 
   console.log(`Calling audioPlayer.play() for sentence ${currentSentenceIndex}`);
   try {
@@ -444,7 +465,6 @@ function playAudio(audioDataUrl, timestamps) {
       console.error(`Synchronous error calling audioPlayer.play() for sentence ${currentSentenceIndex}:`, error);
        handleAudioError({ type: 'error', target: audioPlayer, errorDetails: error }); 
   }
-  // --------------------------------------------
 
   // Pre-fetch the NEXT sentence (logic remains similar)
   const nextIndex = currentSentenceIndex + 1;
@@ -463,22 +483,48 @@ function playAudio(audioDataUrl, timestamps) {
 function stopPlaybackAndResetState() {
     console.log("Stopping playback and resetting state.");
     if (audioPlayer) {
-        audioPlayer.pause();
-        audioPlayer.src = ""; 
+        // --- Remove the existing audio element completely --- 
+        try {
+            if (!audioPlayer.paused) {
+                audioPlayer.pause(); 
+            }
+            // Remove listeners (optional but good practice before removing element)
+            audioPlayer.removeEventListener('ended', handleAudioEnded);
+            audioPlayer.removeEventListener('error', handleAudioError);
+            audioPlayer.removeEventListener('play', handleAudioPlay); 
+            audioPlayer.removeEventListener('pause', handleAudioPause);
+            // ... remove other listeners if added ...
+
+            // audioPlayer.src = ""; // No longer needed
+            if (audioPlayer.parentNode) { // Check if it's in the DOM
+                audioPlayer.remove(); // Remove from DOM
+                console.log("[Reset] Removed audio player element from DOM.");
+            }
+            audioPlayer = null; // Discard the reference
+            console.log("[Reset] Set audioPlayer reference to null.");
+        } catch (e) {
+            console.error("[Reset] Error removing audio player:", e);
+            audioPlayer = null; // Ensure reference is cleared even on error
+        }
+        // ---------------------------------------------------
     }
     isPlaying = false;
     currentSentenceIndex = -1;
     nextAudioData = null;
-    currentWordTimestamps = []; // Clear timestamps
+    currentWordTimestamps = [];
     stopSyncLoop(); 
     clearHighlights(); 
-    currentHighlightedWord = null; // Clear highlighted word ref
+    currentHighlightedWord = null;
+    isStoppingOnError = false; 
+    lastWordElement = null; // Also reset this
     
     const playPauseButton = document.getElementById('kokoro-play-pause-button');
     if (playPauseButton) {
         playPauseButton.textContent = "Play";
         playPauseButton.disabled = false;
     }
+    
+    console.log("[Reset] State reset complete. isStoppingOnError set to false.");
 }
 
 // --- Placeholder Functions for Later Phases ---
@@ -766,26 +812,24 @@ function setupHighlighting(segments, targetElement, isTestMode = false) {
 }
 
 function clearHighlights() {
-    console.log("Clearing highlights by removing class..."); 
+    console.log("Clearing highlights via coordinates..."); // Updated log message
     
-    try { // T21 Debug: Wrap highlight clearing logic
-        // Clear word highlight
-        if (currentHighlightedWord) {
-            currentHighlightedWord.classList.remove('kokoro-highlight-word');
-            currentHighlightedWord = null;
-        }
+    try { 
+        // --- Clear word highlight via coordinates --- 
+        updateWordHighlightCoordinates(null); 
+        lastWordElement = null; // Reset background check cache
+        // ---------------------------------------------
 
-        // T18: Clear sentence highlight by calling update function with invalid index
-        updateSentenceHighlight(-1); 
+        // --- Clear sentence highlight via coordinates --- 
+        // updateSentenceHighlight(-1); // OLD, INCORRECT FUNCTION NAME - REMOVE THIS LINE
+        updateSentenceHighlightCoordinates(-1); // CORRECT FUNCTION NAME
+        // -------------------------------------------
 
-        // Query and remove just in case state is inconsistent (optional, but safer)
-        const highlightedElements = document.querySelectorAll('.kokoro-highlight-word, .kokoro-highlight-sentence');
-        highlightedElements.forEach(el => {
-            el.classList.remove('kokoro-highlight-word', 'kokoro-highlight-sentence');
-        });
-    
-        // Also clear the element references in the main segmentedText array
-        segmentedText.forEach(segment => segment.element = null);
+        // --- Clear hover highlight variable --- 
+        const targetElement = document.body;
+        targetElement.style.setProperty('--kokoroHoverSentenceInfo', '');
+        // -------------------------------------
+
     } catch (e) {
         console.error("[DEBUG] Error inside clearHighlights logic:", e);
     }
@@ -806,8 +850,19 @@ function pollingLoop() {
         return;
     }
 
+    // --- ADD SCROLL OFFSET UPDATE BACK HERE --- 
+    const targetElement = document.body; 
+    try {
+        const currentScrollX = window.scrollX;
+        const currentScrollY = window.scrollY;
+        targetElement.style.setProperty('--kokoroScrollX', currentScrollX);
+        targetElement.style.setProperty('--kokoroScrollY', currentScrollY);
+    } catch (e) {
+        console.error("[PollingLoop] Error setting scroll offset properties:", e);
+    }
+    // -----------------------------------------
+
     // --- UPDATE SENTENCE COORDINATES ---
-    const targetElement = document.body; // Still need targetElement here for other updates
     try {
         updateSentenceHighlightCoordinates(currentSentenceIndex);
     } catch (e) {
@@ -976,13 +1031,25 @@ function updateHighlight(activeSegment) {
 
 // --- T19: Hover Highlighting Logic (Houdini Version) ---
 function handleSentenceHover(event) {
-    if (!event.target.dataset.sentenceId) return; // Ignore if no sentence ID
+    if (!isInitialized) return;
+    if (!event.target.dataset.sentenceId) return; 
     const sentenceId = event.target.dataset.sentenceId;
-    const targetElement = document.body; // Element where CSS variables are set
+    const targetElement = document.body; 
 
-    // Avoid applying hover if it's the currently playing sentence (optional, for clarity)
     const currentSentenceId = currentSentenceIndex >= 0 ? `s-${currentSentenceIndex}` : null;
     if (sentenceId === currentSentenceId) return;
+
+    // --- ADD SCROLL UPDATE ON HOVER START --- 
+    try {
+        const currentScrollX = window.scrollX;
+        const currentScrollY = window.scrollY;
+        targetElement.style.setProperty('--kokoroScrollX', currentScrollX);
+        targetElement.style.setProperty('--kokoroScrollY', currentScrollY);
+        // console.log(`[Hover In] Updated scroll: X=${currentScrollX}, Y=${currentScrollY}`); // DEBUG
+    } catch (e) {
+        console.error("[Hover In] Error setting scroll offset properties:", e);
+    }
+    // ---------------------------------------
 
     try {
         const spans = document.querySelectorAll(`span[data-sentence-id="${sentenceId}"]`);
@@ -1054,6 +1121,7 @@ function handleSentenceHover(event) {
 }
 
 function handleSentenceHoverOut(event) {
+    if (!isInitialized) return;
     if (!event.target.dataset.sentenceId) return;
     const sentenceId = event.target.dataset.sentenceId; // Keep for potential debug logging
     const targetElement = document.body;
@@ -1066,9 +1134,76 @@ function handleSentenceHoverOut(event) {
     }
 }
 
-// --- T20: Click-to-Play Logic (Remains the same) ---
+// --- T20: Click-to-Play Logic --- 
 function handleSentenceClick(event) {
-// ... (existing code is fine) ...
+    if (!isInitialized) {
+        console.warn("[handleSentenceClick] Ignored - Not initialized yet.");
+        return;
+    }
+    if (!event.target.dataset.sentenceId) {
+        console.warn("[Click] Clicked target missing sentenceId:", event.target);
+        return;
+    }
+    const sentenceId = event.target.dataset.sentenceId;
+    console.log(`[Click] Detected click on sentence: ${sentenceId}`);
+
+    try {
+        // Extract index from ID (e.g., "s-5" -> 5)
+        const indexStr = sentenceId.split('-')[1];
+        const clickedIndex = parseInt(indexStr, 10);
+
+        if (isNaN(clickedIndex)) {
+            console.error("[Click] Could not parse sentence index from ID:", sentenceId);
+            return;
+        }
+
+        if (clickedIndex === currentSentenceIndex && isPlaying) {
+            console.log("[Click] Clicked on currently playing sentence. Ignoring.");
+            return; // Optional: Ignore click if already playing this sentence
+        }
+
+        if (clickedIndex < 0 || clickedIndex >= sentenceSegments.length) {
+            console.error("[Click] Clicked index out of bounds:", clickedIndex);
+            return;
+        }
+
+        console.log(`[Click] Starting playback from sentence index: ${clickedIndex}`);
+        startPlaybackFromSentence(clickedIndex);
+
+    } catch (e) {
+        console.error("[Click] Error handling sentence click:", e);
+    }
+}
+
+function startPlaybackFromSentence(index) {
+    console.log(`Starting playback from sentence: ${index}`);
+    
+    // 1. Stop any current playback and reset relevant state
+    stopPlaybackAndResetState(); // This now sets audioPlayer to null
+    
+    // --- Clear hover highlight --- 
+    try {
+        const targetElement = document.body;
+        targetElement.style.setProperty('--kokoroHoverSentenceInfo', '');
+        console.log("[Click->Start] Cleared hover highlight variable.");
+    } catch(e) {
+        console.error("[Click->Start] Error clearing hover highlight variable:", e);
+    }
+    // ---------------------------
+    
+    // 2. Set the new target sentence index
+    currentSentenceIndex = index;
+
+    // 3. Update UI immediately 
+    const playPauseButton = document.getElementById('kokoro-play-pause-button');
+    if(playPauseButton) {
+        playPauseButton.textContent = "Loading...";
+        playPauseButton.disabled = true;
+    }
+
+    // 4. Request audio for the new sentence (REMOVE setTimeout)
+    console.log("[startPlaybackFromSentence] Requesting audio directly.");
+    requestSentenceAudio(currentSentenceIndex); 
 }
 
 // T18: New function to calculate and set word highlight coordinates
@@ -1228,28 +1363,3 @@ function updateActiveSentenceHighlighting(targetSentenceIndex) {
      console.log(`[updateActiveSentenceHighlighting] Updating sentence highlight for index: ${targetSentenceIndex}`); // Add log here too
      updateSentenceHighlightCoordinates(targetSentenceIndex);
 }
-
-// ... pollingLoop ...
-
-// ... stopPlaybackAndResetState ...
-function stopPlaybackAndResetState() {
-    console.log("Stopping playback and resetting state.");
-    if (audioPlayer) {
-        audioPlayer.pause();
-        audioPlayer.src = "";
-    }
-    isPlaying = false;
-    currentSentenceIndex = -1;
-    nextAudioData = null;
-    currentWordTimestamps = []; // Clear timestamps
-    stopSyncLoop(); // This now calls updateWordHighlightCoordinates(null)
-    lastWordElement = null; // Reset background cache check
-
-    const playPauseButton = document.getElementById('kokoro-play-pause-button');
-    if (playPauseButton) {
-        playPauseButton.textContent = "Play";
-        playPauseButton.disabled = false;
-    }
-}
-
-// ... rest of file ...

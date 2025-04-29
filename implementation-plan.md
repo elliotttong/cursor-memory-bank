@@ -79,6 +79,6 @@
     *   Implement listener functions:
         *   `handleSentenceHover(event)`: Gets `sentenceId`. Queries all spans for sentence. Uses same line-based coordinate calculation logic as T18 (`getClientRects`, group by line, find min/max). Updates `--kokoroHoverSentenceInfo`.
         *   `handleSentenceHoverOut(event)`: Clears `--kokoroHoverSentenceInfo`.
-*   **(T20) Click-to-Play Logic:**
+*   **(T20) Click-to-Play Logic:** (Completed)
     *   In `content.js` -> `setupHighlighting`:
         *   Keep `
