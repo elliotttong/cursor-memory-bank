@@ -37,4 +37,4 @@
 - [x] **T18:** Implement coordinate calculation (`getClientRects` on spans) and dynamic CSS variable updates for sentence/word highlighting in `content.js`. *(Line-based sentence logic implemented)*
 - [x] **T19:** Implement hover highlighting using coordinate calculation and separate CSS variables updated via `mouseover`/`mouseout`. *(Updated to line-based logic)*
 - [x] **T20:** Implement click-to-play (added `click` listeners, implemented `startPlaybackFromSentence(index)`).
-- [ ] **T21:** Test Houdini-based sentence highlighting, word highlighting, hover, and click-to-play functionality thoroughly. 
+- [x] **T21:** Test Houdini-based sentence highlighting, word highlighting, hover, and click-to-play functionality thoroughly. 

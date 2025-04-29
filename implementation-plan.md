@@ -80,5 +80,8 @@
         *   `handleSentenceHover(event)`: Gets `sentenceId`. Queries all spans for sentence. Uses same line-based coordinate calculation logic as T18 (`getClientRects`, group by line, find min/max). Updates `--kokoroHoverSentenceInfo`.
         *   `handleSentenceHoverOut(event)`: Clears `--kokoroHoverSentenceInfo`.
 *   **(T20) Click-to-Play Logic:** (Completed)
-    *   In `content.js` -> `setupHighlighting`:
-        *   Keep `
+    *   In `content.js` -> `setupHighlighting`: Click listener added.
+    *   Implemented `handleSentenceClick(event)` to parse index and call `startPlaybackFromSentence`.
+    *   Implemented `startPlaybackFromSentence(index)` to stop, reset state (remove+nullify audio element), set new index, update UI, and request new audio.
+*   **(T21) Phase 4 Testing:** (Completed)
+    *   Core functionality (highlighting, hover, click-to-play, scroll sync) verified.
