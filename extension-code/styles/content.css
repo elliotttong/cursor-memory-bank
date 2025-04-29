@@ -4,14 +4,15 @@
     position: fixed;
     bottom: 20px;
     right: 20px;
-    z-index: 99999; 
+    z-index: 2147483647; /* Max z-index */
     background-color: rgba(240, 240, 240, 0.9);
     border: 1px solid #ccc;
     border-radius: 5px;
-    padding: 8px 12px;
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
-    font-family: sans-serif;
-    font-size: 14px;
+    padding: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+#kokoro-tts-widget {
     display: flex;
     align-items: center;
 }
@@ -22,15 +23,100 @@
     cursor: pointer;
 }
 
-/* Example highlight styles */
-.kokoro-highlight-sentence {
-    background-color: rgba(173, 216, 230, 0.5); /* Light blue */
-    transition: background-color 0.1s ease-in-out;
+#kokoro-tts-widget span {
+    font-family: sans-serif;
+    font-size: 12px;
 }
 
-.kokoro-highlight-word {
-    background-color: yellow; /* Simple yellow background */
-    color: black; /* Ensure text is readable */
+/* Example highlight styles */
+.kokoro-segment {
+    /* No visual styling needed by default if using Houdini paint */
+}
+
+.kokoro-word {
+    /* No visual styling needed by default */
+}
+
+.kokoro-punctuation {
+    /* No visual styling needed by default */
+}
+
+/* T17: Active Sentence Highlight */
+.kokoro-highlight-sentence {
+    background-color: #ADD8E6; /* Light Blue */
     /* Add transition for smoother effect if desired */
     /* transition: background-color 0.1s ease-in-out; */ 
-} 
+}
+
+/* T09: Active Word Highlight (ensure it overrides sentence) */
+.kokoro-highlight-word {
+    background-color: yellow !important; /* Use !important sparingly, but helps override */
+    color: black !important; /* Ensure text remains readable */
+    /* Add transition for smoother effect if desired */
+    /* transition: background-color 0.1s ease-in-out; */
+}
+
+/* T17: Hover Sentence Highlight */
+.kokoro-hover-sentence {
+    background-color: #D3D3D3; /* Light Gray */
+    /* Add transition for smoother effect if desired */
+    /* transition: background-color 0.1s ease-in-out; */
+}
+
+/* Kokoro TTS Extension Styles */
+
+/* T07/T17: Highlight Styling */
+
+/* Basic span styling (optional, for debugging perhaps) */
+.kokoro-segment {
+    /* No visual styling needed by default if using Houdini paint */
+}
+
+.kokoro-word {
+    /* No visual styling needed by default */
+}
+
+.kokoro-punctuation {
+    /* No visual styling needed by default */
+}
+
+/* --- Houdini Paint API Styling (T17) --- */
+
+body {
+    /* Apply the paint worklet to the body's background */
+    background-image: paint(kokoroHighlighter);
+
+    /* Define default colors for the paint worklet */
+    --kokoroSentenceHighlightColorDark: #374b64;  /* Dark Blue-Gray for light page backgrounds */
+    --kokoroSentenceHighlightColorLight: #E6E8FF; /* Light Blue for dark page backgrounds */
+    --kokoroWordHighlightColorDark: #3a72e0;      /* Blue for light page backgrounds */
+    --kokoroWordHighlightColorLight: #B4BBFE;    /* Light Purple for dark page backgrounds */
+    --kokoroHoverHighlightColorDark: #555555;    /* Dark Gray for hover */
+    --kokoroHoverHighlightColorLight: #DDDDDD;   /* Light Gray for hover */
+
+    /* Initialize coordinate info properties (MUST be defined) */
+    /* The content script will update these dynamically */
+    --kokoroHighlightWordInfo: '';        /* e.g., "x1,y1,w1,h1,x2,y2,w2,h2,..." */
+    --kokoroHighlightSentenceInfo: '';    /* e.g., "x1,y1,w1,h1,x2,y2,w2,h2,..." */
+    --kokoroHoverSentenceInfo: '';        /* e.g., "x1,y1,w1,h1,..." */
+    --kokoroElemColor: 'rgb(255, 255, 255)'; /* Will be updated dynamically with actual bg color */
+    /* --kokoroElemMatrix: '' */          /* Omitted for now */
+}
+
+/* --- OLD Highlighting styles (Keep commented out for reference) --- */
+/*
+.kokoro-highlight-word {
+    background-color: yellow;
+    color: black; 
+}
+
+.kokoro-highlight-sentence {
+    background-color: lightblue;
+    color: inherit; 
+}
+
+.kokoro-hover-sentence {
+    background-color: lightgray;
+    color: inherit; 
+}
+*/ 

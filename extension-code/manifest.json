@@ -33,7 +33,10 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["styles/content.css"],
+      "resources": [
+        "styles/content.css",
+        "highlight-painter.js"
+      ],
       "matches": ["<all_urls>"]
     }
   ]

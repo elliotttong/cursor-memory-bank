@@ -1,30 +1,40 @@
-# Active Context: Implementation Phase 2 (BUILD Mode)
+# Active Context: Implementation Phase 2/4 (BUILD Mode - Houdini Pivot)
 
 **Current Mode:** BUILD
-**Current Goal:** Implement Phase 2 (Highlighting & Synchronization) of the Chrome TTS Extension MVP.
+**Current Goal:** Implement Phase 4 (Highlighting & Synchronization) using Houdini Paint API.
 
 **Completed Phases:**
 *   Phase 1 (Project Setup & Core Integration)
+*   Phase 2 (Basic Highlighting Setup - Spans created)
 
 **Completed Tasks (Build Mode):**
 *   (T01-T05): Phase 1 complete.
-*   (T03/T04): Core TTS API integration & audio playback functional.
 *   (T06): Basic text processing/segmentation.
+*   (T07): Basic highlighting mechanism (wrapping words/punct in spans with IDs).
+*   (T08/T09): Using API Timestamps for sync logic base.
 
-**Active Tasks (Phase 2):**
-*   **(T07):** Develop highlighting mechanism (finding/wrapping text nodes).
-*   (T08): Timing Strategy (API confirmed no timing data - fallback required).
-*   (T09): Core synchronization logic implementation (depends on T07 & T08 strategy).
+**Active Tasks (Phase 4 - Houdini Approach):**
+*   ~(T16): Setup Houdini Paint Worklet & adapt paint logic.~ (Done)
+*   ~(T17): Define CSS using `paint()` and custom properties.~ (Done)
+*   ~(T18): Implement coordinate calculation and dynamic CSS variable updates for sentence/word highlighting.~ (Done)
+*   ~(T19): Implement hover highlighting using coordinate calculation and CSS variables.~ *(Done)*
+*   **(T20):** Implement click-to-play (uses existing spans/IDs). *(Current)*
+*   (T21): Test all Houdini-based highlighting and interactions.
 
 **Key Focus Areas:**
 
-*   Implementing DOM manipulation for finding and wrapping text for highlighting (T07).
-*   Preparing for synchronization logic (T09) based on T07 output.
+*   ~~Setting up the Houdini Paint Worklet infrastructure (T16.1).~~
+*   ~~Implementing robust coordinate calculation (`getClientRects`) for text spans (T18, T19).~~ *(Sentence/Word/Hover Done)*
+*   ~~Dynamically updating CSS custom properties to drive the paint worklet (T18, T19).~~ *(Done for Sentence/Word/Hover)*
+*   ~~Adapting and testing the paint logic ported from Speechify's code (T16.2).~~
 
 **Next Steps (BUILD Mode):**
 
-1.  **Implement T07 (Highlighting Mechanism):** Focus on `setupHighlighting` in `content.js`.
-2.  Implement T09 (Sync Logic - Fallback).
-3.  Test Phase 2 functionality.
-4.  Document Phase 2 build.
-5.  Proceed to Phase 3 (Refinement & Testing).
+1.  ~~Implement T16.1: Create `highlight-painter.js` and register the worklet.~~
+2.  ~~Implement T16.2: Adapt paint logic into the worklet.~~
+3.  ~~Implement T17: Define CSS rules.~~
+4.  ~~Implement T18: Coordinate calculation & dynamic updates.~~
+5.  ~~Implement T19: Hover logic.~~
+6.  Implement T20: Click-to-play. *(Next)*
+7.  Test T21.
+8.  Address Phase 3 tasks (T10-T15) concurrently or afterwards.
