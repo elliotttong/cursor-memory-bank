@@ -19,40 +19,43 @@
 - [x] **T08:** Timing Strategy. *(Solved: Using precise word timestamps from Deep Infra API)*.
 - [x] **T09:** Implement core synchronization logic between audio playback and text highlighting. *(Using precise API timestamps)*
 
-## Phase 3: Refinement & Testing
+## Phase 3: UI Refinement & Core Features
 
-- [ ] **T10:** Refine synchronization accuracy (should be good with API timings).
+- [ ] **T10:** Refine synchronization accuracy (should be good with API timings). *(Low priority)*
 - [x] **T11:** Basic testing on a few sample web pages.
     - [x] Fixed ServiceWorker/ObjectURL issue for BBC and similar sites.
+    - [x] Fixed API error with bracketed text [Readwise].
     - [ ] Need to test additional sites for comprehensive coverage.
-- [ ] **T12:** Add simple play/pause controls.
-- [ ] **T13:** Refactor text extraction to use Offscreen Document.
-- [ ] **T14:** Refine highlighting (target specific element, fix wrapping errors).
-- [ ] **T15:** Update API Key storage/UI for Deep Infra token. 
-- [ ] **T16 (New):** Implement improved hover UX:
-    - [ ] Implement paragraph segmentation.
-    - [ ] When stopped: Hover near paragraph start shows Play button.
-    - [ ] When playing: Hover highlights sentence (current behavior).
+- [x] **T12:** Refine Play/Pause button states (Playing, Paused, Loading, Error, API Key Missing).
+- [ ] **T13:** Refactor text extraction to use Offscreen Document. *(Deferred / Re-evaluate)*
+- [ ] **T14:** Refine highlighting (target specific element, fix wrapping errors). *(Investigation paused - See docs/limitations.md)*
+- [ ] **T15:** ~~Update API Key storage/UI for Deep Infra token.~~ *(Deferred - Using chrome.storage.local for dev. Requires secure backend proxy for release.)*
+- [x] **T17 (Was T16):** Implement Skip Forward/Backward buttons and logic.
+- [ ] **T18 (Was T17):** Implement Estimated Time Remaining display (simple WPM).
+- [ ] **T19 (Was T18):** Implement Voice Selection UI and logic.
+- [ ] **T20 (Was T19):** Implement Playback Speed Control UI and logic (verify sync).
+- [ ] **T21 (Was T20):** Implement improved hover UX (paragraph segmentation). *(Deferred)*
+
 
 ## Phase 4: Sentence Highlighting & Interaction (Houdini Approach)
 
-- [x] **T16:** Setup Houdini Paint Worklet & Adapt Paint Logic.
-    - [x] **T16.1:** Create `highlight-painter.js` and register worklet via `CSS.paintWorklet.addModule`.
-    - [x] **T16.2:** Adapt paint logic from `competitors-code/Speechify/houdini.js` into worklet.
-- [x] **T17:** Define CSS using `paint()` and custom properties (`--kokoro...`) for highlighting.
-- [x] **T18:** Implement coordinate calculation (`getClientRects` on spans) and dynamic CSS variable updates for sentence/word highlighting in `content.js`. *(Line-based sentence logic implemented)*
-- [x] **T19:** Implement hover highlighting using coordinate calculation and separate CSS variables updated via `mouseover`/`mouseout`. *(Updated to line-based logic)*
-- [x] **T20:** Implement click-to-play (added `click` listeners, implemented `startPlaybackFromSentence(index)`).
-- [x] **T21:** Test Houdini-based sentence highlighting, word highlighting, hover, and click-to-play functionality thoroughly.
+- [x] **T21 (Was T16):** Setup Houdini Paint Worklet & Adapt Paint Logic.
+    - [x] **T21.1:** Create `highlight-painter.js` and register worklet via `CSS.paintWorklet.addModule`.
+    - [x] **T21.2:** Adapt paint logic from `competitors-code/Speechify/houdini.js` into worklet.
+- [x] **T22 (Was T17):** Define CSS using `paint()` and custom properties (`--kokoro...`) for highlighting.
+- [x] **T23 (Was T18):** Implement coordinate calculation (`getClientRects` on spans) and dynamic CSS variable updates for sentence/word highlighting in `content.js`. *(Line-based sentence logic implemented)*
+- [x] **T24 (Was T19):** Implement hover highlighting using coordinate calculation and separate CSS variables updated via `mouseover`/`mouseout`. *(Updated to line-based logic)*
+- [x] **T25 (Was T20):** Implement click-to-play (added `click` listeners, implemented `startPlaybackFromSentence(index)`).
+- [x] **T26 (Was T21):** Test Houdini-based sentence highlighting, word highlighting, hover, and click-to-play functionality thoroughly.
 - [x] **(Refactor T01):** Refactor `content.js` into `page-scripts/` modules. *(Post-T21 task, completed)*
 
-## Phase 5: Sentence Highlighting & Interaction (Houdini Approach)
+## Phase 5: Advanced Features & Release Prep (Placeholder)
 
-- [x] **T22:** Setup Houdini Paint Worklet & Adapt Paint Logic.
-    - [x] **T22.1:** Create `highlight-painter.js` and register worklet via `CSS.paintWorklet.addModule`.
-    - [x] **T22.2:** Adapt paint logic from `competitors-code/Speechify/houdini.js` into worklet.
-- [x] **T23:** Define CSS using `paint()` and custom properties (`--kokoro...`) for highlighting.
-- [x] **T24:** Implement coordinate calculation (`getClientRects` on spans) and dynamic CSS variable updates for sentence/word highlighting in `content.js`. *(Line-based sentence logic implemented)*
-- [x] **T25:** Implement hover highlighting using coordinate calculation and separate CSS variables updated via `mouseover`/`mouseout`. *(Updated to line-based logic)*
-- [x] **T26:** Implement click-to-play (added `click` listeners, implemented `startPlaybackFromSentence(index)`).
-- [x] **T27:** Test Houdini-based sentence highlighting, word highlighting, hover, and click-to-play functionality thoroughly. 
+- [ ] Implement secure backend proxy for API key management (Replaces deferred T15).
+- [ ] Implement user authentication (if linking to web app).
+- [ ] Add persistence for user settings (speed, voice) using `chrome.storage.local` or sync with backend.
+- [ ] Revisit Offscreen Document refactor (T13) if performance issues arise.
+- [ ] Revisit complex highlighting issues (T14 / limitations) if necessary.
+- [ ] Revisit improved hover UX (T20).
+- [ ] Comprehensive cross-browser/site testing.
+- [ ] Build and packaging for release. 

@@ -1,99 +1,86 @@
-# Implementation Plan: Chrome TTS Extension MVP (Phases 3 & 4)
+# Implementation Plan: Chrome TTS Extension MVP
 
-**Complexity Level:** 3 (Due to Phase 4 features)
+**Complexity Level:** 3 (Mix of simple UI and potentially complex interactions)
 
 ## Requirements Analysis
 
-*   **Phase 3 (Refinement & Testing):**
-    *   (T10) Verify and potentially refine sync accuracy (though API timestamps should make this minimal).
+*   **Phase 3 (UI Refinement & Core Features):**
+    *   (T10) Verify and potentially refine sync accuracy. *(Low priority)*
     *   (T11) Perform basic usability testing on diverse web pages.
-    *   (T12) Implement basic play/pause UI controls functionality.
-    *   (T13) Refactor text extraction to use an Offscreen Document for better performance/isolation.
-    *   (T14) Refine highlighting logic to handle edge cases (e.g., wrapping errors, targeting specific containers).
-    *   (T15) Implement UI/storage for the Deep Infra API key.
-*   **Phase 4 (Sentence Highlighting & Interaction):**
-    *   Implement visual highlighting for the currently playing sentence.
-    *   Implement visual highlighting for sentences on mouse hover.
-    *   Allow users to click on any sentence to start playback from that point.
-    *   Ensure highlight styles are distinct and work reasonably across different websites.
+    *   (T12) Refine Play/Pause button visual states. *(In Progress)*
+    *   (T13) Refactor text extraction to use Offscreen Document. *(Deferred)*
+    *   (T14) Refine highlighting logic. *(Investigation Paused)*
+    *   (T15) ~~API Key UI/Storage.~~ *(Deferred)*
+    *   (T17) Add Skip Forward/Backward sentence buttons.
+    *   (T18) Display estimated reading time.
+    *   (T19) Add Voice Selection control.
+    *   (T20) Add Playback Speed control.
+*   **Phase 4 (Houdini Highlighting):** Completed.
+*   **Phase 5 (Advanced & Release):** Secure API key, user auth, settings persistence, further testing, build.
 
 ## Components Affected
 
-*   `extension-code/content.js`: Major changes for Phase 3 refactoring (T13) and all of Phase 4 (T16-T20). State management, DOM manipulation, event handling.
-*   `extension-code/background.js`: Minor changes possible for Offscreen Document communication (T13).
-*   `extension-code/offscreen/offscreen.html`, `extension-code/offscreen/offscreen.js` (New): Required for T13.
-*   `extension-code/popup/popup.html`, `extension-code/popup/popup.js`: Required for API key input/storage (T15).
-*   `extension-code/styles/content.css`: Required for new highlight styles (T17).
+*   `extension-code/page-scripts/domUtils.js`: Add new UI elements (skip buttons, time display, speed control, voice dropdown) to `injectWidget`. Add update functions for time display.
+*   `extension-code/page-scripts/entry.js`: Attach listeners for new UI elements.
+*   `extension-code/page-scripts/userEvents.js`: Add handlers for skip buttons, speed control, voice selection.
+*   `extension-code/page-scripts/playbackEngine.js`: Modify to use `playbackRate` state. Add function to update rate.
+*   `extension-code/page-scripts/textProcessor.js`: Calculate total words for T18.
+*   `extension-code/page-scripts/pageState.js`: Add state for `playbackRate`, `selectedVoiceId`.
+*   `extension-code/page-scripts/backgroundComms.js`: Send `selectedVoiceId`.
+*   `extension-code/background.js`: Receive `selectedVoiceId`, use it in `callDeepInfraTTS`.
+*   `extension-code/styles/content.css`: Style new UI elements.
+*   `chrome.storage.local` (Later, Phase 5): Persisting speed/voice settings.
 
 ## Architecture Considerations
 
-*   **Offscreen Document (T13):** Use for DOM parsing (Readability.js) to avoid impacting main page performance. Requires message passing setup between content script and offscreen document.
-*   **Sentence Association (T16-T20):** Confirmed approach: Use `data-sentence-id` attribute on all word/punctuation `<span>` elements created by `setupHighlighting`. This allows reliable querying and event handling for sentences.
-*   **State Management:** Carefully manage `currentSentenceIndex`, `isPlaying`, `audioPlayer`, and `nextAudioData` during click-to-play actions (T20).
+*   **API Key Management (T15 Deferred):** Needs backend proxy for release.
+*   **Highlighting Sync (T20 - Speed Control):** Needs careful testing when `playbackRate` is not 1.
+*   **Voice List (T19):** Hardcode initially, consider dynamic fetch later.
+*   **Settings Persistence (Phase 5):** Use `chrome.storage.local` for user speed/voice preferences.
 
 ## Implementation Strategy & Detailed Steps
 
-**Phase 3: Refinement & Testing (Tasks T10-T15)**
+**Phase 3: UI Refinement & Core Features (Tasks T10, T11, T12, T17-T20)**
 
-*   **(T15) API Key UI:**
-    *   Create simple popup UI (`popup.html`/`popup.js`) with an input field for the API key.
-    *   Use `chrome.storage.local` to save/retrieve the key.
-    *   Modify `background.js` to read the key from storage before making API calls. Implement error handling if the key is missing/invalid.
-*   **(T12) Play/Pause Controls:**
-    *   Functionality already implemented in `content.js` (`handlePlayPauseClick`). Ensure robustness.
-*   **(T13) Offscreen Document Refactor:**
-    *   Create `offscreen.html` and `offscreen.js`.
-    *   Set up `chrome.offscreen.createDocument` call in `background.js`.
-    *   Move Readability execution logic to `offscreen.js`.
-    *   Implement message passing:
-        *   `content.js` sends DOM content (or relevant part) to `background.js`.
-        *   `background.js` relays to `offscreen.js`.
-        *   `offscreen.js` processes with Readability and sends extracted text back via `background.js` to `content.js`.
-    *   Update `content.js` (`getTextToRead`) to use this message flow instead of direct Readability execution.
-*   **(T14) Highlighting Refinement:**
-    *   **Issue:** Last word of sentences often missed during playback/highlighting on sites like BBC.
-    *   **Investigation Steps:**
-        *   **Span Injection (`spanInjector.js`):** 
-            *   Add detailed logging to `setupHighlighting` to understand why segments (especially last words) might be skipped (e.g., "spans nodes" warning).
-            *   Inspect BBC DOM structure around sentence ends (e.g., within `p.ssrcss-1q0x1qg-Paragraph` elements) to see if nested spans, punctuation, or hidden characters interfere with `mapSegmentToNodes` or `wrapSegmentInNodes`.
-            *   Determine if Readability.js output structure contributes to the issue.
-        *   **Sync Logic (`syncEngine.js`):**
-            *   Add logging in `pollingLoop` (word finding section) and/or `handleTimeUpdate` to track `currentTime` against the `start`/`end` timestamps of the last few words in a sentence.
-            *   Verify if the condition `currentTime >= wordInfo.start && currentTime < wordInfo.end` correctly includes the last word until the audio actually ends.
-            *   Consider minor adjustments to timing comparisons if needed (e.g., `wordInfo.end >= currentTime`).
-        *   **Outcome:** Removing the strict node check in `spanInjector.js` led to `range.surroundContents()` errors (e.g., "partially selected a non-Text node") on BBC. Confirms complex DOM structure requires a more robust wrapping strategy than currently implemented.
-    *   **Goal:** Modify `spanInjector.js` or `syncEngine.js` to robustly handle last words across different site structures. (Postponed deeper fix).
-    *   Explore methods to target the main content container identified by Readability (if possible) for `setupHighlighting` instead of `document.body`.
-*   **(T10) Sync Accuracy:**
-    *   Primarily involves testing; API timestamps should be accurate. Monitor during T11.
-*   **(T11) Basic Testing:**
-    *   Test core functionality (play, pause, stop, highlighting) on 3-5 different websites (news articles, blogs, documentation). Document any issues.
+*   **(T12) Play/Pause Button States:** *(In Progress)*
+    *   Implement `updatePlayPauseButtonState` in `domUtils.js`.
+    *   Call from `entry.js`, `userEvents.js`, `playbackEngine.js`, `backgroundComms.js`.
+*   **(T17) Skip Buttons:**
+    *   Add Prev/Next buttons to `widget.innerHTML` in `domUtils.js`.
+    *   Style buttons in `content.css`.
+    *   Attach listeners in `entry.js`.
+    *   Create `handleSkipPrevious`, `handleSkipNext` in `userEvents.js`.
+    *   Handlers calculate `targetIndex = state.currentSentenceIndex +/- 1`, check bounds, call `startPlaybackFromSentence(targetIndex)`.
+*   **(T18) Estimated Time:**
+    *   Add `<span>` (e.g., `id="kokoro-time-estimate"`) to `widget.innerHTML` in `domUtils.js`.
+    *   Add `updateEstimatedTime(minutes)` function in `domUtils.js` to update the span.
+    *   Modify `textProcessor.js` (`processText`) to return `totalWordCount`.
+    *   In `entry.js`, after calling `processText`, calculate `estimatedMinutes = Math.round(totalWordCount / 150)`.
+    *   Call `updateEstimatedTime(estimatedMinutes)`.
+*   **(T19) Voice Selection:**
+    *   Define list of Kokoro voices (ID and display name) - can be a constant initially.
+    *   Add `<select id="kokoro-voice-select">` to `widget.innerHTML` in `domUtils.js`, populate `<option>` elements from the list.
+    *   Add `selectedVoiceId` to `pageState.js` (default: 'af_bella').
+    *   Attach `change` listener in `entry.js`.
+    *   Create handler in `userEvents.js` to update `state.selectedVoiceId` on change.
+    *   Modify `backgroundComms.js` (`requestSentenceAudio`) to get voice from state and include `voiceId: state.selectedVoiceId` in the message.
+    *   Modify `background.js` listener to read `message.voiceId`.
+    *   Modify `background.js` (`callDeepInfraTTS`) to use the passed `voiceId` in the API payload's `voice` array.
+*   **(T20) Playback Speed:**
+    *   Define speed options (e.g., `[0.75, 1, 1.25, 1.5, 2]`).
+    *   Add UI (e.g., `<select id="kokoro-speed-select">`) to `widget.innerHTML` in `domUtils.js`, populate options.
+    *   Add `playbackRate` to `pageState.js` (default: 1).
+    *   Attach `change` listener in `entry.js`.
+    *   Create handler in `userEvents.js` that calls a new function `setPlaybackSpeed(rate)` (to be added in `playbackEngine.js`).
+    *   Add `setPlaybackSpeed(rate)` to `playbackEngine.js`: updates `state.playbackRate`; if `state.audioPlayer` exists, sets `state.audioPlayer.playbackRate = rate`.
+    *   Modify `playAudio` in `playbackEngine.js` to set `newPlayer.playbackRate = state.playbackRate` when the player is created.
+    *   **Testing:** Thoroughly test highlighting synchronization at different speeds. Check if `syncEngine.js` needs adjustments.
+*   **(T10) Sync Accuracy:** *(Low priority testing)*
+*   **(T11) Basic Testing:** *(Ongoing)*
 
-**Phase 4: Sentence Highlighting & Interaction (Houdini Approach - Tasks T16-T21)**
+**Phase 4: Houdini Highlighting:** (Completed - Tasks T21-T26)
 
-*   **(T16) Setup Houdini Paint Worklet & Adapt Logic:** (Completed)
-    *   (T16.1) Create `extension-code/highlight-painter.js`.
-    *   (T16.1) Add worklet registration (`CSS.paintWorklet.addModule('highlight-painter.js')`) likely in `content.js` or potentially background script if needed.
-    *   (T16.2) Port core painting logic (`paint`, `roundRect`, `brightnessByColor`, etc.) from `competitors-code/Speechify/houdini.js` into `highlight-painter.js`.
-    *   (T16.2) Define necessary CSS custom properties (e.g., `--kokoroHighlightWordInfo`, `--kokoroHighlightSentenceInfo`, `--kokoroElemColor`, `--kokoroSentenceHighlightColorDark`, etc.) based on the adapted logic.
-*   **(T17) CSS Styles:** (Completed)
-    *   In `styles/content.css`: Apply `background-image: paint(kokoroHighlighter);` (or similar name) to the elements that will contain highlighted text (potentially need a wrapper or apply to `body` initially).
-    *   Define the necessary color custom properties (e.g., `--kokoroSentenceHighlightColorDark: #374b64;`, `--kokoroSentenceHighlightColorLight: #E6E8FF;`, etc.).
-*   **(T18) Active Sentence/Word Highlighting Logic:** (Completed)
-    *   In `content.js` (within `pollingLoop` and `handleTimeUpdate`):
-        *   Word (`handleTimeUpdate`): Finds active word span based on timestamp, calls `getClientRects()`, formats coords, updates `--kokoroHighlightWordInfo`.
-        *   Sentence (`pollingLoop` calling `updateSentenceHighlightCoordinates`): Gets all spans for `currentSentenceIndex`, gets all `clientRects`, groups them by line, calculates min/max horizontal extent per line, formats coords for each line, updates `--kokoroHighlightSentenceInfo`.
-        *   Updates `--kokoroElemColor` based on word parent's background.
-        *   Updates `--kokoroScrollX`/`--kokoroScrollY` in `pollingLoop`.
-*   **(T19) Hover Highlighting Logic:** (Completed)
-    *   In `content.js` -> `setupHighlighting`: Keep `mouseover`/`mouseout` listeners.
-    *   Implement listener functions:
-        *   `handleSentenceHover(event)`: Gets `sentenceId`. Queries all spans for sentence. Uses same line-based coordinate calculation logic as T18 (`getClientRects`, group by line, find min/max). Updates `--kokoroHoverSentenceInfo`.
-        *   `handleSentenceHoverOut(event)`: Clears `--kokoroHoverSentenceInfo`.
-*   **(T20) Click-to-Play Logic:** (Completed)
-    *   In `content.js` -> `setupHighlighting`: Click listener added.
-    *   Implemented `handleSentenceClick(event)` to parse index and call `startPlaybackFromSentence`.
-    *   Implemented `startPlaybackFromSentence(index)` to stop, reset state (remove+nullify audio element), set new index, update UI, and request new audio.
-*   **(T21) Phase 4 Testing:** (Completed)
-    *   Core functionality (highlighting, hover, click-to-play, scroll sync) verified.
+**Phase 5: Advanced Features & Release Prep:** (Tasks defined in `tasks.md` - Focus on backend proxy, persistence, etc.)
+
+*(Deferred/Paused tasks: T13, T14, T15, T20 - Hover UX)*
  

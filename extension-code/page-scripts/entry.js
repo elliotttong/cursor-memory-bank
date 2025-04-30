@@ -2,12 +2,13 @@
 
 import * as state from './pageState.js';
 import { registerPaintWorklet, registerCSSProperties } from './coreSetup.js';
-import { injectWidget, ensureHighlightOverlay, startOverlayObserver } from './domUtils.js';
+import { injectWidget, ensureHighlightOverlay, startOverlayObserver, updatePlayPauseButtonState } from './domUtils.js';
 import { getTextToRead, processText } from './textProcessor.js';
 import { setupHighlighting } from './spanInjector.js';
 import { handlePlayPauseClick } from './playbackEngine.js';
 import { setupBackgroundListener } from './backgroundComms.js';
 import { startSyncLoop } from './syncEngine.js';
+import { handleSkipPrevious, handleSkipNext } from './userEvents.js';
 
 console.log("Kokoro Page Script Entry Initializing...");
 
@@ -47,6 +48,22 @@ async function initializeKokoroFeatures() {
         return; 
     }
     
+    // --- Attach listeners for Skip buttons ---
+    const skipPrevButton = document.getElementById('kokoro-skip-prev-button');
+    const skipNextButton = document.getElementById('kokoro-skip-next-button');
+
+    if (skipPrevButton && skipNextButton) {
+        console.log("[Initialize] Skip buttons found, attaching listeners.");
+        skipPrevButton.addEventListener('click', handleSkipPrevious);
+        skipNextButton.addEventListener('click', handleSkipNext);
+        // Disable skip buttons initially until initialized?
+        // skipPrevButton.disabled = true; 
+        // skipNextButton.disabled = true;
+    } else {
+        console.error("[Initialize] Skip buttons not found after injection. Cannot attach listeners.");
+    }
+    // -------------------------------------
+
     // Now attempt text processing and highlighting setup
     try {
         console.log(">>> Attempting text processing and highlighting setup...");
@@ -76,7 +93,10 @@ async function initializeKokoroFeatures() {
         setupHighlighting(state.segmentedText, targetElement, false);
         console.log("Initialization complete. Spans created.");
         state.setState({ isInitialized: true }); 
-        if(playPauseButton) playPauseButton.disabled = false; // Enable button on full success
+        if(playPauseButton) updatePlayPauseButtonState('idle'); // Set initial state via new function
+        // Enable skip buttons on successful initialization
+        // if (skipPrevButton) skipPrevButton.disabled = false;
+        // if (skipNextButton) skipNextButton.disabled = false;
 
         startOverlayObserver(); // Start observer only on full success
 
@@ -91,10 +111,7 @@ async function initializeKokoroFeatures() {
             sentenceSegments: [],
             createdHighlightSpans: [] // Clear potential partial state
         }); 
-        if(playPauseButton) { 
-             playPauseButton.textContent = "Init Error";
-             playPauseButton.disabled = true;
-        }
+        if(playPauseButton) updatePlayPauseButtonState('error'); // Use new function for error state
     }
 }
 

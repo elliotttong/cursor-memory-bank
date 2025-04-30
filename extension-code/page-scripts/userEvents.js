@@ -1,7 +1,7 @@
 import * as state from './pageState.js';
-import { ensureHighlightOverlay } from './domUtils.js';
+import { ensureHighlightOverlay, updatePlayPauseButtonState } from './domUtils.js';
 import { requestSentenceAudio } from './backgroundComms.js';
-import { stopPlaybackAndResetState } from './playbackEngine.js';
+import { stopPlaybackAndResetState, jumpToSentence } from './playbackEngine.js';
 import { startSyncLoop } from './syncEngine.js';
 
 // --- Hover Highlighting Logic (Houdini Version) ---
@@ -67,7 +67,7 @@ export function handleSentenceClick(event) {
     }
 }
 
-// Internal function called by click handler
+// Rename the internal function to avoid conflict with imported name
 function startPlaybackFromSentence(index) {
     console.log(`Starting playback from sentence: ${index}`);
     
@@ -82,13 +82,59 @@ function startPlaybackFromSentence(index) {
     // Set new target index in state
     state.setState({ currentSentenceIndex: index });
 
-    // Update UI
-    const playPauseButton = document.getElementById('kokoro-play-pause-button');
-    if(playPauseButton) {
-        playPauseButton.textContent = "Loading...";
-        playPauseButton.disabled = true;
-    }
+    // Update UI to loading state
+    updatePlayPauseButtonState('loading');
 
     // Request audio for the target sentence
     requestSentenceAudio(state.currentSentenceIndex); 
-} 
+}
+
+// --- Skip Button Handlers (Modified) ---
+export function handleSkipPrevious() {
+    console.log("[Skip Prev] Clicked.");
+    if (!state.isInitialized || !state.hasPlaybackStartedEver) {
+        console.log("[Skip Prev] Ignored - Not initialized or playback hasn't started.");
+        return;
+    }
+
+    const currentIndex = state.currentSentenceIndex;
+    if (currentIndex <= 0) {
+        console.log("[Skip Prev] Already at the beginning.");
+        return; 
+    }
+
+    const targetIndex = currentIndex - 1;
+    console.log(`[Skip Prev] Jumping from ${currentIndex} to ${targetIndex}`);
+    
+    if (state.isPlaying) {
+        startPlaybackFromSentence(targetIndex); // Stop, load, and play
+    } else {
+        jumpToSentence(targetIndex); // Just change sentence and pre-load, remain paused
+    }
+}
+
+export function handleSkipNext() {
+    console.log("[Skip Next] Clicked.");
+    if (!state.isInitialized || !state.hasPlaybackStartedEver) {
+        console.log("[Skip Next] Ignored - Not initialized or playback hasn't started.");
+        return;
+    }
+
+    const currentIndex = state.currentSentenceIndex;
+    const lastIndex = state.sentenceSegments.length - 1;
+    
+    if (currentIndex === -1 || currentIndex >= lastIndex) {
+        console.log(`[Skip Next] Already at the end (${lastIndex}) or not started.`);
+        return; 
+    }
+    
+    const targetIndex = currentIndex + 1;
+    console.log(`[Skip Next] Jumping from ${currentIndex} to ${targetIndex}`);
+
+    if (state.isPlaying) {
+        startPlaybackFromSentence(targetIndex); // Stop, load, and play
+    } else {
+        jumpToSentence(targetIndex); // Just change sentence and pre-load, remain paused
+    }
+}
+// -------------------------------- 

@@ -16,6 +16,7 @@ export let currentHighlightedSentenceId = null;
 export let createdHighlightSpans = []; // T07 state
 export let isStoppingOnError = false; // Flag to prevent error handling loops
 export let isInitialized = false; // <<< Add initialization flag
+export let hasPlaybackStartedEver = false; // NEW: Flag for skip button visibility
 
 export let kokoroOverlayElement = null; // Toplevel variable to hold the overlay
 export let kokoroOverlayObserver = null; // Hold the observer instance
@@ -47,4 +48,5 @@ export function setState(newState) {
     if (newState.hoveredSentenceId !== undefined) hoveredSentenceId = newState.hoveredSentenceId;
     if (newState.animationFrameId !== undefined) animationFrameId = newState.animationFrameId;
     if (newState.lastWordElement !== undefined) lastWordElement = newState.lastWordElement;
+    if (newState.hasPlaybackStartedEver !== undefined) hasPlaybackStartedEver = newState.hasPlaybackStartedEver;
 } 

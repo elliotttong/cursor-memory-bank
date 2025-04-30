@@ -47,7 +47,9 @@ export function injectWidget() {
     const widget = document.createElement('div');
     widget.id = 'kokoro-tts-widget';
     widget.innerHTML = `
+      <button id="kokoro-skip-prev-button" title="Previous Sentence" class="kokoro-skip-button-hidden">&lt;&lt;</button>
       <button id="kokoro-play-pause-button">Play</button>
+      <button id="kokoro-skip-next-button" title="Next Sentence" class="kokoro-skip-button-hidden">&gt;&gt;</button>
       <span>Kokoro TTS</span>
     `;
     
@@ -61,6 +63,58 @@ export function injectWidget() {
     }
     console.log("Widget Injected.");
   }
+
+// --- NEW: Function to update Play/Pause Button State ---
+export function updatePlayPauseButtonState(stateString) {
+    const button = document.getElementById('kokoro-play-pause-button');
+    if (!button) return; 
+
+    // Disable button during loading or if API key missing to prevent clicks
+    button.disabled = (stateString === 'loading' || stateString === 'apiKeyError');
+
+    switch(stateString) {
+        case 'loading':
+            button.textContent = 'Loading...';
+            break;
+        case 'playing':
+            button.textContent = 'Pause'; // Or Pause Icon ⏸️
+            break;
+        case 'paused':
+            button.textContent = 'Play'; // Or Play Icon ▶️
+            break;
+        case 'error':
+            button.textContent = 'Error'; // Or Error Icon ❌
+            break;
+        case 'apiKeyError':
+            button.textContent = 'API Key?'; // Or Key Icon 🔑
+            break;
+        case 'idle':
+        default:
+            button.textContent = 'Play'; // Or Play Icon ▶️
+            button.disabled = false; // Ensure enabled when idle/ready
+            break;
+    }
+    console.log(`[UI Update] Play/Pause button state set to: ${stateString}`);
+}
+// --------------------------------------------------------
+
+// --- NEW: Skip Button Visibility Helpers ---
+export function showSkipButtons() {
+    const prevButton = document.getElementById('kokoro-skip-prev-button');
+    const nextButton = document.getElementById('kokoro-skip-next-button');
+    if (prevButton) prevButton.classList.remove('kokoro-skip-button-hidden');
+    if (nextButton) nextButton.classList.remove('kokoro-skip-button-hidden');
+    console.log("[UI Update] Skip buttons shown.");
+}
+
+export function hideSkipButtons() {
+    const prevButton = document.getElementById('kokoro-skip-prev-button');
+    const nextButton = document.getElementById('kokoro-skip-next-button');
+    if (prevButton) prevButton.classList.add('kokoro-skip-button-hidden');
+    if (nextButton) nextButton.classList.add('kokoro-skip-button-hidden');
+    console.log("[UI Update] Skip buttons hidden.");
+}
+// ----------------------------------------
 
 // --- Mutation Observer Logic ---
 function handleDOMMutations(mutationsList, observer) {

@@ -1,8 +1,8 @@
 # Active Context: Phase 3 Testing Progress
 
-**Current Mode:** BUILD (Testing - T11/T14 Refinement Paused)
-**Previous Goal:** Fix Service Worker Object URL issue & investigate BBC highlighting.
-**Outcome:** Object URL issue fixed, playback works on BBC. Highlighting refinement (T14) paused due to complex DOM interaction issues (last word wrapping fails on BBC).
+**Current Mode:** BUILD (Phase 3 - UI/UX Focus)
+**Previous Goal:** Fix bracketed text API error & investigate highlighting edge cases (BBC, Readwise).
+**Outcome:** Bracketed text API error fixed. Highlighting issues (T14, Readwise) identified as complex DOM interactions and documented in `docs/limitations.md`. Investigation paused.
 
 **Completed Phases:**
 *   Phase 1, 2, 4 (including refactoring & Bugfix T01).
@@ -12,19 +12,19 @@
 *   Refactoring `content.js` into `page-scripts/` modules.
 *   **(Bugfix T01 & subsequent fixes):** Implement scroll/pause/hover fixes for highlights.
 *   Create technical documentation (`docs/technical/`).
-*   **(T11 - Partial):** Fixed Service Worker Object URL issue for BBC news and similar sites.
+*   **(T11 - Partial):** Fixed Service Worker Object URL issue, fixed bracketed text API error.
+*   Created `docs/limitations.md`.
 
 **Active Tasks:**
 *   **(T11 - Paused):** Further testing on diverse sites paused.
-*   **(T14 - Paused):** Highlighting refinement (last word issue) paused.
+*   **(T14 - Paused):** Highlighting refinement (last word issue, complex formatting) paused.
+*   **(T15 - Deferred):** API Key UI/Storage deferred. Dev relies on `chrome.storage.local`. Requires backend proxy for release.
 
 **Key Focus Areas:**
-*   Moving to next Phase 3 tasks.
+*   Remaining Phase 3 UI/UX tasks (T12, T16) or performance refactor (T13).
 
-**Next Steps (Post-T11/T14 Pause):**
+**Next Steps:**
 
-1.  **(T12):** Implement simple play/pause controls (potentially refining the existing button).
-2.  **(Future Task - Post T11/T12):** Implement improved hover UX (paragraph-start hover -> play button when stopped; sentence hover only when playing). Requires paragraph segmentation.
-3.  **(T13 - Re-evaluate):** Review the need/priority for Offscreen Document text extraction.
-4.  **(T14 - Verify - LATER):** Confirm highlighting wraps correctly (revisit last word issue).
-5.  **(T15):** Implement UI/logic for managing the Deep Infra API Key.
+1.  **(T12):** Refine play/pause button states (Playing, Paused, Loading, Error, API Key Missing).
+2.  **(T16):** Implement improved hover UX (paragraph segmentation, context-aware hover).
+3.  **(T13 - Re-evaluate):** Decide if Offscreen Document refactor is needed now.

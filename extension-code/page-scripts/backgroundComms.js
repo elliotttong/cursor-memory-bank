@@ -1,6 +1,7 @@
 import * as state from './pageState.js';
 // Import necessary handlers from playbackEngine (will be created later)
 import { handleReceivedAudio, stopPlaybackAndResetState } from './playbackEngine.js';
+import { updatePlayPauseButtonState } from './domUtils.js'; // Import update function
 
 // New function to request audio for a specific sentence index
 export function requestSentenceAudio(index) {
@@ -78,18 +79,15 @@ export function setupBackgroundListener() {
         else if (message.action === "sentenceError") {
            console.error(`Error received from background for sentence ${message.sentenceIndex}: ${message.message}`);
            if (message.sentenceIndex === state.currentSentenceIndex) {
-               stopPlaybackAndResetState(); 
-               // TODO: Update UI feedback (requires importing UI/DOM utils)
-               const playPauseButton = document.getElementById('kokoro-play-pause-button');
-               if(playPauseButton) playPauseButton.textContent = "Error";
-           }
+               stopPlaybackAndResetState(); // This will reset the button to idle
+               // Explicitly set error state *after* resetting
+               updatePlayPauseButtonState('error');
+           } // If error is for a non-current sentence, don't change the button state
         } 
-        else if (message.action === "apiError") { 
+        else if (message.action === "apiError") { // Specifically for API Key missing
            console.error(`API Error from background: ${message.message}`);
-           stopPlaybackAndResetState();
-           // TODO: Update UI feedback (requires importing UI/DOM utils)
-           const playPauseButton = document.getElementById('kokoro-play-pause-button');
-           if(playPauseButton) playPauseButton.textContent = "API Key Missing"; 
+           stopPlaybackAndResetState(); // Reset state
+           updatePlayPauseButtonState('apiKeyError'); // Set specific API Key error state
         }
       });
 } 

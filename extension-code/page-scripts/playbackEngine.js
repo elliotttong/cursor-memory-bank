@@ -2,6 +2,7 @@ import * as state from './pageState.js';
 import { requestSentenceAudio } from './backgroundComms.js';
 import { startSyncLoop, stopSyncLoop } from './syncEngine.js';
 import { clearHighlights, updateActiveSentenceHighlighting } from './coordManager.js';
+import { updatePlayPauseButtonState, showSkipButtons, hideSkipButtons } from './domUtils.js';
 
 // --- Playback Control & Sentence Logic ---
 
@@ -15,17 +16,18 @@ export function handlePlayPauseClick() {
       console.warn("[handlePlayPauseClick] Ignored - Not initialized yet.");
       return;
   }
-  const button = document.getElementById('kokoro-play-pause-button');
   
   if (!state.isPlaying) {
       if (state.currentSentenceIndex === -1) {
+           updatePlayPauseButtonState('loading');
            initiateTTS(0);
       } else {
           if (state.audioPlayer && state.audioPlayer.paused) {
-              state.audioPlayer.play();
+              state.audioPlayer.play().catch(handleAudioError);
           } else {
-             console.warn("Play clicked state inconsistency?");
-             initiateTTS(state.currentSentenceIndex); // Try resuming current
+             console.warn("Play clicked but audio player not paused? Re-initiating.");
+             updatePlayPauseButtonState('loading');
+             initiateTTS(state.currentSentenceIndex);
           }
       }
   } else {
@@ -56,11 +58,7 @@ export function initiateTTS(startIndex = 0) {
   }
   state.setState({ currentSentenceIndex: startIndex });
 
-  const playPauseButton = document.getElementById('kokoro-play-pause-button');
-  if(playPauseButton) {
-       playPauseButton.textContent = "Loading..."; 
-       playPauseButton.disabled = true;
-  }
+  updatePlayPauseButtonState('loading');
 
   requestSentenceAudio(state.currentSentenceIndex);
 }
@@ -104,24 +102,19 @@ export function handleReceivedAudio(index, audioObjectURL, timestamps) {
 
 function handleAudioPlay() {
     console.log(`Playback started/resumed for sentence ${state.currentSentenceIndex}`);
-    state.setState({ isPlaying: true });
-    const playPauseButton = document.getElementById('kokoro-play-pause-button');
-    if (playPauseButton) {
-        playPauseButton.textContent = "Pause";
-        playPauseButton.disabled = false;
+    if (!state.hasPlaybackStartedEver) {
+        state.setState({ hasPlaybackStartedEver: true });
+        showSkipButtons(); // Show buttons on first play
     }
+    state.setState({ isPlaying: true });
+    updatePlayPauseButtonState('playing');
     startSyncLoop();
 }
 
 function handleAudioPause() {
   console.log('Playback paused for sentence', state.currentSentenceIndex);
   state.setState({ isPlaying: false });
-  // stopSyncLoop(); // REMOVED: Loop needs to continue for scroll/hover updates when paused
-  const playPauseButton = document.getElementById('kokoro-play-pause-button');
-  if (playPauseButton) {
-      playPauseButton.textContent = 'Play';
-      playPauseButton.disabled = false;
-  }
+  updatePlayPauseButtonState('paused');
 }
 
 function handleAudioEnded() {
@@ -153,9 +146,7 @@ function handleAudioEnded() {
          console.log(`[AUDIO END] No buffered audio for sentence ${expectedNextIndex}. Waiting...`);
          state.setState({ currentSentenceIndex: expectedNextIndex });
          updateActiveSentenceHighlighting(state.currentSentenceIndex); // Update highlight even if waiting
-         const playPauseButton = document.getElementById('kokoro-play-pause-button');
-         if (playPauseButton) playPauseButton.textContent = "Buffering...";
-         // Implicitly wait for handleReceivedAudio to trigger playAudio
+         updatePlayPauseButtonState('loading');
     } 
     else { 
         console.log("[AUDIO END] Finished playing all sentences.");
@@ -188,8 +179,7 @@ function handleAudioError(event) {
     }
     
     stopPlaybackAndResetState(); // This will reset isStoppingOnError
-    const playPauseButton = document.getElementById('kokoro-play-pause-button');
-    if (playPauseButton) playPauseButton.textContent = "Error";
+    updatePlayPauseButtonState('error');
 }
 
 // Internal function to play audio
@@ -279,6 +269,7 @@ export function stopPlaybackAndResetState() {
         }
     }
     stopSyncLoop(); // Stop polling
+    hideSkipButtons(); // Hide skip buttons on full stop/reset
 
     // Update state using setState
     state.setState({
@@ -289,15 +280,40 @@ export function stopPlaybackAndResetState() {
         nextAudioData: null,
         lastWordElement: null,
         currentHighlightedSentenceId: null,
-        isStoppingOnError: false // Ensure this is reset
+        isStoppingOnError: false, // Ensure this is reset
+        hasPlaybackStartedEver: false // Reset the flag
     });
 
-    const playPauseButton = document.getElementById('kokoro-play-pause-button');
-    if (playPauseButton) {
-        playPauseButton.textContent = "Play"; 
-        playPauseButton.disabled = false;
-    }
+    updatePlayPauseButtonState('idle'); // Set idle state on stop/reset
 
     // Clear highlights slightly after state reset to ensure loop has stopped
     setTimeout(clearHighlights, 50); 
-} 
+}
+
+// --- NEW: Function to jump between sentences when paused ---
+export function jumpToSentence(targetIndex) {
+    console.log(`[Jump] Jumping to sentence index: ${targetIndex}`);
+    if (targetIndex < 0 || targetIndex >= state.sentenceSegments.length) {
+        console.error(`[Jump] Target index ${targetIndex} is out of bounds.`);
+        return;
+    }
+
+    // Set new target index in state
+    state.setState({ currentSentenceIndex: targetIndex });
+
+    // Update visual highlight immediately
+    try {
+        updateActiveSentenceHighlighting(targetIndex);
+    } catch (e) {
+        console.error(`[Jump] Error updating sentence highlight: ${e}`);
+    }
+
+    // Request audio for the new target sentence (pre-fetch)
+    // Note: We don't set loading state on the button here, as we are paused.
+    requestSentenceAudio(targetIndex);
+    
+    // Ensure playback state remains paused and button shows 'Play'
+    state.setState({ isPlaying: false });
+    updatePlayPauseButtonState('paused'); 
+}
+// ----------------------------------------------------------- 

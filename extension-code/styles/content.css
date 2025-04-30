@@ -132,3 +132,8 @@ body {
     color: inherit; 
 }
 */ 
+
+/* Skip Button Visibility */
+.kokoro-skip-button-hidden {
+    display: none;
+} 
