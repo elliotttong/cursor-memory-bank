@@ -1,40 +1,28 @@
-# Active Context: Implementation Phase 2/4 (BUILD Mode - Houdini Pivot)
+# Active Context: Ready for Phase 3 Testing
 
-**Current Mode:** BUILD
-**Current Goal:** Implement Phase 4 (Highlighting & Synchronization) using Houdini Paint API.
+**Current Mode:** BUILD (Testing - T11)
+**Previous Goal:** Fix bugs related to scroll/pause/hover highlighting and document core flows.
+**Outcome:** Bugs fixed, core sync/highlighting logic stabilized, documentation created/updated. Hover highlighting now works pre-playback.
 
 **Completed Phases:**
-*   Phase 1 (Project Setup & Core Integration)
-*   Phase 2 (Basic Highlighting Setup - Spans created)
+*   Phase 1, 2, 4 (including refactoring & Bugfix T01).
 
-**Completed Tasks (Build Mode):**
-*   (T01-T05): Phase 1 complete.
-*   (T06): Basic text processing/segmentation.
-*   (T07): Basic highlighting mechanism (wrapping words/punct in spans with IDs).
-*   (T08/T09): Using API Timestamps for sync logic base.
+**Completed Tasks:**
+*   All Phase 1, 2, 4 tasks.
+*   Refactoring `content.js` into `page-scripts/` modules.
+*   **(Bugfix T01 & subsequent fixes):** Implement scroll/pause/hover fixes for highlights.
+*   Create technical documentation (`docs/technical/`).
 
-**Active Tasks (Phase 4 - Houdini Approach):**
-*   ~(T16): Setup Houdini Paint Worklet & adapt paint logic.~ (Done)
-*   ~(T17): Define CSS using `paint()` and custom properties.~ (Done)
-*   ~(T18): Implement coordinate calculation and dynamic CSS variable updates for sentence/word highlighting.~ (Done)
-*   ~(T19): Implement hover highlighting using coordinate calculation and CSS variables.~ *(Done)*
-*   ~(T20): Implement click-to-play (uses existing spans/IDs).~ *(Done)*
-*   **(T21):** Test all Houdini-based highlighting and interactions. *(Current)*
+**Active Tasks:**
+*   **(T11):** Basic testing on a few diverse sample web pages.
 
 **Key Focus Areas:**
+*   Validating core functionality (playback, all highlighting types, sync, scroll handling, pause/resume) across different website structures.
 
-*   ~~Setting up the Houdini Paint Worklet infrastructure (T16.1).~~
-*   ~~Implementing robust coordinate calculation (`getClientRects`) for text spans (T18, T19).~~ *(Sentence/Word/Hover Done)*
-*   ~~Dynamically updating CSS custom properties to drive the paint worklet (T18, T19).~~ *(Done for Sentence/Word/Hover)*
-*   ~~Adapting and testing the paint logic ported from Speechify's code (T16.2).~~
+**Next Steps (Post-T11):**
 
-**Next Steps (BUILD Mode):**
-
-1.  ~~Implement T16.1: Create `highlight-painter.js` and register the worklet.~~
-2.  ~~Implement T16.2: Adapt paint logic into the worklet.~~
-3.  ~~Implement T17: Define CSS rules.~~
-4.  ~~Implement T18: Coordinate calculation & dynamic updates.~~
-5.  ~~Implement T19: Hover logic.~~
-6.  ~~Implement T20: Click-to-play.~~
-7.  ~~Test T21.~~
-8.  Address Phase 3 tasks (T10-T15). *(Next)*
+1.  **(T12):** Implement simple play/pause controls (potentially refining the existing button).
+2.  **(Future Task - Post T11/T12):** Implement improved hover UX (paragraph-start hover -> play button when stopped; sentence hover only when playing). Requires paragraph segmentation.
+3.  **(T13 - Re-evaluate):** Review the need/priority for Offscreen Document text extraction.
+4.  **(T14 - Verify):** Confirm highlighting wraps correctly and targets appropriate elements during T11 testing.
+5.  **(T15):** Implement UI/logic for managing the Deep Infra API Key.

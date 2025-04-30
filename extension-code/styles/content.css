@@ -82,9 +82,21 @@
 
 /* --- Houdini Paint API Styling (T17) --- */
 
+/* T17: Define the overlay element where highlights will be painted */
+.kokoro-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2147483646; /* Just below the widget */
+    pointer-events: none; /* Allow clicks to pass through */
+    background: paint(kokoroHighlighter); /* Apply the painter HERE */
+}
+
 body {
     /* Apply the paint worklet to the body's background */
-    background-image: paint(kokoroHighlighter);
+    /* background-image: paint(kokoroHighlighter); <-- REMOVE THIS */
 
     /* Define default colors for the paint worklet */
     --kokoroSentenceHighlightColorDark: #374b64;  /* Dark Blue-Gray for light page backgrounds */

@@ -1,0 +1,41 @@
+/* Add styles for the overlay */
+.kokoro-overlay {
+  position: fixed;          /* lock to the viewport */
+  inset: 0;                 /* full-screen */
+  pointer-events: none;     /* do not block clicks */
+  z-index: 2147483647;      /* above everything */
+  background-image: paint(kokoroHighlighter);
+  /* Initialize CSS properties used by the painter - these will be updated dynamically */
+  --kokoroHighlightWordInfo: ;
+  --kokoroHighlightSentenceInfo: ;
+  --kokoroHoverSentenceInfo: ;
+  --kokoroElemColor: rgb(255, 255, 255); /* Default background */
+  --kokoroSentenceHighlightColorDark: #ADD8E6;  /* Light blue for sentence */
+  --kokoroSentenceHighlightColorLight: #B0E0E6; /* Slightly different light blue */
+  --kokoroWordHighlightColorDark: #FFD700;     /* Gold/Yellow for word */
+  --kokoroWordHighlightColorLight: #FFFFE0;    /* Light yellow */
+  --kokoroHoverHighlightColorDark: #D3D3D3;    /* Light gray for hover */
+  --kokoroHoverHighlightColorLight: #E0E0E0;   /* Lighter gray */
+  --kokoroScrollX: 0;
+  --kokoroScrollY: 0;
+}
+
+body {
+  /* Ensure body rule does NOT contain background-image: paint(kokoroHighlighter); */
+  /* Other existing body styles (if any) remain here */
+  /* Example: */
+  /* font-family: sans-serif; */
+}
+
+/* ... rest of existing content.css ... */
+
+/* Ensure the specific highlight color properties are defined */
+/* These might already exist, adding them here ensures they are defined */
+:root {
+  --kokoroSentenceHighlightColorDark: #ADD8E6;  /* Light blue for sentence on light bg */
+  --kokoroSentenceHighlightColorLight: #B0E0E6; /* Slightly different light blue on dark bg */
+  --kokoroWordHighlightColorDark: #FFD700;     /* Gold/Yellow for word on light bg */
+  --kokoroWordHighlightColorLight: #FFFFE0;    /* Light yellow on dark bg */
+  --kokoroHoverHighlightColorDark: #D3D3D3;    /* Light gray for hover on light bg */
+  --kokoroHoverHighlightColorLight: #E0E0E0;   /* Lighter gray on dark bg */
+} 

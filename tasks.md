@@ -27,6 +27,10 @@
 - [ ] **T13:** Refactor text extraction to use Offscreen Document.
 - [ ] **T14:** Refine highlighting (target specific element, fix wrapping errors).
 - [ ] **T15:** Update API Key storage/UI for Deep Infra token. 
+- [ ] **T16 (New):** Implement improved hover UX:
+    - [ ] Implement paragraph segmentation.
+    - [ ] When stopped: Hover near paragraph start shows Play button.
+    - [ ] When playing: Hover highlights sentence (current behavior).
 
 ## Phase 4: Sentence Highlighting & Interaction (Houdini Approach)
 
@@ -37,4 +41,16 @@
 - [x] **T18:** Implement coordinate calculation (`getClientRects` on spans) and dynamic CSS variable updates for sentence/word highlighting in `content.js`. *(Line-based sentence logic implemented)*
 - [x] **T19:** Implement hover highlighting using coordinate calculation and separate CSS variables updated via `mouseover`/`mouseout`. *(Updated to line-based logic)*
 - [x] **T20:** Implement click-to-play (added `click` listeners, implemented `startPlaybackFromSentence(index)`).
-- [x] **T21:** Test Houdini-based sentence highlighting, word highlighting, hover, and click-to-play functionality thoroughly. 
+- [x] **T21:** Test Houdini-based sentence highlighting, word highlighting, hover, and click-to-play functionality thoroughly.
+- [x] **(Refactor T01):** Refactor `content.js` into `page-scripts/` modules. *(Post-T21 task, completed)*
+
+## Phase 5: Sentence Highlighting & Interaction (Houdini Approach)
+
+- [x] **T22:** Setup Houdini Paint Worklet & Adapt Paint Logic.
+    - [x] **T22.1:** Create `highlight-painter.js` and register worklet via `CSS.paintWorklet.addModule`.
+    - [x] **T22.2:** Adapt paint logic from `competitors-code/Speechify/houdini.js` into worklet.
+- [x] **T23:** Define CSS using `paint()` and custom properties (`--kokoro...`) for highlighting.
+- [x] **T24:** Implement coordinate calculation (`getClientRects` on spans) and dynamic CSS variable updates for sentence/word highlighting in `content.js`. *(Line-based sentence logic implemented)*
+- [x] **T25:** Implement hover highlighting using coordinate calculation and separate CSS variables updated via `mouseover`/`mouseout`. *(Updated to line-based logic)*
+- [x] **T26:** Implement click-to-play (added `click` listeners, implemented `startPlaybackFromSentence(index)`).
+- [x] **T27:** Test Houdini-based sentence highlighting, word highlighting, hover, and click-to-play functionality thoroughly. 

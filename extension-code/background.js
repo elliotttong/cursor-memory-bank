@@ -16,6 +16,32 @@ const TOKENIZER_TEST_SENTENCES_BG = [
     "¿Sentence seven starts with odd punctuation?"
 ];
 
+// Helper function to convert base64 string to Blob
+function base64ToBlob(base64, contentType = '', sliceSize = 512) {
+  // Remove the data URL prefix if present
+  const base64Data = base64.startsWith('data:') ? base64.split(',')[1] : base64;
+  try {
+    const byteCharacters = atob(base64Data);
+    const byteArrays = [];
+
+    for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+      const slice = byteCharacters.slice(offset, offset + sliceSize);
+      const byteNumbers = new Array(slice.length);
+      for (let i = 0; i < slice.length; i++) {
+        byteNumbers[i] = slice.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      byteArrays.push(byteArray);
+    }
+
+    return new Blob(byteArrays, { type: contentType });
+
+  } catch (e) {
+    console.error("Error decoding base64 or creating Blob:", e);
+    return null; // Indicate failure
+  }
+}
+
 // --- T02: Communication Listener --- (Modified for Deep Infra)
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log("Message received in background:", message);
@@ -45,7 +71,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             }
             apiToken = data.deepInfraToken;
 
-            // 2. Call Deep Infra API (Assuming Synchronous Response for now)
+            // 2. Call Deep Infra API
             console.log(`Background: Requesting TTS+Timestamps for sentence index: ${sentenceIndex}`);
             const result = await callDeepInfraTTS(sentenceText, apiToken);
             
@@ -53,33 +79,52 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             if (result && result.audio && result.words && sender.tab?.id) {
                 console.log(`Background: Sending audio and ${result.words.length} timestamps for sentence ${sentenceIndex} to tab ${sender.tab.id}`);
                 
-                // --- Corrected Data URL Handling ---
-                let audioDataUrl;
-                if (typeof result.audio === 'string' && result.audio.startsWith('data:audio')) {
-                    // API already provided a Data URL
-                    console.log("Using Data URL directly from API response.");
-                    audioDataUrl = result.audio;
-                } else if (typeof result.audio === 'string') {
-                     // Assume it's base64 data and add the prefix
-                    console.warn("API audio response did not start with 'data:audio', assuming base64 and adding prefix.");
-                    audioDataUrl = `data:audio/wav;base64,${result.audio}`;
-                } else {
-                    // Handle unexpected audio format
-                    throw new Error(`API response had unexpected audio data type: ${typeof result.audio}`);
+                // --- Convert to Object URL --- 
+                let audioObjectURL = null;
+                try {
+                    // Determine content type (assume wav if not specified in a data URL prefix)
+                    let contentType = 'audio/wav';
+                    let base64AudioData = result.audio;
+                    if (typeof result.audio === 'string' && result.audio.startsWith('data:')) {
+                        const parts = result.audio.split(',');
+                        const meta = parts[0].split(':')[1]?.split(';')[0]; // e.g., audio/wav
+                        if (meta) contentType = meta;
+                        base64AudioData = parts[1]; // Get only the base64 part
+                        console.log(`Background: Detected content type from data URL: ${contentType}`);
+                    } else if (typeof result.audio !== 'string') {
+                        throw new Error(`API response had unexpected audio data type: ${typeof result.audio}`);
+                    }
+                    // else: assume it's a raw base64 string, use default contentType
+
+                    const audioBlob = base64ToBlob(base64AudioData, contentType);
+                    if (!audioBlob) {
+                        throw new Error("Failed to convert base64 audio to Blob.");
+                    }
+                    audioObjectURL = URL.createObjectURL(audioBlob);
+                    console.log(`Background: Created Object URL: ${audioObjectURL}`);
+                
+                } catch (blobError) {
+                    console.error("Error creating Blob/ObjectURL:", blobError);
+                    // Send error back to content script and original sender
+                    const errorMsg = `Failed to process audio data into Object URL: ${blobError.message}`;
+                    if(sender.tab?.id) { chrome.tabs.sendMessage(sender.tab.id, { action: "sentenceError", message: errorMsg, sentenceIndex: sentenceIndex }); }
+                    try { sendResponse({ status: "error", message: errorMsg, sentenceIndex: sentenceIndex }); } catch(e){}
+                    return; // Stop processing this message
                 }
-                // -------------------------------------
+                // --------------------------
 
                 chrome.tabs.sendMessage(sender.tab.id, {
-                    action: "playAudioWithTimestamps", // New action name
-                    audioDataUrl: audioDataUrl, // Send the corrected URL
+                    action: "playAudioWithTimestamps", // Action remains the same
+                    // ** Send the Object URL **
+                    audioObjectURL: audioObjectURL, 
                     wordTimestamps: result.words,
                     sentenceIndex: sentenceIndex 
                 });
+                
                 // Send success back to original sender (popup/widget)?
                 try {
-                    // Don't send the full audio data back to popup
-                    const minimalResult = { ...result, audio: `(audio data length: ${result.audio?.length})` }; 
-                    sendResponse({ status: "success", detail: `TTS for sentence ${sentenceIndex} complete.`, result: minimalResult, sentenceIndex: sentenceIndex });
+                    // Don't send the full audio data or object URL back to popup
+                    sendResponse({ status: "success", detail: `TTS for sentence ${sentenceIndex} complete.`, result: { words: result.words }, sentenceIndex: sentenceIndex });
                 } catch (e) {
                     console.warn("Could not send final success response to original sender (context likely closed)", e);
                 }
@@ -165,6 +210,39 @@ async function callDeepInfraTTS(text, apiToken) {
   return result; 
 }
 
+// --- Programmatic Injection for Module Support ---
+
+chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+    // Inject when the tab is completely loaded and has a http/https URL
+    if (changeInfo.status === 'complete' && tab.url && (tab.url.startsWith('http://') || tab.url.startsWith('https://'))) {
+        console.log(`Tab ${tabId} updated and complete. Attempting to inject entry script.`);
+        try {
+            await chrome.scripting.executeScript({
+                target: { tabId: tabId },
+                // Use a function that dynamically imports the module
+                func: () => {
+                    // Check if already injected to avoid duplicates on refreshes within the same tab lifecycle
+                    if (window.kokoroPageScriptInitialized) {
+                        console.log('Kokoro entry script already initialized. Skipping dynamic import.');
+                        return;
+                    }
+                    // Dynamically import the entry script as a module
+                    const entryScriptUrl = chrome.runtime.getURL('page-scripts/entry.js');
+                    console.log(`Dynamically importing module: ${entryScriptUrl}`);
+                    import(entryScriptUrl).then(() => {
+                        console.log('Kokoro entry script module loaded successfully.');
+                    }).catch(err => {
+                        console.error('Error dynamically importing Kokoro entry script:', err);
+                    });
+                },
+            });
+            console.log(`Successfully requested injection for tab ${tabId}`);
+        } catch (err) {
+            // Log errors, potentially occurring if the tab is closed or protected
+            console.error(`Failed to inject script into tab ${tabId}: ${err.message}`);
+        }
+    }
+});
 
 // Optional: Listener for extension installation/update for setup tasks
 chrome.runtime.onInstalled.addListener(() => {

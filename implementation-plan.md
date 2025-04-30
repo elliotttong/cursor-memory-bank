@@ -85,3 +85,4 @@
     *   Implemented `startPlaybackFromSentence(index)` to stop, reset state (remove+nullify audio element), set new index, update UI, and request new audio.
 *   **(T21) Phase 4 Testing:** (Completed)
     *   Core functionality (highlighting, hover, click-to-play, scroll sync) verified.
+ 

@@ -16,4 +16,6 @@
 *   Feature Analysis Docs: `/TTS_Extension_Analysis/02_Features_Analysis/MUST_HAVE/`
 *   Kokoro-82M Model Info: [https://huggingface.co/hexgrad/Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M)
 
-**Target Platform:** Google Chrome Extension (Manifest V3) 
+**Target Platform:** Google Chrome Extension (Manifest V3)
+
+**Code Structure:** See `project-structure.md` for details. 
