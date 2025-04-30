@@ -83,10 +83,13 @@ export function setupHighlighting(segments, targetElement, isTestMode = false) {
             range.setStart(mapInfo.startNode, mapInfo.startOffset);
             range.setEnd(mapInfo.endNode, mapInfo.endOffset);
 
-            if (mapInfo.startNode !== mapInfo.endNode || mapInfo.startNode.nodeType !== Node.TEXT_NODE) {
-                if (!isTestMode) console.warn(`Skipping segment ${mapInfo.segment.id} because it spans nodes.`);
-                continue; 
-            }
+            // --- REMOVED Strict Check --- 
+            // We will now *attempt* to wrap even if nodes differ or aren't text nodes.
+            // surroundContents might fail, but the catch block will handle errors.
+            // const skipReason = null; 
+            // ... (previous detailed logging removed for clarity in this step) ...
+            // if (skipReason) { ... continue; }
+            // --------------------------
             
             const span = document.createElement('span');
             span.id = mapInfo.segment.id; 
@@ -98,6 +101,7 @@ export function setupHighlighting(segments, targetElement, isTestMode = false) {
             span.addEventListener('mouseout', handleSentenceHoverOut);
             span.addEventListener('click', handleSentenceClick);
 
+            // Attempt to wrap the contents of the range
             range.surroundContents(span);
 
             mapInfo.segment.element = span; 
@@ -106,7 +110,8 @@ export function setupHighlighting(segments, targetElement, isTestMode = false) {
 
         } catch (e) {
             wrapErrorCount++;
-             if (!isTestMode) console.error(`[SetupHighlighting ERROR ${i}] Error wrapping segment ${mapInfo.segment.id}:`, e.message);
+             // Log errors specifically related to wrapping attempts on potentially complex ranges
+             if (!isTestMode) console.error(`[SetupHighlighting WRAP ERROR ${i}] Error wrapping segment ${mapInfo.segment.id} ('${mapInfo.segment.text.replace(/\s+/g, ' ')}'). Range: [${mapInfo.startNode.nodeName}#${mapInfo.startOffset} -> ${mapInfo.endNode.nodeName}#${mapInfo.endOffset}]. Error: ${e.message}`);
         }
     }
     

@@ -79,47 +79,41 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             if (result && result.audio && result.words && sender.tab?.id) {
                 console.log(`Background: Sending audio and ${result.words.length} timestamps for sentence ${sentenceIndex} to tab ${sender.tab.id}`);
                 
-                // --- Convert to Object URL --- 
-                let audioObjectURL = null;
-                try {
-                    // Determine content type (assume wav if not specified in a data URL prefix)
-                    let contentType = 'audio/wav';
-                    let base64AudioData = result.audio;
-                    if (typeof result.audio === 'string' && result.audio.startsWith('data:')) {
-                        const parts = result.audio.split(',');
-                        const meta = parts[0].split(':')[1]?.split(';')[0]; // e.g., audio/wav
-                        if (meta) contentType = meta;
-                        base64AudioData = parts[1]; // Get only the base64 part
-                        console.log(`Background: Detected content type from data URL: ${contentType}`);
-                    } else if (typeof result.audio !== 'string') {
-                        throw new Error(`API response had unexpected audio data type: ${typeof result.audio}`);
-                    }
-                    // else: assume it's a raw base64 string, use default contentType
+                // --- Determine Content Type and Base64 Data ---
+                let contentType = 'audio/wav'; // Default
+                let base64AudioData = result.audio;
 
-                    const audioBlob = base64ToBlob(base64AudioData, contentType);
-                    if (!audioBlob) {
-                        throw new Error("Failed to convert base64 audio to Blob.");
-                    }
-                    audioObjectURL = URL.createObjectURL(audioBlob);
-                    console.log(`Background: Created Object URL: ${audioObjectURL}`);
-                
-                } catch (blobError) {
-                    console.error("Error creating Blob/ObjectURL:", blobError);
-                    // Send error back to content script and original sender
-                    const errorMsg = `Failed to process audio data into Object URL: ${blobError.message}`;
-                    if(sender.tab?.id) { chrome.tabs.sendMessage(sender.tab.id, { action: "sentenceError", message: errorMsg, sentenceIndex: sentenceIndex }); }
+                if (typeof result.audio === 'string' && result.audio.startsWith('data:')) {
+                    const parts = result.audio.split(',');
+                    const meta = parts[0].split(':')[1]?.split(';')[0]; // e.g., audio/wav
+                    if (meta) contentType = meta;
+                    base64AudioData = parts[1]; // Get only the base64 part
+                    console.log(`Background: Detected content type from data URL: ${contentType}`);
+                } else if (typeof result.audio !== 'string') {
+                     // Send error back to content script if data type is wrong
+                    const errorMsg = `API response had unexpected audio data type: ${typeof result.audio}`;
+                    console.error(errorMsg);
+                    chrome.tabs.sendMessage(sender.tab.id, { action: "sentenceError", message: errorMsg, sentenceIndex: sentenceIndex }); 
                     try { sendResponse({ status: "error", message: errorMsg, sentenceIndex: sentenceIndex }); } catch(e){}
-                    return; // Stop processing this message
+                    return; // Stop processing
                 }
-                // --------------------------
+                // else: assume it's a raw base64 string, use default contentType
+                // --- REMOVED Object URL Creation BLOCK ---
+                // let audioObjectURL = null;
+                // try { ... } catch { ... } // Entire block removed
+                // -----------------------------------------
 
+                // --- Send Raw Data to Content Script ---
                 chrome.tabs.sendMessage(sender.tab.id, {
-                    action: "playAudioWithTimestamps", // Action remains the same
-                    // ** Send the Object URL **
-                    audioObjectURL: audioObjectURL, 
+                    action: "playAudioWithTimestamps", 
+                    // ** Send the raw base64 data and content type **
+                    base64AudioData: base64AudioData, 
+                    contentType: contentType, 
+                    // ----
                     wordTimestamps: result.words,
                     sentenceIndex: sentenceIndex 
                 });
+                // ---------------------------------------
                 
                 // Send success back to original sender (popup/widget)?
                 try {

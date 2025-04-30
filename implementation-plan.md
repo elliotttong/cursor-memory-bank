@@ -51,7 +51,18 @@
         *   `offscreen.js` processes with Readability and sends extracted text back via `background.js` to `content.js`.
     *   Update `content.js` (`getTextToRead`) to use this message flow instead of direct Readability execution.
 *   **(T14) Highlighting Refinement:**
-    *   Investigate potential wrapping errors observed or reported during testing.
+    *   **Issue:** Last word of sentences often missed during playback/highlighting on sites like BBC.
+    *   **Investigation Steps:**
+        *   **Span Injection (`spanInjector.js`):** 
+            *   Add detailed logging to `setupHighlighting` to understand why segments (especially last words) might be skipped (e.g., "spans nodes" warning).
+            *   Inspect BBC DOM structure around sentence ends (e.g., within `p.ssrcss-1q0x1qg-Paragraph` elements) to see if nested spans, punctuation, or hidden characters interfere with `mapSegmentToNodes` or `wrapSegmentInNodes`.
+            *   Determine if Readability.js output structure contributes to the issue.
+        *   **Sync Logic (`syncEngine.js`):**
+            *   Add logging in `pollingLoop` (word finding section) and/or `handleTimeUpdate` to track `currentTime` against the `start`/`end` timestamps of the last few words in a sentence.
+            *   Verify if the condition `currentTime >= wordInfo.start && currentTime < wordInfo.end` correctly includes the last word until the audio actually ends.
+            *   Consider minor adjustments to timing comparisons if needed (e.g., `wordInfo.end >= currentTime`).
+        *   **Outcome:** Removing the strict node check in `spanInjector.js` led to `range.surroundContents()` errors (e.g., "partially selected a non-Text node") on BBC. Confirms complex DOM structure requires a more robust wrapping strategy than currently implemented.
+    *   **Goal:** Modify `spanInjector.js` or `syncEngine.js` to robustly handle last words across different site structures. (Postponed deeper fix).
     *   Explore methods to target the main content container identified by Readability (if possible) for `setupHighlighting` instead of `document.body`.
 *   **(T10) Sync Accuracy:**
     *   Primarily involves testing; API timestamps should be accurate. Monitor during T11.

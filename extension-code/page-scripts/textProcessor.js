@@ -51,10 +51,19 @@ export function processText(text, isTestMode = false) {
         if (!trimmedSentence) return; 
 
         const sentenceId = `s-${sentenceCounter}`; 
-        segments.push({ type: 'sentence', text: trimmedSentence, id: sentenceId, element: null });
+        const cleanedTextForApi = trimmedSentence.replace(/\[|\]/g, ''); // Remove square brackets
+        
+        segments.push({ 
+            type: 'sentence', 
+            text: trimmedSentence, // Original text for mapping/highlighting
+            cleanedTextForApi: cleanedTextForApi, // Cleaned text for TTS API
+            id: sentenceId, 
+            element: null 
+        });
         
         if (isTestMode) {
             console.log(`--- [TOKENIZER TEST] Sentence ${sentenceCounter}: "${trimmedSentence}" ---`);
+            console.log(`--- [TOKENIZER TEST] Cleaned for API: "${cleanedTextForApi}" ---`); // Log cleaned text in test mode
         }
 
         const wordsAndPunctuation = trimmedSentence.match(/([\w'-]+(?:-\w+)*)|[.,!?;:¿]/g) || [];

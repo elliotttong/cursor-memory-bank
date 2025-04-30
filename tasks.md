@@ -22,7 +22,9 @@
 ## Phase 3: Refinement & Testing
 
 - [ ] **T10:** Refine synchronization accuracy (should be good with API timings).
-- [ ] **T11:** Basic testing on a few sample web pages.
+- [x] **T11:** Basic testing on a few sample web pages.
+    - [x] Fixed ServiceWorker/ObjectURL issue for BBC and similar sites.
+    - [ ] Need to test additional sites for comprehensive coverage.
 - [ ] **T12:** Add simple play/pause controls.
 - [ ] **T13:** Refactor text extraction to use Offscreen Document.
 - [ ] **T14:** Refine highlighting (target specific element, fix wrapping errors).
