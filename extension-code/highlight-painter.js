@@ -142,14 +142,12 @@ class KokoroHighlighter {
   }
 
   paint(ctx, size, properties) {
-    // <<< DEBUG: Draw a red square at top-left to confirm paint execution & overlay visibility >>>
-    try {
-        ctx.fillStyle = 'rgba(255, 0, 0, 0.3)'; // Semi-transparent red
-        ctx.fillRect(0, 0, 50, 50); // Draw 50x50 square at top-left of the overlay
-    } catch (e) {
-        console.error("[Painter Debug Square] Error drawing debug rectangle:", e);
-    }
-    // <<< End DEBUG >>>
+    // --- START Debug Logging ---
+    const sentenceCoordsStr = properties.get('--kokoroHighlightSentenceInfo').toString();
+    const wordCoordsStr = properties.get('--kokoroHighlightWordInfo').toString();
+    const hoverCoordsStr = properties.get('--kokoroHoverSentenceInfo').toString();
+    // console.log(`[Painter DEBUG] Paint cycle start. SentenceCoords: '${sentenceCoordsStr.substring(0,50)}...', WordCoords: '${wordCoordsStr.substring(0,50)}...', HoverCoords: '${hoverCoordsStr.substring(0,50)}...'`);
+    // --- END Debug Logging ---
     
     // ctx: The 2D drawing context (like Canvas)
     // size: { width, height } of the element being painted
@@ -163,12 +161,14 @@ class KokoroHighlighter {
 
     // <<< DEBUG: Log parsed coordinates if any exist >>>
     const shouldLog = wordRects.length > 0 || sentenceRects.length > 0 || hoverRects.length > 0;
+    /* <<< REMOVED VERBOSE LOGGING BLOCK >>>
     if (shouldLog) {
         console.log(`[Painter Paint DEBUG] === Painting Frame ===`);
         if(wordRects.length > 0) console.log(`  > Word Rects (${wordRects.length}):`, JSON.stringify(wordRects.slice(0, 2))); // Log first few
         if(sentenceRects.length > 0) console.log(`  > Sentence Rects (${sentenceRects.length}):`, JSON.stringify(sentenceRects.slice(0, 2)));
         if(hoverRects.length > 0) console.log(`  > Hover Rects (${hoverRects.length}):`, JSON.stringify(hoverRects.slice(0, 2)));
     }
+    */
     // <<< End DEBUG >>>
 
     const elemColor = properties.get('--kokoroElemColor')?.toString() || 'rgb(255, 255, 255)';
@@ -196,11 +196,13 @@ class KokoroHighlighter {
     const useDarkHighlightColors = brightness >= 160;
 
     // <<< DEBUG: Log Color Calculation >>>
+    /* <<< REMOVED VERBOSE LOGGING BLOCK >>>
     if (shouldLog) {
         console.log(`  > Elem Color: ${elemColor}`);
         console.log(`  > Brightness: ${brightness.toFixed(2)}`);
         console.log(`  > Use Dark Colors: ${useDarkHighlightColors}`);
     }
+    */
     // <<< End DEBUG >>>
 
     // --- Select Color String Based on Contrast ---
@@ -209,11 +211,13 @@ class KokoroHighlighter {
     const wordFill = useDarkHighlightColors ? wordColorDark : wordColorLight;
 
     // <<< DEBUG: Log Chosen Fill Colors (Now strings) >>>
+    /* <<< REMOVED VERBOSE LOGGING BLOCK >>>
     if (shouldLog) {
         console.log(`  > Final Hover Fill Style: ${hoverFill}`);
         console.log(`  > Final Sentence Fill Style: ${sentenceFill}`);
         console.log(`  > Final Word Fill Style: ${wordFill}`);
     }
+    */
     // <<< End DEBUG >>>
 
     // --- Paint Order: Hover (Optional) -> Sentence -> Word ---
@@ -224,7 +228,7 @@ class KokoroHighlighter {
       for (const rect of hoverRects) {
         const adjustedRect = [rect[0], rect[1], rect[2], rect[3]]; // Use raw coordinates
         // <<< DEBUG LOG >>>
-        if (shouldLog) console.log(`  -> Drawing HOVER rect with color ${ctx.fillStyle}: [${adjustedRect.join(', ')}] Radius: ${defaultRadius}`);
+        // if (shouldLog) console.log(`  -> Drawing HOVER rect with color ${ctx.fillStyle}: [${adjustedRect.join(', ')}] Radius: ${defaultRadius}`);
         drawRoundedRect(ctx, [...adjustedRect, defaultRadius]);
         ctx.fill();
       }
@@ -236,7 +240,7 @@ class KokoroHighlighter {
       for (const rect of sentenceRects) {
         const adjustedRect = [rect[0], rect[1], rect[2], rect[3]]; // Use raw coordinates
         // <<< DEBUG LOG >>>
-        if (shouldLog) console.log(`  -> Drawing SENTENCE rect with color ${ctx.fillStyle}: [${adjustedRect.join(', ')}] Radius: ${defaultRadius}`);
+        // if (shouldLog) console.log(`  -> Drawing SENTENCE rect with color ${ctx.fillStyle}: [${adjustedRect.join(', ')}] Radius: ${defaultRadius}`);
         drawRoundedRect(ctx, [...adjustedRect, defaultRadius]);
         ctx.fill();
       }
@@ -248,7 +252,7 @@ class KokoroHighlighter {
       for (const rect of wordRects) {
         const adjustedRect = [rect[0], rect[1], rect[2], rect[3]]; // Use raw coordinates
         // <<< DEBUG LOG >>>
-        if (shouldLog) console.log(`  -> Drawing WORD rect with color ${ctx.fillStyle}: [${adjustedRect.join(', ')}] Radius: ${defaultRadius}`);
+        // if (shouldLog) console.log(`  -> Drawing WORD rect with color ${ctx.fillStyle}: [${adjustedRect.join(', ')}] Radius: ${defaultRadius}`);
         drawRoundedRect(ctx, [...adjustedRect, defaultRadius]);
         ctx.fill();
       }

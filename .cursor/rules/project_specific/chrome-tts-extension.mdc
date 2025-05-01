@@ -1,0 +1,76 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Chrome TTS Extension Project Rules
+
+## Overview
+
+Project-specific rules and guidelines for developing the Chrome Text-to-Speech Extension. This project utilizes Manifest V3, Content Scripts, a Background Service Worker, and the Houdini Paint API for highlighting.
+
+## Core Architecture & Constraints
+
+*   **Service Worker (`background.js`):**
+    *   Strictly NO DOM access is allowed.
+    *   Strictly NO `URL.createObjectURL` usage. Blobs/ObjectURLs must be handled client-side.
+    *   Responsible for API calls (e.g., `callDeepInfraTTS`) and receiving/routing messages.
+*   **Content Scripts (`page-scripts/`):**
+    *   Handle ALL DOM manipulation, UI updates, and user event listeners.
+    *   Handle `URL.createObjectURL` creation using received Blob/base64 data.
+    *   **CRITICAL:** Responsible for `URL.revokeObjectURL()` to prevent memory leaks.
+    *   Interact with the Houdini Paint Worklet by setting CSS custom properties.
+    *   Orchestrate the main application flow (initiated in `entry.js`).
+*   **Houdini (`highlight-painter.js`):**
+    *   Renders highlights based *only* on the values of CSS custom properties (e.g., `--kokoroHighlightWordInfo`, `--kokoroScrollX`).
+    *   Does NOT access application state (`pageState.js`) or DOM directly.
+    *   Keep parsing logic for CSS properties robust but avoid overly complex state within the painter itself.
+
+## State Management (`pageState.js`)
+
+*   **Centralized State:** ALL shared state relevant to the content script's operation MUST reside in `pageState.js`.
+*   **Updates via `setState`:** ONLY update state using the exported `setState` function.
+*   **Key State Properties:** Be mindful of critical state variables like `isPlaying`, `currentSentenceIndex`, `audioPlayer`, `currentWordTimestamps`, `lastWordElement`, `hoveredSentenceId`, `animationFrameId`, `nextAudioData`.
+
+## Communication (`backgroundComms.js`)
+
+*   **Single Channel:** ALL communication between the background script and content scripts MUST go through the helper functions provided in `backgroundComms.js` (e.g., `requestSentenceAudio`, `handleBackgroundMessage`).
+*   **Data Transfer:** Send raw data (like base64 audio strings or ArrayBuffers) from the background script to the content script. Object URLs are created and managed exclusively on the client-side (content script).
+
+## Highlighting System
+
+*   **Coordinator (`coordManager.js`):**
+    *   Calculates DOM element coordinates using `getClientRects()`.
+    *   Updates CSS custom properties read by the painter (e.g., `--kokoroHighlightWordInfo`, `--kokoroHighlightSentenceInfo`, `--kokoroHoverSentenceInfo`, `--kokoroScrollX`, `--kokoroScrollY`).
+    *   Provides functions like `updateActiveSentenceHighlighting`, `updateWordHighlightCoordinates`, `clearHighlights`.
+*   **Synchronizer (`syncEngine.js`):**
+    *   Runs the `requestAnimationFrame` loop (`pollingLoop`).
+    *   Determines *what* should be highlighted based on audio time (`audioPlayer.currentTime`) and application state (`state.isPlaying`, `state.lastWordElement`, `state.currentSentenceIndex`).
+    *   Calls `coordManager.js` functions to update the CSS variables that trigger the painter.
+*   **Painter (`highlight-painter.js`):**
+    *   Reads the CSS variables set by `coordManager.js` (via `syncEngine.js`).
+    *   Paints the highlights onto the overlay element.
+
+## Audio Playback & Object URLs (`playbackEngine.js`)
+
+*   **Lifecycle:** Manages the `HTMLAudioElement` lifecycle, including `play()`, `pause()`, and handling events like `ended`, `error`, `play`, `pause`.
+*   **ObjectURL Handling:**
+    *   Receives Object URLs from `backgroundComms.js` via `handleReceivedAudio`.
+    *   Assigns the received Object URL to `audioPlayer.src`.
+    *   Keeps track of the currently active `currentAudioObjectURL`.
+    *   **CRITICAL:** MUST revoke the `currentAudioObjectURL` using `URL.revokeObjectURL()` when the audio finishes (`handleAudioEnded`), encounters an error (`handleAudioError`), or when playback is fully stopped (`stopPlaybackAndResetState`). Failure to do so will cause memory leaks.
+
+## DOM Manipulation & UI Updates
+
+*   **Widget (`domUtils.js`):** Use functions in `domUtils.js` (e.g., `injectWidget`, `updatePlayPauseButtonState`, `ensureHighlightOverlay`, `showSkipButtons`, `hideSkipButtons`) for creating and updating the UI widget and the highlight overlay element.
+*   **Spans (`spanInjector.js`):** Handles wrapping text nodes with `<span>` elements for highlighting. Be mindful of its known limitations (documented in `docs/limitations.md`) regarding complex/nested HTML structures. Avoid attempting overly complex wrapping logic here without specific instruction or planning.
+
+## Debugging & Known Issues
+
+*   **Console Logs:** Use consistent prefixes for console logs to easily identify the source module, e.g., `[playbackEngine]`, `[coordManager]`, `[syncEngine]`, `[Painter]`, `[entry]`, `[userEvents]`. Remove or minimize debug logs for production builds.
+*   **Limitations:** Refer to `docs/limitations.md` for known complex highlighting issues (e.g., wrapping across complex nodes, last word highlighting on some sites) that are currently deferred or out-of-scope.
+
+## Code Style & Imports
+
+*   **Imports/Exports:** ALWAYS double-check that imported names exactly match exported names. Pay close attention to default vs. named exports to avoid `SyntaxError`. Verify function signatures.
+*   **Consistency:** Follow existing code patterns, naming conventions (camelCase for functions/variables), and file structure. Keep functions focused on a single responsibility.

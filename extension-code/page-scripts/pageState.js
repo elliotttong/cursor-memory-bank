@@ -4,6 +4,7 @@ export let segmentedText = []; // Array of ALL segments (sentences and words)
 export let sentenceSegments = []; // Array of JUST sentence segments
 export let currentSentenceIndex = -1; 
 export let isPlaying = false;
+export let playbackIntended = false; // NEW: Tracks user's explicit play/pause intention
 
 // Store precise timings received from API
 export let currentWordTimestamps = []; // Structure: [{ text, start, end }, ...]
@@ -16,7 +17,6 @@ export let currentHighlightedSentenceId = null;
 export let createdHighlightSpans = []; // T07 state
 export let isStoppingOnError = false; // Flag to prevent error handling loops
 export let isInitialized = false; // <<< Add initialization flag
-export let hasPlaybackStartedEver = false; // NEW: Flag for skip button visibility
 
 export let kokoroOverlayElement = null; // Toplevel variable to hold the overlay
 export let kokoroOverlayObserver = null; // Hold the observer instance
@@ -28,6 +28,12 @@ export let hoveredSentenceId = null; // Tracks the sentence ID currently being h
 export let animationFrameId = null; // Store the ID for cancellation
 export let lastWordElement = null; // T18: Keep track of the last element for background color check
 
+// NEW: Buffer for audio received while paused/jumped
+export let bufferedPausedAudio = null; // { sentenceIndex, audioObjectURL, wordTimestamps }
+
+// NEW: Flag to indicate if the next received audio should play automatically
+export let shouldAutoplayNext = false;
+
 // Function to allow modules to update state variables
 // This is a simple approach; more complex state management could be used later if needed.
 export function setState(newState) {
@@ -36,6 +42,7 @@ export function setState(newState) {
     if (newState.sentenceSegments !== undefined) sentenceSegments = newState.sentenceSegments;
     if (newState.currentSentenceIndex !== undefined) currentSentenceIndex = newState.currentSentenceIndex;
     if (newState.isPlaying !== undefined) isPlaying = newState.isPlaying;
+    if (newState.playbackIntended !== undefined) playbackIntended = newState.playbackIntended;
     if (newState.currentWordTimestamps !== undefined) currentWordTimestamps = newState.currentWordTimestamps;
     if (newState.nextAudioData !== undefined) nextAudioData = newState.nextAudioData;
     if (newState.currentHighlightedWord !== undefined) currentHighlightedWord = newState.currentHighlightedWord;
@@ -48,5 +55,6 @@ export function setState(newState) {
     if (newState.hoveredSentenceId !== undefined) hoveredSentenceId = newState.hoveredSentenceId;
     if (newState.animationFrameId !== undefined) animationFrameId = newState.animationFrameId;
     if (newState.lastWordElement !== undefined) lastWordElement = newState.lastWordElement;
-    if (newState.hasPlaybackStartedEver !== undefined) hasPlaybackStartedEver = newState.hasPlaybackStartedEver;
+    if (newState.bufferedPausedAudio !== undefined) bufferedPausedAudio = newState.bufferedPausedAudio;
+    if (newState.shouldAutoplayNext !== undefined) shouldAutoplayNext = newState.shouldAutoplayNext;
 } 

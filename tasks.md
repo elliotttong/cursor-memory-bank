@@ -51,11 +51,12 @@
 
 ## Phase 5: Advanced Features & Release Prep (Placeholder)
 
+- [ ] **T22 (New):** Implement Audio Caching (LRU strategy recommended) to reduce redundant API calls.
 - [ ] Implement secure backend proxy for API key management (Replaces deferred T15).
 - [ ] Implement user authentication (if linking to web app).
 - [ ] Add persistence for user settings (speed, voice) using `chrome.storage.local` or sync with backend.
 - [ ] Revisit Offscreen Document refactor (T13) if performance issues arise.
 - [ ] Revisit complex highlighting issues (T14 / limitations) if necessary.
-- [ ] Revisit improved hover UX (T20).
+- [ ] Revisit improved hover UX (T21).
 - [ ] Comprehensive cross-browser/site testing.
 - [ ] Build and packaging for release. 

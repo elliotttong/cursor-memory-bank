@@ -1,29 +1,28 @@
 import * as state from './pageState.js';
 import { ensureHighlightOverlay, updatePlayPauseButtonState } from './domUtils.js';
 import { requestSentenceAudio } from './backgroundComms.js';
-import { stopPlaybackAndResetState, jumpToSentence } from './playbackEngine.js';
+import { stopPlaybackAndResetState, handlePlayPauseClick, playSentence } from './playbackEngine.js';
 import { startSyncLoop } from './syncEngine.js';
+import { updateHoverHighlightCoordinates } from './coordManager.js';
 
 // --- Hover Highlighting Logic (Houdini Version) ---
 export function handleSentenceHover(event) {
-    const target = event.target.closest('.kokoro-segment');
+    const target = event.target.closest('.kokoro-segment[data-sentence-id]');
     if (!target || !target.dataset.sentenceId) return;
 
     const sentenceId = target.dataset.sentenceId;
     
     if (state.hoveredSentenceId !== sentenceId) {
-        console.log(`[Hover In] Setting hoveredSentenceId to: ${sentenceId}`);
         state.setState({ hoveredSentenceId: sentenceId });
         startSyncLoop();
     }
 }
 
 export function handleSentenceHoverOut(event) {
-    const target = event.target.closest('.kokoro-segment');
+    const target = event.target.closest('.kokoro-segment[data-sentence-id]');
     if (!target || !target.dataset.sentenceId) return;
 
     if (state.hoveredSentenceId === target.dataset.sentenceId) {
-        console.log(`[Hover Out] Clearing hoveredSentenceId (was ${state.hoveredSentenceId})`);
         state.setState({ hoveredSentenceId: null });
     }
 }
@@ -36,7 +35,6 @@ export function handleSentenceClick(event) {
     }
     const target = event.target.closest('.kokoro-segment[data-sentence-id]');
     if (!target) {
-        console.warn("[Click] Clicked target missing sentenceId.");
         return;
     }
     const sentenceId = target.dataset.sentenceId;
@@ -50,91 +48,41 @@ export function handleSentenceClick(event) {
             console.error("[Click] Could not parse index from ID:", sentenceId);
             return;
         }
-        if (clickedIndex === state.currentSentenceIndex && state.isPlaying) {
-            console.log("[Click] Clicked on currently playing sentence. Ignoring.");
-            return; 
-        }
         if (clickedIndex < 0 || clickedIndex >= state.sentenceSegments.length) {
             console.error("[Click] Clicked index out of bounds:", clickedIndex);
             return;
         }
 
-        console.log(`[Click] Starting playback from index: ${clickedIndex}`);
-        startPlaybackFromSentence(clickedIndex);
+        console.log(`[Click] Calling playSentence for index: ${clickedIndex}`);
+        state.setState({ playbackIntended: true });
+        playSentence(clickedIndex, true);
 
     } catch (e) {
         console.error("[Click] Error handling click:", e);
     }
 }
 
-// Rename the internal function to avoid conflict with imported name
-function startPlaybackFromSentence(index) {
-    console.log(`Starting playback from sentence: ${index}`);
-    
-    stopPlaybackAndResetState(); // Reset playback state first
-    
-    // Clear hover highlight explicitly
-    try {
-        let overlay = ensureHighlightOverlay();
-        if (overlay) overlay.style.setProperty('--kokoroHoverSentenceInfo', '');
-    } catch(e) { console.error("[Click->Start] Error clearing hover:", e); }
-    
-    // Set new target index in state
-    state.setState({ currentSentenceIndex: index });
+// --- Skip Button Handlers --- 
 
-    // Update UI to loading state
-    updatePlayPauseButtonState('loading');
-
-    // Request audio for the target sentence
-    requestSentenceAudio(state.currentSentenceIndex); 
-}
-
-// --- Skip Button Handlers (Modified) ---
 export function handleSkipPrevious() {
-    console.log("[Skip Prev] Clicked.");
-    if (!state.isInitialized || !state.hasPlaybackStartedEver) {
-        console.log("[Skip Prev] Ignored - Not initialized or playback hasn't started.");
+    console.log("[Skip Previous] Clicked.");
+    if (!state.isInitialized || state.currentSentenceIndex <= 0) {
+        console.warn("[Skip Previous] Ignored - Not initialized or already at first sentence.");
         return;
     }
-
-    const currentIndex = state.currentSentenceIndex;
-    if (currentIndex <= 0) {
-        console.log("[Skip Prev] Already at the beginning.");
-        return; 
-    }
-
-    const targetIndex = currentIndex - 1;
-    console.log(`[Skip Prev] Jumping from ${currentIndex} to ${targetIndex}`);
-    
-    if (state.isPlaying) {
-        startPlaybackFromSentence(targetIndex); // Stop, load, and play
-    } else {
-        jumpToSentence(targetIndex); // Just change sentence and pre-load, remain paused
-    }
+    const targetIndex = state.currentSentenceIndex - 1;
+    console.log(`[Skip Previous] Target index: ${targetIndex}. Current playback INTENDED: ${state.playbackIntended}`);
+    playSentence(targetIndex, state.playbackIntended);
 }
 
 export function handleSkipNext() {
     console.log("[Skip Next] Clicked.");
-    if (!state.isInitialized || !state.hasPlaybackStartedEver) {
-        console.log("[Skip Next] Ignored - Not initialized or playback hasn't started.");
+    if (!state.isInitialized || state.currentSentenceIndex >= state.sentenceSegments.length - 1) {
+        console.warn("[Skip Next] Ignored - Not initialized or already at last sentence.");
         return;
     }
-
-    const currentIndex = state.currentSentenceIndex;
-    const lastIndex = state.sentenceSegments.length - 1;
-    
-    if (currentIndex === -1 || currentIndex >= lastIndex) {
-        console.log(`[Skip Next] Already at the end (${lastIndex}) or not started.`);
-        return; 
-    }
-    
-    const targetIndex = currentIndex + 1;
-    console.log(`[Skip Next] Jumping from ${currentIndex} to ${targetIndex}`);
-
-    if (state.isPlaying) {
-        startPlaybackFromSentence(targetIndex); // Stop, load, and play
-    } else {
-        jumpToSentence(targetIndex); // Just change sentence and pre-load, remain paused
-    }
+    const targetIndex = state.currentSentenceIndex + 1;
+    console.log(`[Skip Next] Target index: ${targetIndex}. Current playback INTENDED: ${state.playbackIntended}`);
+    playSentence(targetIndex, state.playbackIntended);
 }
 // -------------------------------- 

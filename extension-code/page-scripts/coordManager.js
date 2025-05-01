@@ -59,24 +59,27 @@ export function updateWordHighlightCoordinates(activeSegment) {
 }
 
 // T18: Update sentence highlight coordinates
-export function updateSentenceHighlightCoordinates(targetSentenceIndex) {
+// Renamed internal function to avoid confusion
+function calculateAndSetSentenceHighlightCoordinates(targetSentenceIndex) {
+    // console.log(`[CoordMgr DEBUG] Enter calculateAndSetSentenceHighlightCoordinates for index: ${targetSentenceIndex}`);
     let overlay = ensureHighlightOverlay();
     if (!overlay) {
-        console.error("Overlay element not found for sentence highlight update.");
+        console.error("[CoordMgr] Overlay element not found for sentence highlight update.");
         return;
     }
 
     if (targetSentenceIndex < 0) {
         overlay.style.setProperty('--kokoroHighlightSentenceInfo', ''); 
+        // console.log(`[CoordMgr DEBUG] Cleared sentence highlight (index < 0).`);
         return;
     }
 
     const sentenceId = `s-${targetSentenceIndex}`;
-    // Query within the document, assuming spans exist
     const sentenceSpans = document.querySelectorAll(`.kokoro-segment[data-sentence-id="${sentenceId}"]`);
 
     if (sentenceSpans.length === 0) {
         overlay.style.setProperty('--kokoroHighlightSentenceInfo', ''); 
+        // console.log(`[CoordMgr DEBUG] Cleared sentence highlight (no spans found for ${sentenceId}).`);
         return;
     }
 
@@ -98,6 +101,7 @@ export function updateSentenceHighlightCoordinates(targetSentenceIndex) {
 
     if (allRects.length === 0) {
         overlay.style.setProperty('--kokoroHighlightSentenceInfo', ''); 
+        // console.log(`[CoordMgr DEBUG] Cleared sentence highlight (zero rects for ${sentenceId}).`);
         return;
     }
 
@@ -137,13 +141,14 @@ export function updateSentenceHighlightCoordinates(targetSentenceIndex) {
     // --- End Line Merging --- 
 
     const coordString = lineBoundingBoxes.flat().join(',');
+    // console.log(`[CoordMgr DEBUG] Setting --kokoroHighlightSentenceInfo for index ${targetSentenceIndex}: ${coordString.substring(0,100)}...`);
     overlay.style.setProperty('--kokoroHighlightSentenceInfo', coordString); 
 }
 
 // Exported wrapper for sentence highlighting updates
 export function updateActiveSentenceHighlighting(targetSentenceIndex) {
      console.log(`[CoordMgr] Updating sentence highlight coords for index: ${targetSentenceIndex}`);
-     updateSentenceHighlightCoordinates(targetSentenceIndex);
+     calculateAndSetSentenceHighlightCoordinates(targetSentenceIndex);
 }
 
 // Exported function to clear all highlights via coordinates
@@ -161,7 +166,7 @@ export function clearHighlights() {
         state.setState({ lastWordElement: null }); // Also clear the state tracking element
 
         // Clear sentence highlight coords
-        updateSentenceHighlightCoordinates(-1);
+        calculateAndSetSentenceHighlightCoordinates(-1);
 
         // Clear hover highlight coords
         overlay.style.setProperty('--kokoroHoverSentenceInfo', '');

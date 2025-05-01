@@ -80,7 +80,19 @@
 
 **Phase 4: Houdini Highlighting:** (Completed - Tasks T21-T26)
 
-**Phase 5: Advanced Features & Release Prep:** (Tasks defined in `tasks.md` - Focus on backend proxy, persistence, etc.)
+**Phase 5: Advanced Features & Release Prep:**
 
-*(Deferred/Paused tasks: T13, T14, T15, T20 - Hover UX)*
+*   **(T22) Audio Caching:**
+    *   **Goal:** Avoid re-fetching TTS for already played/skipped sentences within a session.
+    *   **Component:** `pageState.js` (add cache Map), `backgroundComms.js` (check cache before request), `playbackEngine.js` (store in cache on receive, manage revocation).
+    *   **Strategy:** Implement an LRU (Least Recently Used) cache for `audioObjectURL` and `wordTimestamps`, mapped by sentence index.
+    *   **Revocation:** When adding to a full cache, revoke and remove the URL of the *least recently accessed* item.
+    *   **Considerations:** Determine appropriate cache size (e.g., 5-10). Ensure robust URL revocation to prevent memory leaks.
+*   **(Future)** Implement secure backend proxy (replaces T15).
+*   **(Future)** Implement user auth.
+*   **(Future)** Add settings persistence.
+*   **(Future)** Revisit T13, T14, T21 if needed.
+*   **(Future)** Testing & Build.
+
+*(Deferred/Paused tasks: T13, T14, T15, T21 - Hover UX)*
  

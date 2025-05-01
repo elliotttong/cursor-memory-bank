@@ -1,5 +1,5 @@
 import * as state from './pageState.js';
-import { updateWordHighlightCoordinates, updateSentenceHighlightCoordinates, updateHoverHighlightCoordinates } from './coordManager.js';
+import { updateWordHighlightCoordinates, updateActiveSentenceHighlighting, updateHoverHighlightCoordinates } from './coordManager.js';
 import { ensureHighlightOverlay } from './domUtils.js'; // Needed for robust overlay access
 import { requestSentenceAudio } from './backgroundComms.js';
 import { stopPlaybackAndResetState } from './playbackEngine.js';
@@ -9,7 +9,7 @@ import { stopPlaybackAndResetState } from './playbackEngine.js';
 function pollingLoop(timestamp) {
     let overlay = ensureHighlightOverlay();
     if (!overlay) {
-        console.warn("Polling loop: Overlay disappeared, stopping.");
+        // console.warn("Polling loop: Overlay disappeared, stopping."); // Keep this one
         stopPlaybackAndResetState(); // Stop if overlay vanishes
         return;
     }
@@ -74,7 +74,7 @@ function pollingLoop(timestamp) {
     const currentSentenceIdx = state.currentSentenceIndex;
     if (currentSentenceIdx >= 0) {
         // console.log(`[Polling Loop] Update Sentence Coords for index: ${currentSentenceIdx}`); // Reduce noise
-        updateSentenceHighlightCoordinates(currentSentenceIdx);
+        updateActiveSentenceHighlighting(currentSentenceIdx);
 
         // Update the *state variable* for current highlighted sentence ID only if it changes during playback
         if (state.isPlaying) {
@@ -86,9 +86,9 @@ function pollingLoop(timestamp) {
         }
     } else {
         // Ensure sentence highlight is cleared if index is invalid (e.g., after stop)
-        // updateSentenceHighlightCoordinates handles index < 0 internally
+        // updateActiveSentenceHighlighting handles index < 0 internally
          // console.log(`[Polling Loop] Clearing Sentence Coords (index: ${currentSentenceIdx})`); // Reduce noise
-         updateSentenceHighlightCoordinates(-1); // Explicitly clear if index is invalid? Redundant?
+         updateActiveSentenceHighlighting(-1); // Explicitly clear if index is invalid? Redundant?
     }
 
     // --- Request next frame ---
@@ -96,7 +96,7 @@ function pollingLoop(timestamp) {
     if (state.isPlaying || activeSegmentForWordHighlight || currentSentenceIdx >=0 || state.hoveredSentenceId !== null) {
          state.setState({ animationFrameId: requestAnimationFrame(pollingLoop) });
     } else {
-         console.log("[Polling Loop] Conditions met to stop polling (not playing, no active word/sentence/hover).");
+         // console.log("[Polling Loop] Conditions met to stop polling (not playing, no active word/sentence/hover)."); // Keep this one
          state.setState({ animationFrameId: null }); // Stop the loop if truly idle
     }
 }
@@ -147,11 +147,15 @@ function handleTimeUpdate() {
 export function startSyncLoop() {
     console.log("[startSyncLoop] Sync loop initiated.");
     if (state.animationFrameId === null) {
-        console.log("[startSyncLoop] animationFrameId is null, starting pollingLoop.");
-        // Start polling immediately
-        pollingLoop(); 
+        if (state.isPlaying) {
+            console.log("[startSyncLoop] Player is playing, starting continuous pollingLoop.");
+            pollingLoop(); // Start continuous loop if playing
+        } else {
+            console.log("[startSyncLoop] Player is NOT playing, starting ONE frame of pollingLoop.");
+            requestAnimationFrame(pollingLoop); // Start only ONE frame if not playing (e.g., after jump)
+        }
     } else {
-        console.log("[startSyncLoop] Loop already running? ID:", state.animationFrameId);
+        console.log("[startSyncLoop] Loop already running or requested. ID:", state.animationFrameId);
     }
 }
 

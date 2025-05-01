@@ -1,13 +1,58 @@
 import * as state from './pageState.js';
 import { requestSentenceAudio } from './backgroundComms.js';
 import { startSyncLoop, stopSyncLoop } from './syncEngine.js';
-import { clearHighlights, updateActiveSentenceHighlighting } from './coordManager.js';
+import { clearHighlights, updateActiveSentenceHighlighting, updateWordHighlightCoordinates } from './coordManager.js';
 import { updatePlayPauseButtonState, showSkipButtons, hideSkipButtons } from './domUtils.js';
 
 // --- Playback Control & Sentence Logic ---
 
 // Keep track of the current Object URL to revoke it later
 let currentAudioObjectURL = null;
+
+// Stops current audio player, clears flags, but leaves playbackIntended and currentSentenceIndex intact.
+function stopCurrentAudio() {
+    console.log("[stopCurrentAudio] Stopping current audio track...");
+    stopSyncLoop(); // Stop polling
+
+    if (state.audioPlayer) {
+        try {
+            if (!state.audioPlayer.paused) {
+                state.audioPlayer.pause();
+            }
+            state.audioPlayer.removeEventListener('ended', handleAudioEnded);
+            state.audioPlayer.removeEventListener('error', handleAudioError);
+            state.audioPlayer.removeEventListener('play', handleAudioPlay);
+            state.audioPlayer.removeEventListener('pause', handleAudioPause);
+            state.audioPlayer.src = '';
+            console.log("[stopCurrentAudio] Audio player listeners removed and src cleared.");
+        } catch (e) {
+            console.error("[stopCurrentAudio] Error cleaning up audio player:", e);
+        }
+    }
+
+    if (currentAudioObjectURL) {
+        console.log(`[stopCurrentAudio] Revoking Object URL: ${currentAudioObjectURL}`);
+        URL.revokeObjectURL(currentAudioObjectURL);
+        currentAudioObjectURL = null;
+    }
+
+    // Clear only momentary playback state
+    state.setState({
+        audioPlayer: null,
+        currentWordTimestamps: [],
+        isPlaying: false, // Actual player state is false now
+        // playbackIntended: state.playbackIntended, // <<< DO NOT CHANGE INTENTION HERE
+        nextAudioData: null,
+        lastWordElement: null,
+        isStoppingOnError: false,
+        bufferedPausedAudio: null,
+        shouldAutoplayNext: false // Reset this flag for the next cycle
+    });
+
+    updateWordHighlightCoordinates(null); // Clear word highlight
+
+    console.log("[stopCurrentAudio] Finished stopping current audio.");
+}
 
 // Exported for UI attachment in entry.js
 export function handlePlayPauseClick() {
@@ -16,85 +61,100 @@ export function handlePlayPauseClick() {
       console.warn("[handlePlayPauseClick] Ignored - Not initialized yet.");
       return;
   }
-  
-  if (!state.isPlaying) {
-      if (state.currentSentenceIndex === -1) {
-           updatePlayPauseButtonState('loading');
-           initiateTTS(0);
-      } else {
-          if (state.audioPlayer && state.audioPlayer.paused) {
-              state.audioPlayer.play().catch(handleAudioError);
-          } else {
-             console.warn("Play clicked but audio player not paused? Re-initiating.");
-             updatePlayPauseButtonState('loading');
-             initiateTTS(state.currentSentenceIndex);
-          }
-      }
+
+  if (!state.playbackIntended) { // Check INTENTION, not momentary state
+      // --- User wants to START or RESUME --- 
+      state.setState({ playbackIntended: true }); // Set intention to play
+      const indexToPlay = state.currentSentenceIndex === -1 ? 0 : state.currentSentenceIndex;
+      console.log(`[handlePlayPauseClick] Setting intention to PLAY. Determined indexToPlay: ${indexToPlay}`);
+      playSentence(indexToPlay, true); // Always trigger play
   } else {
-      if (state.audioPlayer) {
+      // --- User wants to PAUSE --- 
+      state.setState({ playbackIntended: false }); // Set intention to pause
+      if (state.audioPlayer && !state.audioPlayer.paused) {
+          console.log(`[handlePlayPauseClick] User pausing audio for sentence ${state.currentSentenceIndex}`);
           state.audioPlayer.pause();
+          // Explicitly set momentary state on user pause action
+          state.setState({ isPlaying: false }); 
+          updatePlayPauseButtonState('paused');
+      } else {
+          // If player doesn't exist or already paused, ensure state is consistent
+          console.log(`[handlePlayPauseClick] Pause clicked, but player not active. Ensuring state is paused.`);
+          state.setState({ isPlaying: false });
+          updatePlayPauseButtonState('paused');
       }
   }
 }
 
-// Exported for starting playback
-export function initiateTTS(startIndex = 0) { 
-  console.log(`Requesting TTS start from index: ${startIndex}`);
+// Unified function: Handles starting, resuming, skipping, clicking.
+export function playSentence(targetIndex, shouldPlay) {
+    console.log(`[playSentence] Called with targetIndex: ${targetIndex}, shouldPlay: ${shouldPlay}`);
 
-  // TODO: Re-evaluate if re-initialization is the right approach here
-  if (state.sentenceSegments.length === 0) {
-      console.error("[initiateTTS] No sentences available. Requires initialization.");
-      // Perhaps call a function from init.js? 
-      // initializeExtensionFeatures(); // Avoid calling the old monolithic function
-      stopPlaybackAndResetState();
-      return;
-  }
-
-  stopPlaybackAndResetState();
-  
-  if (startIndex < 0 || startIndex >= state.sentenceSegments.length) {
-      console.warn(`[initiateTTS] Invalid startIndex ${startIndex}. Defaulting to 0.`);
-      startIndex = 0;
-  }
-  state.setState({ currentSentenceIndex: startIndex });
-
-  updatePlayPauseButtonState('loading');
-
-  requestSentenceAudio(state.currentSentenceIndex);
-}
-
-// Internal handler for receiving audio from backgroundComms
-export function handleReceivedAudio(index, audioObjectURL, timestamps) {
-    console.log(`Received audio object URL and ${timestamps?.length || 0} timestamps for sentence index ${index}`);
-    console.log(`[DEBUG] Timestamps received for sentence ${index}:`, JSON.parse(JSON.stringify(timestamps)));
-    console.log(`[DEBUG] Received Object URL: ${audioObjectURL}`);
-    
-    if (!audioObjectURL || !timestamps) {
-        console.error("Received incomplete audio data (missing URL or timestamps) for sentence:", index);
-        if (index === state.currentSentenceIndex) stopPlaybackAndResetState(); // Stop if error on current sentence
+    if (state.sentenceSegments.length === 0) {
+        console.error("[playSentence] No sentences available. Requires initialization.");
+        stopPlaybackAndResetState(); // Full reset needed
         return;
     }
 
-    // Store ObjectURL along with timestamps
+    // Stop current audio gently (clears isPlaying, but not playbackIntended)
+    stopCurrentAudio();
+
+    // Validate target index
+    if (targetIndex < 0 || targetIndex >= state.sentenceSegments.length) {
+        console.error(`[playSentence] Invalid targetIndex ${targetIndex}. Bounds are 0-${state.sentenceSegments.length - 1}. Stopping.`);
+        stopPlaybackAndResetState(); // Full reset needed
+        return;
+    }
+
+    // Update state and highlight BEFORE loading
+    console.log(`[playSentence] Setting index ${targetIndex} and updating sentence highlight.`);
+    state.setState({ currentSentenceIndex: targetIndex });
+    updateActiveSentenceHighlighting(targetIndex);
+    startSyncLoop(); // Ensure one frame runs for the highlight update
+
+    // Show loading state UI
+    updatePlayPauseButtonState('loading');
+    showSkipButtons();
+
+    // Set flag to control auto-play based on the shouldPlay argument
+    console.log(`[playSentence] Setting shouldAutoplayNext flag to: ${shouldPlay}`);
+    state.setState({ shouldAutoplayNext: shouldPlay });
+
+    // Request the audio
+    console.log(`[playSentence] Requesting audio for index ${targetIndex}.`);
+    requestSentenceAudio(targetIndex);
+}
+
+
+// Internal handler for receiving audio from backgroundComms
+export function handleReceivedAudio(index, audioObjectURL, timestamps) {
+    // ... (remains the same, relies on shouldAutoplayNext)
+    console.log(`Received audio object URL and ${timestamps?.length || 0} timestamps for sentence index ${index}`);
+
+    if (!audioObjectURL || !timestamps) {
+        console.error("Received incomplete audio data (missing URL or timestamps) for sentence:", index);
+        if (index === state.currentSentenceIndex) stopPlaybackAndResetState();
+        return;
+    }
+
+    if (index !== state.currentSentenceIndex) {
+        console.warn(`[handleReceivedAudio] Received audio for unexpected index ${index} (current target: ${state.currentSentenceIndex}). Revoking URL.`);
+        URL.revokeObjectURL(audioObjectURL);
+        return;
+    }
+
     const audioData = { sentenceIndex: index, audioObjectURL: audioObjectURL, wordTimestamps: timestamps };
 
-    if (index === state.currentSentenceIndex) {
-        // If received for the sentence we are currently supposed to play
-        if (!state.isPlaying) {
-            playAudio(audioData.audioObjectURL, audioData.wordTimestamps);
-        } else {
-            console.warn(`Received audio for current index ${index} while playing. Storing as next.`);
-            state.setState({ nextAudioData: audioData }); 
-        }
-    } 
-    else if (index === state.currentSentenceIndex + 1) {
-        console.log(`[PRE-FETCH] Storing data (ObjectURL) for next sentence ${index}.`);
-        state.setState({ nextAudioData: audioData });
-    } 
-    else {
-        // Revoke unexpected URL immediately?
-        console.warn(`Received audio for unexpected index ${index} (current: ${state.currentSentenceIndex}). Revoking URL.`);
-        if (audioObjectURL) URL.revokeObjectURL(audioObjectURL);
+    console.log(`[handleReceivedAudio] Received audio for current target index ${index}. Checking shouldAutoplayNext: ${state.shouldAutoplayNext}`);
+
+    if (state.shouldAutoplayNext) {
+        console.log(`[handleReceivedAudio] Autoplaying audio immediately for index ${index}.`);
+        state.setState({ shouldAutoplayNext: false });
+        playAudio(audioData.audioObjectURL, audioData.wordTimestamps);
+    } else {
+        console.log(`[handleReceivedAudio] Buffering audio for paused state index ${index}.`);
+        state.setState({ bufferedPausedAudio: audioData });
+        updatePlayPauseButtonState('paused');
     }
 }
 
@@ -102,62 +162,51 @@ export function handleReceivedAudio(index, audioObjectURL, timestamps) {
 
 function handleAudioPlay() {
     console.log(`Playback started/resumed for sentence ${state.currentSentenceIndex}`);
-    if (!state.hasPlaybackStartedEver) {
-        state.setState({ hasPlaybackStartedEver: true });
-        showSkipButtons(); // Show buttons on first play
-    }
-    state.setState({ isPlaying: true });
+    // isPlaying reflects the actual player state
+    state.setState({
+        isPlaying: true,
+        // playbackIntended remains true (or was set by user)
+        shouldAutoplayNext: false,
+        bufferedPausedAudio: null
+    });
     updatePlayPauseButtonState('playing');
     startSyncLoop();
 }
 
 function handleAudioPause() {
-  console.log('Playback paused for sentence', state.currentSentenceIndex);
-  state.setState({ isPlaying: false });
-  updatePlayPauseButtonState('paused');
+  // Log only, state managed by explicit actions
+  console.log(`[DEBUG] Audio pause event fired for player. Current isPlaying: ${state.isPlaying}, playbackIntended: ${state.playbackIntended}, player ended: ${state.audioPlayer?.ended}`);
 }
 
 function handleAudioEnded() {
     console.log(`Audio finished for sentence ${state.currentSentenceIndex}`);
-    
-    // ** Revoke the Object URL for the track that just finished **
+
     if (currentAudioObjectURL) {
         console.log(`[Revoke] Revoking Object URL: ${currentAudioObjectURL}`);
         URL.revokeObjectURL(currentAudioObjectURL);
         currentAudioObjectURL = null;
     }
 
+    // Momentarily set isPlaying false
     state.setState({ isPlaying: false, currentWordTimestamps: [] });
-    stopSyncLoop(); 
-    
-    console.log(`[AUDIO END] Checking nextAudioData:`, state.nextAudioData);
+    stopSyncLoop();
 
     const expectedNextIndex = state.currentSentenceIndex + 1;
-    const bufferedData = state.nextAudioData;
 
-    if (bufferedData && bufferedData.sentenceIndex === expectedNextIndex) {
-        console.log(`[AUDIO END] Found buffered audio (ObjectURL) for next sentence ${expectedNextIndex}.`);
-        state.setState({ currentSentenceIndex: expectedNextIndex, nextAudioData: null });
-        updateActiveSentenceHighlighting(state.currentSentenceIndex); // Use coordManager function
-        // ** Pass the ObjectURL from buffered data **
-        playAudio(bufferedData.audioObjectURL, bufferedData.wordTimestamps); 
-    } 
-    else if (expectedNextIndex < state.sentenceSegments.length) {
-         console.log(`[AUDIO END] No buffered audio for sentence ${expectedNextIndex}. Waiting...`);
-         state.setState({ currentSentenceIndex: expectedNextIndex });
-         updateActiveSentenceHighlighting(state.currentSentenceIndex); // Update highlight even if waiting
-         updatePlayPauseButtonState('loading');
-    } 
-    else { 
+    if (expectedNextIndex < state.sentenceSegments.length) {
+        console.log(`[AUDIO END] Proceeding to next sentence: ${expectedNextIndex}`);
+        // *** Automatically proceed based on the USER'S INTENTION ***
+        playSentence(expectedNextIndex, state.playbackIntended);
+    } else {
         console.log("[AUDIO END] Finished playing all sentences.");
-        stopPlaybackAndResetState();
+        stopPlaybackAndResetState(); // This will set playbackIntended = false
     }
 }
 
 function handleAudioError(event) {
+    // ... (remains the same, calls stopPlaybackAndResetState which handles flags)
     console.error(`Audio playback error during sentence ${state.currentSentenceIndex}:`, event);
-    
-    // ** Revoke the Object URL if an error occurred **
+
     if (currentAudioObjectURL) {
         console.log(`[Revoke on Error] Revoking Object URL: ${currentAudioObjectURL}`);
         URL.revokeObjectURL(currentAudioObjectURL);
@@ -170,33 +219,33 @@ function handleAudioError(event) {
     }
     state.setState({ isStoppingOnError: true });
 
-    stopSyncLoop(); 
-    
+    stopSyncLoop();
+
     if (state.audioPlayer && state.audioPlayer.error) {
         console.error("MediaError details:", state.audioPlayer.error);
-    } else if (event.errorDetails) { 
+    } else if (event.errorDetails) {
          console.error("Promise rejection details:", event.errorDetails);
     }
-    
-    stopPlaybackAndResetState(); // This will reset isStoppingOnError
+
+    stopPlaybackAndResetState();
     updatePlayPauseButtonState('error');
 }
 
-// Internal function to play audio
+// Internal function to play audio - called by handleReceivedAudio
 function playAudio(audioObjectURL, timestamps) {
+   // ... (playAudio remains the same - sets up player, calls .play())
   console.log(`playAudio called for sentence ${state.currentSentenceIndex} with ${timestamps.length} timestamps.`);
   console.log(`  > Object URL: ${audioObjectURL}`);
-  
-  // --- Cleanup old player & Revoke previous URL if any --- 
+
   if (state.audioPlayer) {
-      console.warn("[playAudio] Existing audioPlayer found, attempting cleanup first.");
+      console.warn("[playAudio] Existing audioPlayer found, attempting cleanup *again* (should have been done by stopCurrentAudio).");
       try {
         if (!state.audioPlayer.paused) state.audioPlayer.pause();
         state.audioPlayer.removeEventListener('ended', handleAudioEnded);
         state.audioPlayer.removeEventListener('error', handleAudioError);
-        state.audioPlayer.removeEventListener('play', handleAudioPlay); 
+        state.audioPlayer.removeEventListener('play', handleAudioPlay);
         state.audioPlayer.removeEventListener('pause', handleAudioPause);
-        state.audioPlayer.src = ''; // Release resource
+        state.audioPlayer.src = '';
       } catch(e) { console.error("Error cleaning up old audio player:", e); }
       state.setState({ audioPlayer: null });
   }
@@ -205,89 +254,89 @@ function playAudio(audioObjectURL, timestamps) {
       URL.revokeObjectURL(currentAudioObjectURL);
       currentAudioObjectURL = null;
   }
-  // ------------------------------------------------------
 
   console.log("Creating new Audio element...");
-  const newPlayer = new Audio(); 
-  
-  // Attach mandatory listeners
+  const newPlayer = new Audio();
+
   newPlayer.addEventListener('ended', handleAudioEnded);
   newPlayer.addEventListener('error', handleAudioError);
-  newPlayer.addEventListener('play', handleAudioPlay); 
+  newPlayer.addEventListener('play', handleAudioPlay);
   newPlayer.addEventListener('pause', handleAudioPause);
-  
-  // Add other debug listeners if needed
+
   newPlayer.addEventListener('loadstart', () => console.log(`Audio event: loadstart for ${state.currentSentenceIndex}`));
   newPlayer.addEventListener('loadeddata', () => console.log(`Audio event: loadeddata for ${state.currentSentenceIndex}`));
 
-  // Store timestamps, player, and **the new Object URL** in state/module scope
-  state.setState({ 
-      audioPlayer: newPlayer, 
-      currentWordTimestamps: timestamps 
+  state.setState({
+      audioPlayer: newPlayer,
+      currentWordTimestamps: timestamps
   });
-  currentAudioObjectURL = audioObjectURL; // Track the URL being used
-  
-  console.log(`Setting audioPlayer.src for sentence ${state.currentSentenceIndex} to ObjectURL`);
-  newPlayer.src = audioObjectURL; // ** Use the Object URL **
-  
-  console.log(`Calling audioPlayer.play() for sentence ${state.currentSentenceIndex}`);
-  newPlayer.play().catch(handleAudioError); // Catch potential play() promise rejection
+  currentAudioObjectURL = audioObjectURL;
 
-  // Pre-fetch next sentence if applicable
+  console.log(`Setting audioPlayer.src for sentence ${state.currentSentenceIndex} to ObjectURL`);
+  newPlayer.src = audioObjectURL;
+
+  console.log(`Calling audioPlayer.play() for sentence ${state.currentSentenceIndex}`);
+  if (state.playbackRate) {
+      console.log(`[playAudio] Setting playbackRate to ${state.playbackRate}`);
+      newPlayer.playbackRate = state.playbackRate;
+  }
+  newPlayer.play().catch(handleAudioError);
+
   const nextIndex = state.currentSentenceIndex + 1;
-  if (nextIndex < state.sentenceSegments.length && !state.nextAudioData) { // Only fetch if not already buffered
+  if (nextIndex < state.sentenceSegments.length && !state.nextAudioData) {
+      console.log(`[playAudio] Requesting pre-fetch for next sentence: ${nextIndex}`);
       requestSentenceAudio(nextIndex);
   }
 }
 
 // Exported for resetting state from other modules
+// This function FULLY stops everything and resets intention.
 export function stopPlaybackAndResetState() {
     console.log("Stopping playback and resetting state.");
-    
-    // ** Revoke the current Object URL if playback is stopped **
+
     if (currentAudioObjectURL) {
         console.log(`[Revoke on Stop] Revoking Object URL: ${currentAudioObjectURL}`);
         URL.revokeObjectURL(currentAudioObjectURL);
         currentAudioObjectURL = null;
     }
-    
+
     if (state.audioPlayer) {
         try {
              if (!state.audioPlayer.paused) {
-                state.audioPlayer.pause(); 
+                state.audioPlayer.pause();
             }
-            // Remove listeners on the current instance
             state.audioPlayer.removeEventListener('ended', handleAudioEnded);
             state.audioPlayer.removeEventListener('error', handleAudioError);
-            state.audioPlayer.removeEventListener('play', handleAudioPlay); 
+            state.audioPlayer.removeEventListener('play', handleAudioPlay);
             state.audioPlayer.removeEventListener('pause', handleAudioPause);
-            state.audioPlayer.src = ''; // Attempt to release resource
+            state.audioPlayer.src = '';
 
             console.log("[Reset] Audio player listeners removed and src cleared.");
         } catch (e) {
             console.error("[Reset] Error cleaning up audio player:", e);
         }
     }
-    stopSyncLoop(); // Stop polling
-    hideSkipButtons(); // Hide skip buttons on full stop/reset
+    stopSyncLoop();
+    hideSkipButtons();
 
-    // Update state using setState
+    // *** Reset ALL relevant state, including intention ***
     state.setState({
         audioPlayer: null,
         currentWordTimestamps: [],
         isPlaying: false,
-        currentSentenceIndex: -1, 
+        playbackIntended: false, // Reset intention on full stop
+        currentSentenceIndex: -1,
         nextAudioData: null,
         lastWordElement: null,
         currentHighlightedSentenceId: null,
-        isStoppingOnError: false, // Ensure this is reset
-        hasPlaybackStartedEver: false // Reset the flag
+        isStoppingOnError: false,
+        shouldAutoplayNext: false,
+        bufferedPausedAudio: null
     });
 
-    updatePlayPauseButtonState('idle'); // Set idle state on stop/reset
+    updatePlayPauseButtonState('idle');
 
-    // Clear highlights slightly after state reset to ensure loop has stopped
-    setTimeout(clearHighlights, 50); 
+    setTimeout(clearHighlights, 50);
 }
 
 // --- NEW: Function to jump between sentences when paused ---

@@ -47,10 +47,16 @@ export function injectWidget() {
     const widget = document.createElement('div');
     widget.id = 'kokoro-tts-widget';
     widget.innerHTML = `
-      <button id="kokoro-skip-prev-button" title="Previous Sentence" class="kokoro-skip-button-hidden">&lt;&lt;</button>
-      <button id="kokoro-play-pause-button">Play</button>
-      <button id="kokoro-skip-next-button" title="Next Sentence" class="kokoro-skip-button-hidden">&gt;&gt;</button>
-      <span>Kokoro TTS</span>
+      <div class="kokoro-widget-row kokoro-widget-main-controls">
+          <button id="kokoro-play-pause-button">Play</button>
+      </div>
+      <div class="kokoro-widget-row kokoro-widget-skip-controls">
+          <button id="kokoro-skip-prev-button" class="kokoro-skip-button kokoro-skip-button-hidden" title="Previous Sentence">&lt;&lt;</button> 
+          <button id="kokoro-skip-next-button" class="kokoro-skip-button kokoro-skip-button-hidden" title="Next Sentence">&gt;&gt;</button>
+      </div>
+      <div class="kokoro-widget-row kokoro-widget-label">
+          <span>Kokoro TTS</span>
+      </div>
     `;
     
     widgetContainer.appendChild(widget);
@@ -64,7 +70,7 @@ export function injectWidget() {
     console.log("Widget Injected.");
   }
 
-// --- NEW: Function to update Play/Pause Button State ---
+// --- Function to update Play/Pause Button State ---
 export function updatePlayPauseButtonState(stateString) {
     const button = document.getElementById('kokoro-play-pause-button');
     if (!button) return; 
@@ -72,31 +78,40 @@ export function updatePlayPauseButtonState(stateString) {
     // Disable button during loading or if API key missing to prevent clicks
     button.disabled = (stateString === 'loading' || stateString === 'apiKeyError');
 
+    // Show skip buttons when loading starts (user initiated playback)
+    if (stateString === 'loading') {
+        showSkipButtons(); 
+    }
+
     switch(stateString) {
         case 'loading':
             button.textContent = 'Loading...';
             break;
         case 'playing':
             button.textContent = 'Pause'; // Or Pause Icon ⏸️
+            button.disabled = false; // Ensure enabled when playing
             break;
         case 'paused':
             button.textContent = 'Play'; // Or Play Icon ▶️
+            button.disabled = false; // Ensure enabled when paused
             break;
         case 'error':
             button.textContent = 'Error'; // Or Error Icon ❌
+            button.disabled = false; // Allow retry potentially
             break;
         case 'apiKeyError':
             button.textContent = 'API Key?'; // Or Key Icon 🔑
+            // Keep disabled
             break;
         case 'idle':
         default:
             button.textContent = 'Play'; // Or Play Icon ▶️
             button.disabled = false; // Ensure enabled when idle/ready
+            // Keep skip buttons hidden when idle (handled by stopPlaybackAndResetState calling hideSkipButtons)
             break;
     }
     console.log(`[UI Update] Play/Pause button state set to: ${stateString}`);
 }
-// --------------------------------------------------------
 
 // --- NEW: Skip Button Visibility Helpers ---
 export function showSkipButtons() {
