@@ -34,6 +34,16 @@ export let bufferedPausedAudio = null; // { sentenceIndex, audioObjectURL, wordT
 // NEW: Flag to indicate if the next received audio should play automatically
 export let shouldAutoplayNext = false;
 
+// T19: Voice selection state
+export let selectedVoiceId = 'kokoro-82m'; // Default voice ID
+
+// T20: Playback speed state
+export let playbackRate = 1.0; // Default playback rate
+
+// T18: Estimated reading time
+export let estimatedReadingTimeMinutes = 0; // Estimated reading time in minutes
+export let totalWordCount = 0; // Total number of words in the content
+
 // Function to allow modules to update state variables
 // This is a simple approach; more complex state management could be used later if needed.
 export function setState(newState) {
@@ -57,4 +67,8 @@ export function setState(newState) {
     if (newState.lastWordElement !== undefined) lastWordElement = newState.lastWordElement;
     if (newState.bufferedPausedAudio !== undefined) bufferedPausedAudio = newState.bufferedPausedAudio;
     if (newState.shouldAutoplayNext !== undefined) shouldAutoplayNext = newState.shouldAutoplayNext;
+    if (newState.selectedVoiceId !== undefined) selectedVoiceId = newState.selectedVoiceId;
+    if (newState.playbackRate !== undefined) playbackRate = newState.playbackRate;
+    if (newState.estimatedReadingTimeMinutes !== undefined) estimatedReadingTimeMinutes = newState.estimatedReadingTimeMinutes;
+    if (newState.totalWordCount !== undefined) totalWordCount = newState.totalWordCount;
 } 

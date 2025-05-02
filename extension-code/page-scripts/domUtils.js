@@ -34,102 +34,153 @@ export function injectWidget() {
     const widgetExists = document.getElementById('kokoro-tts-widget');
     if (widgetExists) {
       console.log("Widget already exists.");
-      return;
+      return widgetExists;
     }
   
     if (!document.body) {
         console.error("document.body not found, cannot inject widget yet.");
-        return;
+        return null;
     }
   
-    const widgetContainer = document.createElement('div');
-    widgetContainer.id = 'kokoro-tts-widget-container'; 
+    // Create the main positioning container (level 1)
+    const container = document.createElement('div');
+    container.id = 'kokoro-tts-widget-container';
+    
+    // Create the visual styling container (level 2)
+    const outerContainer = document.createElement('div');
+    outerContainer.id = 'kokoro-tts-widget-outer';
+    container.appendChild(outerContainer);
+    
+    // Create the content layout container (level 3)
     const widget = document.createElement('div');
     widget.id = 'kokoro-tts-widget';
+    widget.dataset.layout = 'V'; // Default to Vertical
+    widget.dataset.playback = 'idle';
+    widget.dataset.hover = 'false';
+    outerContainer.appendChild(widget);
+
+    // Define the HTML structure based on the new design spec
     widget.innerHTML = `
-      <div class="kokoro-widget-row kokoro-widget-main-controls">
-          <button id="kokoro-play-pause-button">Play</button>
-      </div>
-      <div class="kokoro-widget-row kokoro-widget-skip-controls">
-          <button id="kokoro-skip-prev-button" class="kokoro-skip-button kokoro-skip-button-hidden" title="Previous Sentence">&lt;&lt;</button> 
-          <button id="kokoro-skip-next-button" class="kokoro-skip-button kokoro-skip-button-hidden" title="Next Sentence">&gt;&gt;</button>
-      </div>
-      <div class="kokoro-widget-row kokoro-widget-label">
-          <span>Kokoro TTS</span>
-      </div>
+        <!-- Vertical Layout Container -->
+        <div class="kokoro-v-layout">
+
+            <!-- Top Section (Time) -->
+            <div class="kokoro-v-section kokoro-v-time">
+                <span id="kokoro-time-display" class="kokoro-time-text">--:--</span>
+            </div>
+
+            <!-- Main Control Section (Play/Pause, Spinner) -->
+            <div class="kokoro-v-section kokoro-v-main-control">
+                <button id="kokoro-play-pause-button" class="kokoro-play-pause" aria-label="Play">
+                    <!-- SVG icons will be injected via CSS background or JS -->
+                    <div class="kokoro-progress-ring"></div> 
+                    <span class="kokoro-icon kokoro-play-icon"></span>
+                    <span class="kokoro-icon kokoro-pause-icon"></span>
+                    <span class="kokoro-icon kokoro-loading-spinner"></span>
+                    <span class="kokoro-icon kokoro-error-icon"></span>
+                </button>
+            </div>
+
+            <!-- Skip Controls Section -->
+            <div class="kokoro-v-section kokoro-v-skip-controls">
+                <button id="kokoro-skip-prev-button" class="kokoro-skip-button" aria-label="Skip Back">
+                    <span class="kokoro-icon kokoro-skip-back-icon"></span>
+                    <!-- &lt;&lt; -->
+                </button>
+                <button id="kokoro-skip-next-button" class="kokoro-skip-button" aria-label="Skip Forward">
+                     <span class="kokoro-icon kokoro-skip-fwd-icon"></span>
+                    <!-- &gt;&gt; -->
+                </button>
+            </div>
+
+            <!-- Divider (Optional, shown in some states) -->
+            <hr class="kokoro-v-divider" /> 
+
+            <!-- Voice & Speed Section -->
+            <div class="kokoro-v-section kokoro-v-voice-speed">
+                <button id="kokoro-voice-button" class="kokoro-voice-avatar" aria-label="Select Voice">
+                    <!-- Avatar IMG placeholder -->
+                </button>
+                <button id="kokoro-speed-button" class="kokoro-speed-chip" aria-label="Select Speed">
+                    1.0x
+                </button>
+            </div>
+
+            <!-- Hover Controls Section (Initially hidden) -->
+            <div class="kokoro-v-section kokoro-v-hover-controls">
+                 <button id="kokoro-library-add-button" class="kokoro-hover-button" aria-label="Add to Library">
+                     <span class="kokoro-icon kokoro-library-add-icon"></span> 
+                     <span class="kokoro-icon kokoro-library-added-icon"></span> 
+                 </button>
+                 <button id="kokoro-library-open-button" class="kokoro-hover-button" aria-label="Open Library">
+                     <span class="kokoro-icon kokoro-library-open-icon"></span>
+                 </button>
+                 <button id="kokoro-help-button" class="kokoro-hover-button" aria-label="Help / Report Issue">
+                     <span class="kokoro-icon kokoro-help-icon"></span>
+                 </button>
+                 <button id="kokoro-settings-button" class="kokoro-hover-button" aria-label="Settings">
+                     <span class="kokoro-icon kokoro-settings-icon"></span>
+                 </button>
+                 <button id="kokoro-upgrade-button" class="kokoro-hover-button kokoro-upgrade-button" aria-label="Upgrade">
+                     <span class="kokoro-icon kokoro-upgrade-icon"></span>
+                 </button>
+            </div>
+
+             <!-- Close Button (Optional, maybe only shown on hover?) -->
+             <button id="kokoro-close-button" class="kokoro-close-button" aria-label="Close Widget">
+                 <span class="kokoro-icon kokoro-close-icon"></span>
+             </button>
+
+        </div> 
+        
+        <!-- Horizontal Layout Container (Structure placeholder, styling later) -->
+        <div class="kokoro-h-layout">
+            <!-- Placeholder for Horizontal elements -->
+        </div>
     `;
-    
-    widgetContainer.appendChild(widget);
-    document.body.appendChild(widgetContainer);
-  
+
+    // Add the entire container structure to the document body
+    document.body.appendChild(container);
+
+    // Initial state setup (e.g., disable button if needed)
     const playPauseButton = document.getElementById('kokoro-play-pause-button');
     if (playPauseButton) {
-        playPauseButton.disabled = true; // Start disabled
-        // TODO: Attach handlePlayPauseClick listener (will be imported in entry.js)
+        playPauseButton.disabled = false; // Enable by default, state logic will disable if needed
     }
-    console.log("Widget Injected.");
-  }
+    console.log("Widget Injected with new nested container structure.");
+    
+    return widget;
+}
 
 // --- Function to update Play/Pause Button State ---
 export function updatePlayPauseButtonState(stateString) {
-    const button = document.getElementById('kokoro-play-pause-button');
-    if (!button) return; 
+    const widget = document.getElementById('kokoro-tts-widget');
+    if (!widget) return;
 
-    // Disable button during loading or if API key missing to prevent clicks
-    button.disabled = (stateString === 'loading' || stateString === 'apiKeyError');
+    // Set the data-playback attribute on the root element
+    widget.dataset.playback = stateString;
 
-    // Show skip buttons when loading starts (user initiated playback)
-    if (stateString === 'loading') {
-        showSkipButtons(); 
+    // Optionally disable the main button (e.g., during loading?)
+    // const button = document.getElementById('kokoro-play-pause-button');
+    // if (button) {
+    //    button.disabled = (stateString === 'loading'); 
+    // }
+
+    console.log(`[UI Update] Widget playback state set to: ${stateString}`);
+
+    // Hide/Show skip buttons based on state (can refine this)
+    if (stateString === 'idle' || stateString === 'error') {
+        // Maybe hide skips?
+        // hideSkipButtons(); // Let CSS handle this based on data-playback
+    } else {
+        // showSkipButtons(); // Let CSS handle this based on data-playback
     }
-
-    switch(stateString) {
-        case 'loading':
-            button.textContent = 'Loading...';
-            break;
-        case 'playing':
-            button.textContent = 'Pause'; // Or Pause Icon ⏸️
-            button.disabled = false; // Ensure enabled when playing
-            break;
-        case 'paused':
-            button.textContent = 'Play'; // Or Play Icon ▶️
-            button.disabled = false; // Ensure enabled when paused
-            break;
-        case 'error':
-            button.textContent = 'Error'; // Or Error Icon ❌
-            button.disabled = false; // Allow retry potentially
-            break;
-        case 'apiKeyError':
-            button.textContent = 'API Key?'; // Or Key Icon 🔑
-            // Keep disabled
-            break;
-        case 'idle':
-        default:
-            button.textContent = 'Play'; // Or Play Icon ▶️
-            button.disabled = false; // Ensure enabled when idle/ready
-            // Keep skip buttons hidden when idle (handled by stopPlaybackAndResetState calling hideSkipButtons)
-            break;
-    }
-    console.log(`[UI Update] Play/Pause button state set to: ${stateString}`);
 }
 
-// --- NEW: Skip Button Visibility Helpers ---
-export function showSkipButtons() {
-    const prevButton = document.getElementById('kokoro-skip-prev-button');
-    const nextButton = document.getElementById('kokoro-skip-next-button');
-    if (prevButton) prevButton.classList.remove('kokoro-skip-button-hidden');
-    if (nextButton) nextButton.classList.remove('kokoro-skip-button-hidden');
-    console.log("[UI Update] Skip buttons shown.");
-}
-
-export function hideSkipButtons() {
-    const prevButton = document.getElementById('kokoro-skip-prev-button');
-    const nextButton = document.getElementById('kokoro-skip-next-button');
-    if (prevButton) prevButton.classList.add('kokoro-skip-button-hidden');
-    if (nextButton) nextButton.classList.add('kokoro-skip-button-hidden');
-    console.log("[UI Update] Skip buttons hidden.");
-}
-// ----------------------------------------
+// --- Skip Button Visibility Helpers (Likely REMOVE - CSS handles visibility) ---
+// export function showSkipButtons() { ... }
+// export function hideSkipButtons() { ... }
+// ---------------------------------------------------------------------------
 
 // --- Mutation Observer Logic ---
 function handleDOMMutations(mutationsList, observer) {

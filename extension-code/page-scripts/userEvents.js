@@ -86,3 +86,54 @@ export function handleSkipNext() {
     playSentence(targetIndex, state.playbackIntended);
 }
 // -------------------------------- 
+
+// --- Placeholder Handlers for New UI Controls ---
+
+export function handleLibraryAddClick() {
+    // Add/remove 'added' class for visual feedback (basic)
+    const button = document.getElementById('kokoro-library-add-button');
+    if (button) button.classList.toggle('added'); 
+    console.log("[Placeholder] Library Add/Remove Toggled");
+    // TODO: Implement actual logic to save/remove from library
+}
+
+export function handleLibraryOpenClick() {
+    console.log("[Placeholder] Open Library Clicked");
+    // TODO: Implement logic to open library view/tab
+}
+
+export function handleHelpClick() {
+    console.log("[Placeholder] Help Clicked");
+    // TODO: Implement logic to show help/report dialog
+}
+
+export function handleSettingsClick() {
+    console.log("[Placeholder] Settings Clicked");
+    // TODO: Implement logic to show settings panel
+}
+
+export function handleUpgradeClick() {
+    console.log("[Placeholder] Upgrade Clicked");
+    // TODO: Implement logic to show upgrade/paywall info
+}
+
+export function handleVoiceSelectClick() {
+    console.log("[Placeholder] Voice Select Clicked");
+    // TODO: Implement logic to show voice selection pop-out
+}
+
+export function handleSpeedSelectClick() {
+    console.log("[Placeholder] Speed Select Clicked");
+    // TODO: Implement logic to show speed selection pop-out
+}
+
+export function handleCloseWidgetClick() {
+    console.log("[Placeholder] Close Widget Clicked");
+    const widget = document.getElementById('kokoro-tts-widget');
+    if (widget) {
+        widget.style.display = 'none'; // Simple hide
+    }
+    // TODO: Add logic to potentially re-show later or persist closed state?
+}
+
+// -------------------------------- 

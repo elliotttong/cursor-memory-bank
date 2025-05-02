@@ -1,35 +1,202 @@
+/* ---------- Root variables ---------- */
+:root {
+    --gap: 8px;
+    --radius-big: 40px;
+    --radius-small: 16px;
+    --speed: 150ms;
+    
+    /* Glassmorphism settings */
+    --widget-width: 40px;
+    --widget-bg: rgba(30,32,35,0.65);
+    --widget-hover-bg: rgba(35,38,45,0.85);
+    --widget-border: rgba(255, 255, 255, 0.15);
+    --widget-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    --widget-inner-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
+    --icon-color: rgba(255, 255, 255, 0.8);
+    --hover-color: white;
+    --button-hover-bg: rgba(255, 255, 255, 0.15);
+    --button-active-bg: rgba(255, 255, 255, 0.2);
+    --transition-speed: 250ms;
+}
+
 /* Placeholder styles for the floating widget and highlights */
 
+/* Container structure - Level 1: Positioning */
 #kokoro-tts-widget-container {
     position: fixed;
     bottom: 20px;
     right: 20px;
-    z-index: 2147483647; /* Max z-index */
-    background-color: rgba(240, 240, 240, 0.9);
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    padding: 5px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    /* Ensure container allows flex children */
-    display: flex; 
+    z-index: 2147483647;
+    background: transparent;
+    cursor: move;
 }
 
+/* Container structure - Level 2: Visual styling */
+#kokoro-tts-widget-outer {
+    background: var(--widget-bg);
+    border-radius: 40px;
+    width: var(--widget-width);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--widget-border);
+    box-shadow: var(--widget-shadow), var(--widget-inner-shadow);
+    overflow: hidden;
+    transition: background var(--transition-speed) ease, 
+                box-shadow var(--transition-speed) ease,
+                border-color var(--transition-speed) ease;
+}
+
+/* Hover effects - more solid but not fully */
+#kokoro-tts-widget-outer:hover {
+    background: var(--widget-hover-bg);
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3), inset 0 0 0 1px rgba(255,255,255,0.12);
+}
+
+/* Container structure - Level 3: Content layout */
 #kokoro-tts-widget {
     display: flex;
-    flex-direction: column; /* Explicitly column */
+    flex-direction: column;
     align-items: center;
-    width: 100%; /* Ensure widget takes container width */
+    justify-content: center;
+    width: 100%;
+    padding: 10px 0;
+    gap: 10px;
+    text-align: center;
 }
 
+/* Style all sections to be vertically stacked with less bottom margin */
+.kokoro-v-layout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 12px; /* Increased spacing between sections */
+}
+
+/* Ensure all sections are properly centered with less bottom margin */
+.kokoro-v-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 2px;
+}
+
+/* Stack rows vertically with reduced margin */
+.kokoro-widget-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 4px;
+}
+
+/* Style for all buttons to ensure consistency */
 #kokoro-tts-widget button {
-    margin-right: 0;
-    padding: 5px 10px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    margin: 2px 0;
+    border: none;
+    border-radius: 50%;
+    background-color: transparent;
+    color: var(--icon-color);
     cursor: pointer;
-    background-color: #eee;
-    border: 1px solid #ccc;
-    border-radius: 3px;
+    transition: background-color var(--transition-speed) ease, 
+                transform var(--transition-speed) ease,
+                color var(--transition-speed) ease;
+    overflow: hidden; /* Ensure icons don't overflow */
 }
 
+/* Special style for play/pause button */
+#kokoro-play-pause-button {
+    width: 32px;
+    height: 32px;
+}
+
+/* Style for control sections - override previous definition */
+.kokoro-v-skip-controls,
+.kokoro-v-voice-speed,
+.kokoro-v-hover-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 6px;
+}
+
+/* Override for skip controls to be horizontal - SINGLE DEFINITION */
+.kokoro-v-skip-controls {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    gap: 2px; /* Very small gap between skip buttons */
+    margin: 0;
+}
+
+/* Style for speed selection - remove border and background */
+#kokoro-speed-button {
+    width: auto;
+    height: auto;
+    padding: 2px 0;
+    margin: 2px 0;
+    font-size: 16px;
+    font-weight: bold;
+    background-color: transparent;
+    color: var(--icon-color);
+    border: none;
+}
+
+/* Improve button hover effects */
+#kokoro-tts-widget button:hover {
+    background-color: var(--button-hover-bg);
+    color: var(--hover-color);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+#kokoro-tts-widget button:active {
+    transform: translateY(0);
+    background-color: var(--button-active-bg);
+    box-shadow: none;
+}
+
+/* Style the time display to match reference */
+.kokoro-time-text {
+    font-size: 14px;
+    font-weight: normal;
+    color: var(--icon-color);
+    margin: 2px 0;
+}
+
+/* Style time display to look like the reference */
+#kokoro-time-display {
+    margin: 4px 0;
+}
+
+/* Improve contrast of dividers */
+.kokoro-v-divider {
+    width: 60%;
+    margin: 2px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    opacity: 0.3;
+}
+
+/* Hide horizontal layout completely */
+.kokoro-h-layout {
+    display: none;
+}
+
+/* Individual widget elements styling */
 #kokoro-tts-widget span {
     font-family: sans-serif;
     font-size: 12px;
@@ -140,32 +307,6 @@ body {
 }
 */ 
 
-/* Style the rows within the widget */
-.kokoro-widget-row {
-    display: flex;
-    justify-content: center; /* Center items horizontally */
-    width: 100%; /* Make rows take full width */
-    margin-bottom: 5px; /* Add spacing between rows */
-}
-
-/* Remove bottom margin from the last row */
-.kokoro-widget-row:last-child {
-    margin-bottom: 0;
-}
-
-/* Style the main play button */
-#kokoro-play-pause-button {
-    /* Add specific styles if needed, maybe larger? */
-    padding: 8px 15px;
-}
-
-/* Style the skip buttons */
-.kokoro-widget-skip-controls button.kokoro-skip-button {
-    padding: 3px 8px; /* Smaller padding */
-    font-size: 10px;  /* Smaller font */
-    margin: 0 5px;   /* Add space between skip buttons */
-}
-
 /* Style the label */
 .kokoro-widget-label span {
     font-family: sans-serif;
@@ -177,3 +318,161 @@ body {
 .kokoro-skip-button-hidden {
     display: none;
 } 
+
+/* Skip buttons styling - smaller and tighter */
+.kokoro-skip-button {
+    width: 20px !important;
+    height: 20px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Style for voice button */
+#kokoro-voice-button {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    overflow: hidden;
+    background-color: transparent;
+    margin: 4px 0;
+}
+
+/* Icon styles - make them visible with Unicode symbols */
+.kokoro-icon {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    color: var(--icon-color);
+    font-size: 16px;
+}
+
+/* Play button icon alignment fix */
+.kokoro-play-icon::before {
+    content: "▶";
+    font-size: 16px;
+    margin-left: 2px; /* Optical centering */
+}
+
+/* Pause button icon alignment */
+.kokoro-pause-icon::before {
+    content: "⏸";
+    font-size: 16px;
+}
+
+/* Voice avatar placeholder */
+#kokoro-voice-button::before {
+    content: "👤";
+    font-size: 16px;
+}
+
+/* Skip Icons */
+.kokoro-skip-back-icon::before {
+    content: "«";
+    font-size: 12px;
+}
+
+.kokoro-skip-fwd-icon::before {
+    content: "»";
+    font-size: 12px;
+}
+
+/* Settings/Help Icons */
+.kokoro-settings-icon::before {
+    content: "⚙";
+}
+
+.kokoro-help-icon::before {
+    content: "?";
+}
+
+/* Library Icons */
+.kokoro-library-add-icon, 
+.kokoro-library-added-icon {
+    display: none; /* Hide both by default */
+}
+
+/* Show the add icon by default */
+.kokoro-library-add-icon {
+    display: flex;
+}
+
+/* When in added state, hide add icon and show added icon */
+#kokoro-library-add-button.added .kokoro-library-add-icon {
+    display: none;
+}
+#kokoro-library-add-button.added .kokoro-library-added-icon {
+    display: flex;
+}
+
+/* Proper play/pause state handling */
+#kokoro-tts-widget[data-playback="idle"] .kokoro-pause-icon,
+#kokoro-tts-widget[data-playback="error"] .kokoro-pause-icon,
+#kokoro-tts-widget[data-playback="loading"] .kokoro-pause-icon {
+    display: none;
+}
+
+#kokoro-tts-widget[data-playback="playing"] .kokoro-play-icon {
+    display: none;
+}
+
+/* Ensure button content is centered */
+.kokoro-skip-button,
+#kokoro-play-pause-button,
+#kokoro-library-add-button,
+#kokoro-library-open-button,
+#kokoro-help-button,
+#kokoro-settings-button,
+#kokoro-close-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Make close button smaller and less obtrusive */
+#kokoro-close-button {
+    width: 24px;
+    height: 24px;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+.kokoro-close-icon::before {
+    content: "×";
+    font-size: 18px;
+}
+
+/* Ensure voice/speed section is properly spaced */
+.kokoro-v-voice-speed {
+    margin: 4px 0;
+}
+
+/* Hide elements not needed in the minimal UI */
+.kokoro-widget-label,
+.kokoro-h-layout {
+    display: none;
+}
+
+/* Additional styling for minimal mode */
+.kokoro-time-text {
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+/* Library Icons */
+.kokoro-library-add-icon::before {
+    content: "+";
+}
+
+.kokoro-library-added-icon::before {
+    content: "✓";
+}
+
+.kokoro-library-open-icon::before {
+    content: "≡";
+}

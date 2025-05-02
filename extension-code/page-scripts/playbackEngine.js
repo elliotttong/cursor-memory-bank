@@ -2,7 +2,7 @@ import * as state from './pageState.js';
 import { requestSentenceAudio } from './backgroundComms.js';
 import { startSyncLoop, stopSyncLoop } from './syncEngine.js';
 import { clearHighlights, updateActiveSentenceHighlighting, updateWordHighlightCoordinates } from './coordManager.js';
-import { updatePlayPauseButtonState, showSkipButtons, hideSkipButtons } from './domUtils.js';
+import { updatePlayPauseButtonState } from './domUtils.js';
 
 // --- Playback Control & Sentence Logic ---
 
@@ -114,7 +114,6 @@ export function playSentence(targetIndex, shouldPlay) {
 
     // Show loading state UI
     updatePlayPauseButtonState('loading');
-    showSkipButtons();
 
     // Set flag to control auto-play based on the shouldPlay argument
     console.log(`[playSentence] Setting shouldAutoplayNext flag to: ${shouldPlay}`);
@@ -317,7 +316,6 @@ export function stopPlaybackAndResetState() {
         }
     }
     stopSyncLoop();
-    hideSkipButtons();
 
     // *** Reset ALL relevant state, including intention ***
     state.setState({

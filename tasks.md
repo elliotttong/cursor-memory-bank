@@ -26,32 +26,27 @@
     - [x] Fixed ServiceWorker/ObjectURL issue for BBC and similar sites.
     - [x] Fixed API error with bracketed text [Readwise].
     - [ ] Need to test additional sites for comprehensive coverage.
-- [ ] **T12:** Refine Play/Pause button states. *(Superseded by T-UI-Refactor)*
+- [x] **T12:** Refine Play/Pause button states (Playing, Paused, Loading, Error, API Key Missing).
 - [ ] **T13:** Refactor text extraction to use Offscreen Document. *(Deferred / Re-evaluate)*
 - [ ] **T14:** Refine highlighting (target specific element, fix wrapping errors). *(Investigation paused - See docs/limitations.md)*
 - [ ] **T15:** ~~Update API Key storage/UI for Deep Infra token.~~ *(Deferred - Using chrome.storage.local for dev. Requires secure backend proxy for release.)*
-- [ ] **T17:** Implement Skip Forward/Backward buttons and logic. *(Functionality done, UI part of T-UI-Refactor)*
-- [ ] **T-UI-Refactor:** Implement new multi-state, multi-layout widget UI.
-    - [ ] **T-UI-Refactor.1:** Foundational Refactor (HTML Structure, Base Styles, State Attributes).
-    - [ ] **T-UI-Refactor.2:** Vertical Layout Implementation (All States).
-    - [ ] **T-UI-Refactor.3:** Horizontal Layout Implementation (All States).
-    - [ ] **T-UI-Refactor.4:** Integrate Existing Controls (Play/Pause, Skip, Time).
-- [ ] **T18:** Implement Estimated Time Remaining display. *(Depends on T-UI-Refactor)*
-- [ ] **T19:** Implement Voice Selection UI and logic. *(Depends on T-UI-Refactor)*
-- [ ] **T20:** Implement Playback Speed Control UI and logic. *(Depends on T-UI-Refactor)*
-- [ ] **T21 (Old):** Implement improved hover UX (paragraph segmentation). *(Deferred)*
+- [x] **T17 (Was T16):** Implement Skip Forward/Backward buttons and logic.
+- [ ] **T18 (Was T17):** Implement Estimated Time Remaining display (simple WPM).
+- [ ] **T19 (Was T18):** Implement Voice Selection UI and logic.
+- [ ] **T20 (Was T19):** Implement Playback Speed Control UI and logic (verify sync).
+- [ ] **T21 (Was T20):** Implement improved hover UX (paragraph segmentation). *(Deferred)*
 
 
 ## Phase 4: Sentence Highlighting & Interaction (Houdini Approach)
 
-- [x] **T21 (Old T16):** Setup Houdini Paint Worklet & Adapt Paint Logic.
+- [x] **T21 (Was T16):** Setup Houdini Paint Worklet & Adapt Paint Logic.
     - [x] **T21.1:** Create `highlight-painter.js` and register worklet via `CSS.paintWorklet.addModule`.
     - [x] **T21.2:** Adapt paint logic from `competitors-code/Speechify/houdini.js` into worklet.
-- [x] **T22 (Old T17):** Define CSS using `paint()` and custom properties (`--kokoro...`) for highlighting.
-- [x] **T23 (Old T18):** Implement coordinate calculation (`getClientRects` on spans) and dynamic CSS variable updates for sentence/word highlighting in `content.js`. *(Line-based sentence logic implemented)*
-- [x] **T24 (Old T19):** Implement hover highlighting using coordinate calculation and separate CSS variables updated via `mouseover`/`mouseout`. *(Updated to line-based logic)*
-- [x] **T25 (Old T20):** Implement click-to-play (added `click` listeners, implemented `startPlaybackFromSentence(index)`). *(Refactored to use playSentence)*
-- [x] **T26 (Old T21):** Test Houdini-based sentence highlighting, word highlighting, hover, and click-to-play functionality thoroughly.
+- [x] **T22 (Was T17):** Define CSS using `paint()` and custom properties (`--kokoro...`) for highlighting.
+- [x] **T23 (Was T18):** Implement coordinate calculation (`getClientRects` on spans) and dynamic CSS variable updates for sentence/word highlighting in `content.js`. *(Line-based sentence logic implemented)*
+- [x] **T24 (Was T19):** Implement hover highlighting using coordinate calculation and separate CSS variables updated via `mouseover`/`mouseout`. *(Updated to line-based logic)*
+- [x] **T25 (Was T20):** Implement click-to-play (added `click` listeners, implemented `startPlaybackFromSentence(index)`).
+- [x] **T26 (Was T21):** Test Houdini-based sentence highlighting, word highlighting, hover, and click-to-play functionality thoroughly.
 - [x] **(Refactor T01):** Refactor `content.js` into `page-scripts/` modules. *(Post-T21 task, completed)*
 
 ## Phase 5: Advanced Features & Release Prep (Placeholder)
@@ -62,6 +57,6 @@
 - [ ] Add persistence for user settings (speed, voice) using `chrome.storage.local` or sync with backend.
 - [ ] Revisit Offscreen Document refactor (T13) if performance issues arise.
 - [ ] Revisit complex highlighting issues (T14 / limitations) if necessary.
-- [ ] Revisit improved hover UX (Old T21).
+- [ ] Revisit improved hover UX (T21).
 - [ ] Comprehensive cross-browser/site testing.
 - [ ] Build and packaging for release. 
