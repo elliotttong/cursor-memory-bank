@@ -116,7 +116,7 @@ export function playSentence(targetIndex, shouldPlay) {
     updatePlayPauseButtonState('loading');
 
     // Set flag to control auto-play based on the shouldPlay argument
-    console.log(`[playSentence] Setting shouldAutoplayNext flag to: ${shouldPlay}`);
+    console.log(`[playSentence] DEBUG: Setting shouldAutoplayNext flag to: ${shouldPlay}`);
     state.setState({ shouldAutoplayNext: shouldPlay });
 
     // Request the audio
@@ -128,10 +128,10 @@ export function playSentence(targetIndex, shouldPlay) {
 // Internal handler for receiving audio from backgroundComms
 export function handleReceivedAudio(index, audioObjectURL, timestamps) {
     // ... (remains the same, relies on shouldAutoplayNext)
-    console.log(`Received audio object URL and ${timestamps?.length || 0} timestamps for sentence index ${index}`);
+    console.log(`[handleReceivedAudio] Received audio for sentence index ${index}. Timestamps: ${timestamps?.length || 0}. URL starts with: ${audioObjectURL?.substring(0, 20)}`);
 
     if (!audioObjectURL || !timestamps) {
-        console.error("Received incomplete audio data (missing URL or timestamps) for sentence:", index);
+        console.error("[handleReceivedAudio] Received incomplete audio data for sentence:", index);
         if (index === state.currentSentenceIndex) stopPlaybackAndResetState();
         return;
     }
@@ -144,14 +144,14 @@ export function handleReceivedAudio(index, audioObjectURL, timestamps) {
 
     const audioData = { sentenceIndex: index, audioObjectURL: audioObjectURL, wordTimestamps: timestamps };
 
-    console.log(`[handleReceivedAudio] Received audio for current target index ${index}. Checking shouldAutoplayNext: ${state.shouldAutoplayNext}`);
+    console.log(`[handleReceivedAudio] DEBUG: Checking shouldAutoplayNext flag: ${state.shouldAutoplayNext}`);
 
     if (state.shouldAutoplayNext) {
-        console.log(`[handleReceivedAudio] Autoplaying audio immediately for index ${index}.`);
+        console.log(`[handleReceivedAudio] DEBUG: Autoplaying audio immediately for index ${index}.`);
         state.setState({ shouldAutoplayNext: false });
         playAudio(audioData.audioObjectURL, audioData.wordTimestamps);
     } else {
-        console.log(`[handleReceivedAudio] Buffering audio for paused state index ${index}.`);
+        console.log(`[handleReceivedAudio] DEBUG: Buffering audio for paused state index ${index}.`);
         state.setState({ bufferedPausedAudio: audioData });
         updatePlayPauseButtonState('paused');
     }
@@ -233,8 +233,7 @@ function handleAudioError(event) {
 // Internal function to play audio - called by handleReceivedAudio
 function playAudio(audioObjectURL, timestamps) {
    // ... (playAudio remains the same - sets up player, calls .play())
-  console.log(`playAudio called for sentence ${state.currentSentenceIndex} with ${timestamps.length} timestamps.`);
-  console.log(`  > Object URL: ${audioObjectURL}`);
+  console.log(`[playAudio] DEBUG: Called for sentence ${state.currentSentenceIndex} with ${timestamps.length} timestamps. URL: ${audioObjectURL?.substring(0,20)}`);
 
   if (state.audioPlayer) {
       console.warn("[playAudio] Existing audioPlayer found, attempting cleanup *again* (should have been done by stopCurrentAudio).");
@@ -255,31 +254,41 @@ function playAudio(audioObjectURL, timestamps) {
   }
 
   console.log("Creating new Audio element...");
-  const newPlayer = new Audio();
+  const player = new Audio();
 
-  newPlayer.addEventListener('ended', handleAudioEnded);
-  newPlayer.addEventListener('error', handleAudioError);
-  newPlayer.addEventListener('play', handleAudioPlay);
-  newPlayer.addEventListener('pause', handleAudioPause);
+  player.addEventListener('ended', handleAudioEnded);
+  player.addEventListener('error', handleAudioError);
+  player.addEventListener('play', handleAudioPlay);
+  player.addEventListener('pause', handleAudioPause);
 
-  newPlayer.addEventListener('loadstart', () => console.log(`Audio event: loadstart for ${state.currentSentenceIndex}`));
-  newPlayer.addEventListener('loadeddata', () => console.log(`Audio event: loadeddata for ${state.currentSentenceIndex}`));
+  player.addEventListener('loadstart', () => console.log(`Audio event: loadstart for ${state.currentSentenceIndex}`));
+  player.addEventListener('loadeddata', () => console.log(`Audio event: loadeddata for ${state.currentSentenceIndex}`));
 
   state.setState({
-      audioPlayer: newPlayer,
+      audioPlayer: player,
       currentWordTimestamps: timestamps
   });
   currentAudioObjectURL = audioObjectURL;
 
   console.log(`Setting audioPlayer.src for sentence ${state.currentSentenceIndex} to ObjectURL`);
-  newPlayer.src = audioObjectURL;
+  player.src = audioObjectURL;
 
   console.log(`Calling audioPlayer.play() for sentence ${state.currentSentenceIndex}`);
   if (state.playbackRate) {
       console.log(`[playAudio] Setting playbackRate to ${state.playbackRate}`);
-      newPlayer.playbackRate = state.playbackRate;
+      player.playbackRate = state.playbackRate;
   }
-  newPlayer.play().catch(handleAudioError);
+  const playPromise = player.play();
+  if (playPromise !== undefined) {
+      playPromise.then(_ => {
+          console.log("[playAudio] DEBUG: player.play() promise resolved successfully.");
+      }).catch(error => {
+          console.error("[playAudio] DEBUG: player.play() promise rejected:", error);
+          handleAudioError({errorDetails: error});
+      });
+  } else {
+     console.log("[playAudio] DEBUG: player.play() did not return a promise (older browser?). Assuming playback started.");
+  }
 
   const nextIndex = state.currentSentenceIndex + 1;
   if (nextIndex < state.sentenceSegments.length && !state.nextAudioData) {

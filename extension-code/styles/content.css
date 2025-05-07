@@ -409,15 +409,34 @@ body {
     display: flex;
 }
 
-/* Proper play/pause state handling */
-#kokoro-tts-widget[data-playback="idle"] .kokoro-pause-icon,
-#kokoro-tts-widget[data-playback="error"] .kokoro-pause-icon,
-#kokoro-tts-widget[data-playback="loading"] .kokoro-pause-icon {
+/* Proper play/pause state handling based on parent widget attribute */
+
+/* Hide PAUSE icon when widget is NOT playing */
+#kokoro-tts-widget:not([data-playback="playing"]) #kokoro-play-pause-button .kokoro-pause-icon {
     display: none;
 }
 
-#kokoro-tts-widget[data-playback="playing"] .kokoro-play-icon {
+/* Hide PLAY icon when widget IS playing */
+#kokoro-tts-widget[data-playback="playing"] #kokoro-play-pause-button .kokoro-play-icon {
     display: none;
+}
+
+/* Ensure one is always visible by default if needed, although the above should cover it */
+/* We assume 'idle', 'paused', 'loading', 'error' should show PLAY */
+/* We assume 'playing' should show PAUSE */
+
+/* Explicitly show PLAY icon for non-playing states */
+#kokoro-tts-widget[data-playback="idle"] #kokoro-play-pause-button .kokoro-play-icon,
+#kokoro-tts-widget[data-playback="paused"] #kokoro-play-pause-button .kokoro-play-icon,
+#kokoro-tts-widget[data-playback="loading"] #kokoro-play-pause-button .kokoro-play-icon, /* Or show loading spinner */
+#kokoro-tts-widget[data-playback="error"] #kokoro-play-pause-button .kokoro-play-icon /* Or show error icon */
+{
+    display: flex; /* Or inline-flex, make sure it shows */
+}
+
+/* Explicitly show PAUSE icon ONLY when playing */
+#kokoro-tts-widget[data-playback="playing"] #kokoro-play-pause-button .kokoro-pause-icon {
+     display: flex; /* Or inline-flex */
 }
 
 /* Ensure button content is centered */
