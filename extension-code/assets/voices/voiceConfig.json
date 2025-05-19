@@ -1,0 +1,491 @@
+{
+    "voices": [
+      {
+        "id": "pf_dora",
+        "name": "Dora",
+        "country": "Brazil",
+        "language": "pt-BR",
+        "gender": "Female",
+        "provider": "deepinfra",
+        "isPremium": false
+      },
+      {
+        "id": "pm_alex",
+        "name": "Alex",
+        "country": "Brazil",
+        "language": "pt-BR",
+        "gender": "Male",
+        "provider": "deepinfra",
+        "isPremium": false
+      },
+      {
+        "id": "pm_santa",
+        "name": "Santa",
+        "country": "Brazil",
+        "language": "pt-BR",
+        "gender": "Male",
+        "provider": "deepinfra",
+        "isPremium": false
+      },
+      {
+        "id": "zf_xiaobei",
+        "name": "Xiaobei",
+        "country": "China",
+        "language": "zh-CN",
+        "gender": "Female",
+        "provider": "deepinfra",
+        "isPremium": false
+      },
+      {
+        "id": "zf_xiaoni",
+        "name": "Xiaoni",
+        "country": "China",
+        "language": "zh-CN",
+        "gender": "Female",
+        "provider": "deepinfra",
+        "isPremium": false
+      },
+      {
+        "id": "zf_xiaoxiao",
+        "name": "Xiaoxiao",
+        "country": "China",
+        "language": "zh-CN",
+        "gender": "Female",
+        "provider": "deepinfra",
+        "isPremium": false
+      },
+      {
+        "id": "zf_xiaoyi",
+        "name": "Xiaoyi",
+        "country": "China",
+        "language": "zh-CN",
+        "gender": "Female",
+        "provider": "deepinfra",
+        "isPremium": false
+      },
+      {
+        "id": "zm_yunjian",
+        "name": "Yunjian",
+        "country": "China",
+        "language": "zh-CN",
+        "gender": "Male",
+        "provider": "deepinfra",
+        "isPremium": false
+      },
+      {
+        "id": "zm_yunxia",
+        "name": "Yunxia",
+        "country": "China",
+        "language": "zh-CN",
+        "gender": "Male",
+        "provider": "deepinfra",
+        "isPremium": false
+      },
+      {
+        "id": "zm_yunxi",
+        "name": "Yunxi",
+        "country": "China",
+        "language": "zh-CN",
+        "gender": "Male",
+        "provider": "deepinfra",
+        "isPremium": false
+      },
+      {
+        "id": "zm_yunyang",
+        "name": "Yunyang",
+        "country": "China",
+        "language": "zh-CN",
+        "gender": "Male",
+        "provider": "deepinfra",
+        "isPremium": false
+      },
+      {
+        "id": "ff_siwis",
+        "name": "Siwis (CC BY)",
+        "country": "France",
+        "language": "fr-FR",
+        "gender": "Female",
+        "provider": "deepinfra",
+        "isPremium": true
+      },
+      {
+        "id": "hf_alpha",
+        "name": "Alpha",
+        "country": "India",
+        "language": "hi-IN",
+        "gender": "Female",
+        "provider": "deepinfra",
+        "isPremium": false
+      },
+      {
+        "id": "hf_beta",
+        "name": "Beta",
+        "country": "India",
+        "language": "hi-IN",
+        "gender": "Female",
+        "provider": "deepinfra",
+        "isPremium": false
+      },
+      {
+        "id": "hm_omega",
+        "name": "Omega",
+        "country": "India",
+        "language": "hi-IN",
+        "gender": "Male",
+        "provider": "deepinfra",
+        "isPremium": false
+      },
+      {
+        "id": "hm_psi",
+        "name": "Psi",
+        "country": "India",
+        "language": "hi-IN",
+        "gender": "Male",
+        "provider": "deepinfra",
+        "isPremium": false
+      },
+      {
+        "id": "if_sara",
+        "name": "Sara",
+        "country": "Italy",
+        "language": "it-IT",
+        "gender": "Female",
+        "provider": "deepinfra",
+        "isPremium": false
+      },
+      {
+        "id": "im_nicola",
+        "name": "Nicola",
+        "country": "Italy",
+        "language": "it-IT",
+        "gender": "Male",
+        "provider": "deepinfra",
+        "isPremium": false
+      },
+      {
+        "id": "jf_alpha",
+        "name": "Alpha (CC BY)",
+        "country": "Japan",
+        "language": "ja-JP",
+        "gender": "Female",
+        "provider": "deepinfra",
+        "isPremium": true
+      },
+      {
+        "id": "jf_gongitsune",
+        "name": "Gongitsune",
+        "country": "Japan",
+        "language": "ja-JP",
+        "gender": "Female",
+        "provider": "deepinfra",
+        "isPremium": false
+      },
+      {
+        "id": "jf_tebukuro",
+        "name": "Tebukurowokaini",
+        "country": "Japan",
+        "language": "ja-JP",
+        "gender": "Female",
+        "provider": "deepinfra",
+        "isPremium": false
+      },
+      {
+        "id": "jf_nezumi",
+        "name": "Nezuminoyomeiri",
+        "country": "Japan",
+        "language": "ja-JP",
+        "gender": "Female",
+        "provider": "deepinfra",
+        "isPremium": false
+      },
+      {
+        "id": "jm_kumo",
+        "name": "Kumonoito",
+        "country": "Japan",
+        "language": "ja-JP",
+        "gender": "Male",
+        "provider": "deepinfra",
+        "isPremium": false
+      },
+      {
+        "id": "ef_dora",
+        "name": "Dora",
+        "country": "Spain",
+        "language": "es-ES",
+        "gender": "Female",
+        "provider": "deepinfra",
+        "isPremium": false
+      },
+      {
+        "id": "em_alex",
+        "name": "Alex",
+        "country": "Spain",
+        "language": "es-ES",
+        "gender": "Male",
+        "provider": "deepinfra",
+        "isPremium": false
+      },
+      {
+        "id": "em_santa",
+        "name": "Santa",
+        "country": "Spain",
+        "language": "es-ES",
+        "gender": "Male",
+        "provider": "deepinfra",
+        "isPremium": false
+      },
+      {
+        "id": "bf_emma",
+        "name": "Emma",
+        "country": "UK",
+        "language": "en-GB",
+        "gender": "Female",
+        "provider": "deepinfra",
+        "isPremium": true
+      },
+      {
+        "id": "bf_isabella",
+        "name": "Isabella",
+        "country": "UK",
+        "language": "en-GB",
+        "gender": "Female",
+        "provider": "deepinfra",
+        "isPremium": false
+      },
+      {
+        "id": "bm_fable",
+        "name": "Fable",
+        "country": "UK",
+        "language": "en-GB",
+        "gender": "Male",
+        "provider": "deepinfra",
+        "isPremium": false
+      },
+      {
+        "id": "bm_george",
+        "name": "George",
+        "country": "UK",
+        "language": "en-GB",
+        "gender": "Male",
+        "provider": "deepinfra",
+        "isPremium": false
+      },
+      {
+        "id": "bm_lewis",
+        "name": "Lewis",
+        "country": "UK",
+        "language": "en-GB",
+        "gender": "Male",
+        "provider": "deepinfra",
+        "isPremium": false
+      },
+      {
+        "id": "bf_alice",
+        "name": "Alice",
+        "country": "UK",
+        "language": "en-GB",
+        "gender": "Female",
+        "provider": "deepinfra",
+        "isPremium": false
+      },
+      {
+        "id": "bf_lily",
+        "name": "Lily",
+        "country": "UK",
+        "language": "en-GB",
+        "gender": "Female",
+        "provider": "deepinfra",
+        "isPremium": false
+      },
+      {
+        "id": "bm_daniel",
+        "name": "Daniel",
+        "country": "UK",
+        "language": "en-GB",
+        "gender": "Male",
+        "provider": "deepinfra",
+        "isPremium": false
+      },
+      {
+        "id": "af_heart",
+        "name": "Heart",
+        "country": "USA",
+        "language": "en-US",
+        "gender": "Female",
+        "provider": "deepinfra",
+        "isPremium": true
+      },
+      {
+        "id": "af_bella",
+        "name": "Bella",
+        "country": "USA",
+        "language": "en-US",
+        "gender": "Female",
+        "provider": "deepinfra",
+        "isPremium": true
+      },
+      {
+        "id": "af_nicole",
+        "name": "Nicole",
+        "country": "USA",
+        "language": "en-US",
+        "gender": "Female",
+        "provider": "deepinfra",
+        "isPremium": true
+      },
+      {
+        "id": "af_aoede",
+        "name": "Aoede",
+        "country": "USA",
+        "language": "en-US",
+        "gender": "Female",
+        "provider": "deepinfra",
+        "isPremium": true
+      },
+      {
+        "id": "af_kore",
+        "name": "Kore",
+        "country": "USA",
+        "language": "en-US",
+        "gender": "Female",
+        "provider": "deepinfra",
+        "isPremium": true
+      },
+      {
+        "id": "af_sarah",
+        "name": "Sarah",
+        "country": "USA",
+        "language": "en-US",
+        "gender": "Female",
+        "provider": "deepinfra",
+        "isPremium": true
+      },
+      {
+        "id": "am_fenrir",
+        "name": "Fenrir",
+        "country": "USA",
+        "language": "en-US",
+        "gender": "Male",
+        "provider": "deepinfra",
+        "isPremium": true
+      },
+      {
+        "id": "am_michael",
+        "name": "Michael",
+        "country": "USA",
+        "language": "en-US",
+        "gender": "Male",
+        "provider": "deepinfra",
+        "isPremium": true
+      },
+      {
+        "id": "am_puck",
+        "name": "Puck",
+        "country": "USA",
+        "language": "en-US",
+        "gender": "Male",
+        "provider": "deepinfra",
+        "isPremium": true
+      },
+      {
+        "id": "af_alloy",
+        "displayName": "Alloy",
+        "country": "USA",
+        "gender": "female",
+        "provider": "deepinfra",
+        "isPremium": false
+      },
+      {
+        "id": "af_nova",
+        "displayName": "Nova",
+        "country": "USA",
+        "gender": "female",
+        "provider": "deepinfra",
+        "isPremium": false
+      },
+      {
+        "id": "af_sky",
+        "displayName": "Sky",
+        "country": "USA",
+        "gender": "female",
+        "provider": "deepinfra",
+        "isPremium": false
+      },
+      {
+        "id": "af_jessica",
+        "displayName": "Jessica",
+        "country": "USA",
+        "gender": "female",
+        "provider": "deepinfra",
+        "isPremium": false
+      },
+      {
+        "id": "af_river",
+        "displayName": "River",
+        "country": "USA",
+        "gender": "female",
+        "provider": "deepinfra",
+        "isPremium": false
+      },
+      {
+        "id": "am_echo",
+        "displayName": "Echo",
+        "country": "USA",
+        "gender": "male",
+        "provider": "deepinfra",
+        "isPremium": false
+      },
+      {
+        "id": "am_eric",
+        "displayName": "Eric",
+        "country": "USA",
+        "gender": "male",
+        "provider": "deepinfra",
+        "isPremium": false
+      },
+      {
+        "id": "am_liam",
+        "displayName": "Liam",
+        "country": "USA",
+        "gender": "male",
+        "provider": "deepinfra",
+        "isPremium": false
+      },
+      {
+        "id": "am_onyx",
+        "displayName": "Onyx",
+        "country": "USA",
+        "gender": "male",
+        "provider": "deepinfra",
+        "isPremium": false
+      },
+      {
+        "id": "am_santa",
+        "displayName": "Santa",
+        "country": "USA",
+        "gender": "male",
+        "provider": "deepinfra",
+        "isPremium": false
+      },
+      {
+        "id": "am_adam",
+        "displayName": "Adam",
+        "country": "USA",
+        "gender": "male",
+        "provider": "deepinfra",
+        "isPremium": false
+      },
+      {
+        "id": "browser_default",
+        "displayName": "Browser Default",
+        "country": "N/A",
+        "gender": "unknown",
+        "provider": "browser",
+        "isPremium": false
+      }
+    ],
+    "defaults": {
+      "deepinfra": "af_bella",
+      "browser": "browser_default"
+    }
+  }

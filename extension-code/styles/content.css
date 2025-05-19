@@ -495,3 +495,217 @@ body {
 .kokoro-library-open-icon::before {
     content: "≡";
 }
+
+/* -------- Voice Selector Styles -------- */
+
+/* Main voice selector container */
+.kokoro-voice-selector {
+    position: absolute;
+    bottom: 80px;
+    right: 0;
+    width: 280px;
+    max-height: 400px;
+    background: var(--widget-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--widget-border);
+    box-shadow: var(--widget-shadow), var(--widget-inner-shadow);
+    border-radius: 12px;
+    color: var(--icon-color);
+    font-family: sans-serif;
+    z-index: 2147483647;
+    overflow: hidden;
+    display: none; /* Hidden by default */
+}
+
+/* Header with title and close button */
+.kokoro-selector-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--widget-border);
+}
+
+.kokoro-selector-title {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.kokoro-selector-close {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color var(--transition-speed) ease;
+}
+
+.kokoro-selector-close:hover {
+    background: var(--button-hover-bg);
+}
+
+/* Provider tabs */
+.kokoro-provider-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--widget-border);
+    padding: 0 8px;
+}
+
+.kokoro-provider-tab {
+    padding: 10px 12px;
+    background: transparent;
+    border: none;
+    color: var(--icon-color);
+    cursor: pointer;
+    transition: color var(--transition-speed) ease, 
+                border-bottom var(--transition-speed) ease;
+    position: relative;
+    font-size: 14px;
+}
+
+.kokoro-provider-tab:hover {
+    color: var(--hover-color);
+}
+
+.kokoro-provider-tab-active {
+    border-bottom: 2px solid var(--hover-color);
+    color: var(--hover-color);
+}
+
+.kokoro-quota-exceeded-badge {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    font-size: 8px;
+    padding: 2px 4px;
+    background: #ff5555;
+    color: white;
+    border-radius: 8px;
+}
+
+/* Voice list */
+.kokoro-voice-list {
+    max-height: 260px;
+    overflow-y: auto;
+    padding: 8px;
+}
+
+.kokoro-voice-loading, 
+.kokoro-voice-error,
+.kokoro-voice-empty {
+    text-align: center;
+    padding: 20px;
+    color: var(--icon-color);
+}
+
+.kokoro-voice-error {
+    color: #ff5555;
+}
+
+/* Voice sections */
+.kokoro-voice-section {
+    margin-bottom: 16px;
+}
+
+.kokoro-voice-section-title {
+    font-size: 12px;
+    text-transform: uppercase;
+    opacity: 0.7;
+    margin-bottom: 8px;
+    padding-left: 8px;
+}
+
+/* Voice item */
+.kokoro-voice-item {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color var(--transition-speed) ease;
+    position: relative;
+}
+
+.kokoro-voice-item:hover {
+    background: var(--button-hover-bg);
+}
+
+.kokoro-voice-item-selected {
+    background: var(--button-active-bg);
+}
+
+.kokoro-voice-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    margin-right: 12px;
+    border: 1px solid var(--widget-border);
+}
+
+.kokoro-voice-details {
+    flex-grow: 1;
+}
+
+.kokoro-voice-name {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.kokoro-voice-lang {
+    font-size: 12px;
+    opacity: 0.7;
+}
+
+.kokoro-voice-gender {
+    font-size: 12px;
+    opacity: 0.7;
+    margin-right: 8px;
+    text-transform: capitalize;
+}
+
+.kokoro-voice-premium-badge {
+    font-size: 10px;
+    padding: 2px 6px;
+    background: linear-gradient(45deg, #ff8a00, #e52e71);
+    color: white;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+/* Quota status */
+.kokoro-quota-status {
+    padding: 12px 16px;
+    border-top: 1px solid var(--widget-border);
+}
+
+.kokoro-quota-label {
+    font-size: 14px;
+    margin-bottom: 6px;
+}
+
+.kokoro-quota-bar {
+    height: 6px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 6px;
+}
+
+.kokoro-quota-progress {
+    height: 100%;
+    background: linear-gradient(90deg, #4d92ff, #4dffe9);
+    border-radius: 3px;
+}
+
+.kokoro-quota-text {
+    font-size: 12px;
+    text-align: right;
+    opacity: 0.7;
+}

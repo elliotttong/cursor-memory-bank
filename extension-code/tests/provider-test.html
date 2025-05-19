@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Provider Abstraction Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    button {
+      padding: 8px 16px;
+      margin: 5px;
+      background-color: #4285f4;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #3367d6;
+    }
+    pre {
+      background-color: #f5f5f5;
+      padding: 10px;
+      border-radius: 4px;
+      overflow: auto;
+      max-height: 400px;
+    }
+    .test-section {
+      margin-bottom: 20px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+    h2 {
+      margin-top: 0;
+    }
+    .success {
+      color: green;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <h1>Provider Abstraction Test</h1>
+  <p>This page lets you test the provider abstraction layer without modifying the main extension.</p>
+  
+  <div class="test-section">
+    <h2>Provider Initialization</h2>
+    <button id="init-btn">Initialize Providers</button>
+    <pre id="init-output">Results will appear here...</pre>
+  </div>
+  
+  <div class="test-section">
+    <h2>Voice Management</h2>
+    <button id="list-voices-btn">List All Voices</button>
+    <button id="list-deep-infra-btn">List Deep Infra Voices</button>
+    <button id="list-browser-btn">List Browser Voices</button>
+    <pre id="voice-output">Results will appear here...</pre>
+  </div>
+  
+  <div class="test-section">
+    <h2>Synthesis Test</h2>
+    <textarea id="test-text" rows="3" cols="60" style="width: 100%;">This is a test of the provider abstraction layer.</textarea>
+    <button id="synthesize-btn">Synthesize Speech</button>
+    <audio id="audio-player" controls style="width: 100%; margin-top: 10px;"></audio>
+    <pre id="synthesis-output">Results will appear here...</pre>
+  </div>
+  
+  <script type="module">
+    import { initializeProviders, providerManager, deepInfraProvider, browserTTSProvider } from '../modules/providers/index.js';
+    
+    // Initialize buttons
+    document.getElementById('init-btn').addEventListener('click', async () => {
+      const output = document.getElementById('init-output');
+      output.innerHTML = 'Initializing providers...';
+      
+      try {
+        const result = await initializeProviders();
+        output.innerHTML = `<span class="success">Providers initialized successfully!</span>\n\n` +
+                          `Default provider: ${providerManager.defaultProvider}\n` +
+                          `Fallback provider: ${providerManager.fallbackProvider}\n` +
+                          `Number of registered providers: ${Object.keys(providerManager.providers).length}`;
+      } catch (error) {
+        output.innerHTML = `<span class="error">Initialization failed!</span>\n\n${error.message}`;
+      }
+    });
+    
+    document.getElementById('list-voices-btn').addEventListener('click', async () => {
+      const output = document.getElementById('voice-output');
+      output.innerHTML = 'Loading voices...';
+      
+      try {
+        const voices = await providerManager.getAllVoices();
+        output.innerHTML = `<span class="success">Found ${voices.length} voices</span>\n\n` +
+                          JSON.stringify(voices, null, 2);
+      } catch (error) {
+        output.innerHTML = `<span class="error">Failed to list voices!</span>\n\n${error.message}`;
+      }
+    });
+    
+    document.getElementById('list-deep-infra-btn').addEventListener('click', async () => {
+      const output = document.getElementById('voice-output');
+      output.innerHTML = 'Loading Deep Infra voices...';
+      
+      try {
+        const voices = await deepInfraProvider.getVoices();
+        output.innerHTML = `<span class="success">Found ${voices.length} Deep Infra voices</span>\n\n` +
+                          JSON.stringify(voices, null, 2);
+      } catch (error) {
+        output.innerHTML = `<span class="error">Failed to list Deep Infra voices!</span>\n\n${error.message}`;
+      }
+    });
+    
+    document.getElementById('list-browser-btn').addEventListener('click', async () => {
+      const output = document.getElementById('voice-output');
+      output.innerHTML = 'Loading Browser voices...';
+      
+      try {
+        const voices = await browserTTSProvider.getVoices();
+        output.innerHTML = `<span class="success">Found ${voices.length} Browser voices</span>\n\n` +
+                          JSON.stringify(voices, null, 2);
+      } catch (error) {
+        output.innerHTML = `<span class="error">Failed to list Browser voices!</span>\n\n${error.message}`;
+      }
+    });
+    
+    document.getElementById('synthesize-btn').addEventListener('click', async () => {
+      const output = document.getElementById('synthesis-output');
+      const text = document.getElementById('test-text').value;
+      
+      if (!text.trim()) {
+        output.innerHTML = '<span class="error">Please enter some text to synthesize!</span>';
+        return;
+      }
+      
+      output.innerHTML = 'Synthesizing speech...';
+      
+      try {
+        // First get the active provider and selected voice
+        const activeProvider = providerManager.getActiveProvider();
+        const selectedVoice = await providerManager.getSelectedVoice();
+        
+        output.innerHTML = `Using provider: ${activeProvider.name}\n` +
+                          `Selected voice: ${selectedVoice ? selectedVoice.name : 'Default'}\n\n` +
+                          `Synthesizing: "${text}"\n\n`;
+        
+        // Synthesize the speech
+        const result = await providerManager.synthesizeSpeech(text);
+        
+        // Create a blob URL for the audio
+        const byteCharacters = atob(result.audioBase64);
+        const byteArrays = [];
+        const sliceSize = 512;
+        
+        for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+          const slice = byteCharacters.slice(offset, offset + sliceSize);
+          const byteNumbers = new Array(slice.length);
+          for (let i = 0; i < slice.length; i++) {
+            byteNumbers[i] = slice.charCodeAt(i);
+          }
+          const byteArray = new Uint8Array(byteNumbers);
+          byteArrays.push(byteArray);
+        }
+        
+        const blob = new Blob(byteArrays, { type: result.contentType });
+        const audioUrl = URL.createObjectURL(blob);
+        
+        // Set the audio element source
+        const audioPlayer = document.getElementById('audio-player');
+        audioPlayer.src = audioUrl;
+        
+        // Clean up the URL when the audio is done
+        audioPlayer.onended = () => {
+          URL.revokeObjectURL(audioUrl);
+        };
+        
+        // Append results
+        output.innerHTML += `<span class="success">Synthesis successful!</span>\n\n` +
+                           `Word timestamps: ${result.wordTimestamps.length}\n` +
+                           JSON.stringify(result.wordTimestamps, null, 2);
+      } catch (error) {
+        output.innerHTML = `<span class="error">Synthesis failed!</span>\n\n${error.message}`;
+      }
+    });
+  </script>
+</body>
+</html> 

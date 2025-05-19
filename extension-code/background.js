@@ -42,14 +42,21 @@ function base64ToBlob(base64, contentType = '', sliceSize = 512) {
   }
 }
 
-// --- T02: Communication Listener --- (Modified for Deep Infra)
+// --- T02: Communication Listener --- (Provider-agnostic, modular)
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log("Message received in background:", message);
 
   if (message.action === "requestTTS") {
-    let apiToken = null; // Changed variable name
     const sentenceText = message.text; 
     const sentenceIndex = message.sentenceIndex;
+    const voiceKey = message.voiceKey; // Composite key (provider:id)
+
+    if (!voiceKey) {
+      const errorMsg = 'No voiceKey provided in requestTTS message.';
+      console.error(errorMsg);
+      try { sendResponse({ status: "error", message: errorMsg, sentenceIndex }); } catch(e){}
+      return false;
+    }
 
     if (typeof sentenceText !== 'string' || sentenceText.trim() === '' || typeof sentenceIndex !== 'number') {
         console.error("Invalid requestTTS message format:", message);
@@ -57,80 +64,41 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         return false; 
     }
 
-    // Use IIAFE
     (async () => {
         try {
-            // 1. Get API Token (Using new storage key)
-            const data = await chrome.storage.local.get(['deepInfraToken']);
-            if (!data.deepInfraToken) {
-                // Inform content script AND original sender (popup) about missing token
-                 const errorMsg = "Deep Infra API Token not configured.";
-                 if(sender.tab?.id) { chrome.tabs.sendMessage(sender.tab.id, { action: "apiError", message: errorMsg, sentenceIndex: sentenceIndex }); }
-                 try { sendResponse({ status: "error", message: errorMsg, sentenceIndex: sentenceIndex }); } catch(e){ console.warn("Could not send API key error response to original sender."); }
-                 return; // Stop processing
-            }
-            apiToken = data.deepInfraToken;
+        // Parse provider and voiceId from composite key
+        const [provider, voiceId] = voiceKey.split(":");
+        let result;
+        if (provider === 'deepinfra') {
+          // Use provider abstraction only
+          result = await deepInfraProvider.synthesizeSpeech(sentenceText, voiceId, {});
+        } else {
+          throw new Error(`Provider '${provider}' not supported in background.js`);
+        }
 
-            // 2. Call Deep Infra API
-            console.log(`Background: Requesting TTS+Timestamps for sentence index: ${sentenceIndex}`);
-            const result = await callDeepInfraTTS(sentenceText, apiToken);
-            
-            // 3. Process Result & Send to Content Script
-            if (result && result.audio && result.words && sender.tab?.id) {
-                console.log(`Background: Sending audio and ${result.words.length} timestamps for sentence ${sentenceIndex} to tab ${sender.tab.id}`);
-                
-                // --- Determine Content Type and Base64 Data ---
-                let contentType = 'audio/wav'; // Default
-                let base64AudioData = result.audio;
-
-                if (typeof result.audio === 'string' && result.audio.startsWith('data:')) {
-                    const parts = result.audio.split(',');
-                    const meta = parts[0].split(':')[1]?.split(';')[0]; // e.g., audio/wav
-                    if (meta) contentType = meta;
-                    base64AudioData = parts[1]; // Get only the base64 part
-                    console.log(`Background: Detected content type from data URL: ${contentType}`);
-                } else if (typeof result.audio !== 'string') {
-                     // Send error back to content script if data type is wrong
-                    const errorMsg = `API response had unexpected audio data type: ${typeof result.audio}`;
-                    console.error(errorMsg);
-                    chrome.tabs.sendMessage(sender.tab.id, { action: "sentenceError", message: errorMsg, sentenceIndex: sentenceIndex }); 
-                    try { sendResponse({ status: "error", message: errorMsg, sentenceIndex: sentenceIndex }); } catch(e){}
-                    return; // Stop processing
-                }
-                // else: assume it's a raw base64 string, use default contentType
-                // --- REMOVED Object URL Creation BLOCK ---
-                // let audioObjectURL = null;
-                // try { ... } catch { ... } // Entire block removed
-                // -----------------------------------------
-
-                // --- Send Raw Data to Content Script ---
+        // Process Result & Send to Content Script
+        if (result && result.audioBase64 && result.wordTimestamps && sender.tab?.id) {
+          let contentType = result.contentType || 'audio/wav';
+          let base64AudioData = result.audioBase64;
                 chrome.tabs.sendMessage(sender.tab.id, {
-                    action: "playAudioWithTimestamps", 
-                    // ** Send the raw base64 data and content type **
-                    base64AudioData: base64AudioData, 
-                    contentType: contentType, 
-                    // ----
-                    wordTimestamps: result.words,
+            action: "playAudioWithTimestamps", 
+            base64AudioData: base64AudioData, 
+            contentType: contentType, 
+            wordTimestamps: result.wordTimestamps,
                     sentenceIndex: sentenceIndex 
                 });
-                // ---------------------------------------
-                
-                // Send success back to original sender (popup/widget)?
                 try {
-                    // Don't send the full audio data or object URL back to popup
-                    sendResponse({ status: "success", detail: `TTS for sentence ${sentenceIndex} complete.`, result: { words: result.words }, sentenceIndex: sentenceIndex });
+            sendResponse({ status: "success", detail: `TTS for sentence ${sentenceIndex} complete.`, result: { words: result.wordTimestamps }, sentenceIndex: sentenceIndex });
                 } catch (e) {
                     console.warn("Could not send final success response to original sender (context likely closed)", e);
                 }
             } else {
-                 // Handle cases where response structure is wrong or tab closed
-                 let errorDetail = "Unknown error processing API response.";
-                 if (!result?.audio) errorDetail = "API response missing audio data.";
-                 if (!result?.words) errorDetail = "API response missing timestamp data.";
+          let errorDetail = "Unknown error processing provider response.";
+          if (!result?.audioBase64) errorDetail = "Provider response missing audio data.";
+          if (!result?.wordTimestamps) errorDetail = "Provider response missing timestamp data.";
                  if (!sender.tab?.id) errorDetail = "Originating tab closed before response.";
-                 throw new Error(`API call succeeded but processing failed for sentence ${sentenceIndex}: ${errorDetail}`);
+          throw new Error(`Provider call succeeded but processing failed for sentence ${sentenceIndex}: ${errorDetail}`);
             }
-
         } catch (error) {
             console.error(`TTS Request failed for sentence ${sentenceIndex}:`, error);
              try {
@@ -146,11 +114,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
                 });
              }
         }
-    })(); // Execute 
-
+    })();
     return true; // Indicate async response 
   }
-  
 });
 
 // --- T03: Deep Infra TTS Integration --- (Replaces Replicate functions)
@@ -159,22 +125,33 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 // REMOVED: pollForResult (Replicate specific)
 
 // NEW function to call Deep Infra API
-async function callDeepInfraTTS(text, apiToken) {
-  const selectedVoice = "af_bella"; // Keep default for now
+async function callDeepInfraTTS(text, apiToken, voiceKey) {
+  // Parse provider and voice id from composite key
+  let selectedVoice = "af_bella"; // Default fallback
+  if (voiceKey && typeof voiceKey === 'string') {
+    const parts = voiceKey.split(":");
+    if (parts.length === 2 && parts[0] === 'deepinfra') {
+      selectedVoice = parts[1];
+      console.log(`[DeepInfraTTS] Using selected voice from key: ${selectedVoice}`);
+    } else {
+      console.warn(`[DeepInfraTTS] Unsupported provider in voiceKey: ${voiceKey}. Falling back to default voice.`);
+    }
+  } else {
+    console.warn('[DeepInfraTTS] No valid voiceKey provided, using default voice.');
+  }
   const outputFormat = "wav"; // Ensure consistent format
   
   // Corrected payload structure (no "input" wrapper)
   const payload = {
     text: text,
-    // Ensure voice is an array as per schema
-    voice: [selectedVoice], 
+    preset_voice: [selectedVoice], // Use correct parameter for Deep Infra
     output_format: outputFormat,
     return_timestamps: true, // ** Request timestamps! **
     // speed: 1, // Optional: Add speed control later
     // stream: false // Keep default for now
   };
 
-  console.log(`Calling Deep Infra API (${KOKORO_API_ENDPOINT})...`, payload);
+  console.log(`[DeepInfraTTS] API Request Payload:`, JSON.stringify(payload, null, 2));
   const response = await fetch(KOKORO_API_ENDPOINT, {
     method: 'POST',
     headers: {
@@ -183,9 +160,8 @@ async function callDeepInfraTTS(text, apiToken) {
     },
     body: JSON.stringify(payload)
   });
-
   const result = await response.json();
-  console.log("Deep Infra Raw Response:", result);
+  console.log('[DeepInfraTTS] API Response:', result);
 
   if (!response.ok) {
     console.error("Deep Infra API HTTP Error Status:", response.status, result);
@@ -243,3 +219,5 @@ chrome.runtime.onInstalled.addListener(() => {
   console.log("Kokoro TTS Reader MVP installed/updated.");
   // Consider setting a placeholder for deepInfraToken if none exists
 }); 
+
+import deepInfraProvider from './modules/providers/deepInfraProvider.js'; 

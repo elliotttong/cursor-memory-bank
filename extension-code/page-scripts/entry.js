@@ -23,6 +23,7 @@ import {
     handleSpeedSelectClick,
     handleCloseWidgetClick
 } from './userEvents.js';
+import { initializeProviders } from '../modules/providers/index.js';
 
 console.log("Kokoro Page Script Entry Initializing...");
 
@@ -30,8 +31,13 @@ console.log("Kokoro Page Script Entry Initializing...");
 async function initializeKokoroFeatures() {
     console.log(">>> ENTERED initializeKokoroFeatures function.");
 
-    state.setState({ isInitialized: false });
+    // --- Ensure ProviderManager and all providers are initialized before any UI/widget code ---
+    console.log('[Entry] Initializing providers...');
+    await initializeProviders();
+    console.log('[Entry] Providers initialized. Proceeding with UI/widget setup.');
 
+    state.setState({ isInitialized: false }); 
+    
     // Perform setup that doesn't depend on text extraction first
     try {
         registerPaintWorklet();
@@ -99,7 +105,7 @@ async function initializeKokoroFeatures() {
         playPauseButton.disabled = true; // Keep disabled until text processed
     } else {
         console.error("[Initialize] Play/Pause button not found. Cannot attach listener.");
-        return;
+        return; 
     }
 
     // Attach listeners for Skip buttons
@@ -134,7 +140,14 @@ async function initializeKokoroFeatures() {
     if (closeButton) closeButton.addEventListener('click', handleCloseWidgetClick);
     // *********************************************************
 
-
+    // Initialize the voice avatar with the current voice
+    if (voiceButton) {
+        // Import async to avoid circular dependencies
+        import('../modules/ui/voiceSelector.js').then(module => {
+            module.updateVoiceAvatar(voiceButton);
+        });
+    }
+    
     // Now attempt text processing and highlighting setup
     try {
         console.log(">>> Attempting text processing and highlighting setup...");

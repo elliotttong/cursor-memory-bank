@@ -6,13 +6,15 @@
   "permissions": [
     "activeTab",
     "scripting",
-    "storage"
+    "storage",
+    "tts"
   ],
   "host_permissions": [
     "<all_urls>"
   ],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background.js",
+    "type": "module"
   },
   "content_scripts": [
     {
@@ -36,7 +38,10 @@
       "resources": [
         "styles/content.css",
         "highlight-painter.js",
-        "page-scripts/*"
+        "page-scripts/*",
+        "modules/providers/*",
+        "modules/ui/*",
+        "assets/*"
       ],
       "matches": ["<all_urls>"]
     }

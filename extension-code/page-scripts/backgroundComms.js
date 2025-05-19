@@ -3,10 +3,14 @@ import * as state from './pageState.js';
 import { handleReceivedAudio, stopPlaybackAndResetState } from './playbackEngine.js';
 import { updatePlayPauseButtonState } from './domUtils.js'; // Import update function
 
-// New function to request audio for a specific sentence index
-export function requestSentenceAudio(index) {
+// New function to request audio for a specific sentence index and voice key
+export function requestSentenceAudio(index, voiceKey) {
     if (index < 0 || index >= state.sentenceSegments.length) {
         console.log("Index out of bounds, not requesting sentence:", index);
+        return; 
+    }
+    if (!voiceKey) {
+        console.error('No voiceKey provided to requestSentenceAudio. Aborting request.');
         return; 
     }
     const sentence = state.sentenceSegments[index];
@@ -15,7 +19,8 @@ export function requestSentenceAudio(index) {
     chrome.runtime.sendMessage({ 
         action: "requestTTS", 
         text: sentence.cleanedTextForApi,
-        sentenceIndex: index 
+        sentenceIndex: index,
+        voiceKey: voiceKey // Pass the composite key for provider/voice lookup
     }, (response) => {
        // Background now sends separate message on completion/error
     });
@@ -26,12 +31,20 @@ export function setupBackgroundListener() {
     chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         console.log(`[${new Date().toLocaleTimeString()}] Content listener received message:`, JSON.parse(JSON.stringify(message))); 
         
-        if (message.action === "playAudioWithTimestamps") {
+        if (message.action === "playAudioWithTimestamps") { 
           // Check if we received raw audio data instead of an object URL
           if (message.base64AudioData && message.contentType) {
             try {
+              // Process base64 data - handle data URL format if present
+              let base64Data = message.base64AudioData;
+              
+              // If it's a data URL, extract just the base64 part
+              if (base64Data.startsWith('data:')) {
+                base64Data = base64Data.split(',')[1];
+              }
+              
               // Convert base64 to Blob
-              const byteCharacters = atob(message.base64AudioData);
+              const byteCharacters = atob(base64Data);
               const byteArrays = [];
               const sliceSize = 512;
               

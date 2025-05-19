@@ -4,6 +4,7 @@ import { requestSentenceAudio } from './backgroundComms.js';
 import { stopPlaybackAndResetState, handlePlayPauseClick, playSentence } from './playbackEngine.js';
 import { startSyncLoop } from './syncEngine.js';
 import { updateHoverHighlightCoordinates } from './coordManager.js';
+import { createVoiceSelectorPanel, toggleVoiceSelector, updateVoiceAvatar } from '../modules/ui/voiceSelector.js';
 
 // --- Hover Highlighting Logic (Houdini Version) ---
 export function handleSentenceHover(event) {
@@ -46,7 +47,7 @@ export function handleSentenceClick(event) {
 
         if (isNaN(clickedIndex)) {
             console.error("[Click] Could not parse index from ID:", sentenceId);
-            return;
+            return; 
         }
         if (clickedIndex < 0 || clickedIndex >= state.sentenceSegments.length) {
             console.error("[Click] Clicked index out of bounds:", clickedIndex);
@@ -118,8 +119,29 @@ export function handleUpgradeClick() {
 }
 
 export function handleVoiceSelectClick() {
-    console.log("[Placeholder] Voice Select Clicked");
-    // TODO: Implement logic to show voice selection pop-out
+    console.log("[Voice Selector] Voice Select button clicked");
+    
+    // Get the container element to attach the selector to
+    const container = document.getElementById('kokoro-tts-widget-container');
+    if (!container) {
+        console.error("[Voice Selector] Container not found");
+        return;
+    }
+    
+    // Create voice selector panel if it doesn't exist yet
+    let selectorPanel = document.querySelector('.kokoro-voice-selector');
+    if (!selectorPanel) {
+        selectorPanel = createVoiceSelectorPanel(container);
+    }
+    
+    // Toggle the visibility of the selector panel
+    toggleVoiceSelector();
+
+    // Update the voice avatar
+    const voiceButton = document.getElementById('kokoro-voice-button');
+    if (voiceButton) {
+        updateVoiceAvatar(voiceButton);
+    }
 }
 
 export function handleSpeedSelectClick() {
