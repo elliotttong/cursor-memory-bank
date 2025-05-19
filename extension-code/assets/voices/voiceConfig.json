@@ -7,7 +7,7 @@
         "language": "pt-BR",
         "gender": "Female",
         "provider": "deepinfra",
-        "isPremium": false
+        "isPremium": true
       },
       {
         "id": "pm_alex",
@@ -16,7 +16,7 @@
         "language": "pt-BR",
         "gender": "Male",
         "provider": "deepinfra",
-        "isPremium": false
+        "isPremium": true
       },
       {
         "id": "pm_santa",
@@ -25,7 +25,7 @@
         "language": "pt-BR",
         "gender": "Male",
         "provider": "deepinfra",
-        "isPremium": false
+        "isPremium": true
       },
       {
         "id": "zf_xiaobei",
@@ -34,7 +34,7 @@
         "language": "zh-CN",
         "gender": "Female",
         "provider": "deepinfra",
-        "isPremium": false
+        "isPremium": true
       },
       {
         "id": "zf_xiaoni",
@@ -43,7 +43,7 @@
         "language": "zh-CN",
         "gender": "Female",
         "provider": "deepinfra",
-        "isPremium": false
+        "isPremium": true
       },
       {
         "id": "zf_xiaoxiao",
@@ -52,7 +52,7 @@
         "language": "zh-CN",
         "gender": "Female",
         "provider": "deepinfra",
-        "isPremium": false
+        "isPremium": true
       },
       {
         "id": "zf_xiaoyi",
@@ -61,7 +61,7 @@
         "language": "zh-CN",
         "gender": "Female",
         "provider": "deepinfra",
-        "isPremium": false
+        "isPremium": true
       },
       {
         "id": "zm_yunjian",
@@ -70,7 +70,7 @@
         "language": "zh-CN",
         "gender": "Male",
         "provider": "deepinfra",
-        "isPremium": false
+        "isPremium": true
       },
       {
         "id": "zm_yunxia",
@@ -79,7 +79,7 @@
         "language": "zh-CN",
         "gender": "Male",
         "provider": "deepinfra",
-        "isPremium": false
+        "isPremium": true
       },
       {
         "id": "zm_yunxi",
@@ -88,7 +88,7 @@
         "language": "zh-CN",
         "gender": "Male",
         "provider": "deepinfra",
-        "isPremium": false
+        "isPremium": true
       },
       {
         "id": "zm_yunyang",
@@ -97,7 +97,7 @@
         "language": "zh-CN",
         "gender": "Male",
         "provider": "deepinfra",
-        "isPremium": false
+        "isPremium": true
       },
       {
         "id": "ff_siwis",
@@ -115,7 +115,7 @@
         "language": "hi-IN",
         "gender": "Female",
         "provider": "deepinfra",
-        "isPremium": false
+        "isPremium": true
       },
       {
         "id": "hf_beta",
@@ -124,7 +124,7 @@
         "language": "hi-IN",
         "gender": "Female",
         "provider": "deepinfra",
-        "isPremium": false
+        "isPremium": true
       },
       {
         "id": "hm_omega",
@@ -133,7 +133,7 @@
         "language": "hi-IN",
         "gender": "Male",
         "provider": "deepinfra",
-        "isPremium": false
+        "isPremium": true
       },
       {
         "id": "hm_psi",
@@ -142,7 +142,7 @@
         "language": "hi-IN",
         "gender": "Male",
         "provider": "deepinfra",
-        "isPremium": false
+        "isPremium": true
       },
       {
         "id": "if_sara",
@@ -151,7 +151,7 @@
         "language": "it-IT",
         "gender": "Female",
         "provider": "deepinfra",
-        "isPremium": false
+        "isPremium": true
       },
       {
         "id": "im_nicola",
@@ -160,7 +160,7 @@
         "language": "it-IT",
         "gender": "Male",
         "provider": "deepinfra",
-        "isPremium": false
+        "isPremium": true
       },
       {
         "id": "jf_alpha",
@@ -178,7 +178,7 @@
         "language": "ja-JP",
         "gender": "Female",
         "provider": "deepinfra",
-        "isPremium": false
+        "isPremium": true
       },
       {
         "id": "jf_tebukuro",
@@ -187,7 +187,7 @@
         "language": "ja-JP",
         "gender": "Female",
         "provider": "deepinfra",
-        "isPremium": false
+        "isPremium": true
       },
       {
         "id": "jf_nezumi",
@@ -196,7 +196,7 @@
         "language": "ja-JP",
         "gender": "Female",
         "provider": "deepinfra",
-        "isPremium": false
+        "isPremium": true
       },
       {
         "id": "jm_kumo",
@@ -205,7 +205,7 @@
         "language": "ja-JP",
         "gender": "Male",
         "provider": "deepinfra",
-        "isPremium": false
+        "isPremium": true
       },
       {
         "id": "ef_dora",
@@ -214,7 +214,7 @@
         "language": "es-ES",
         "gender": "Female",
         "provider": "deepinfra",
-        "isPremium": false
+        "isPremium": true
       },
       {
         "id": "em_alex",
@@ -223,7 +223,7 @@
         "language": "es-ES",
         "gender": "Male",
         "provider": "deepinfra",
-        "isPremium": false
+        "isPremium": true
       },
       {
         "id": "em_santa",
@@ -232,7 +232,7 @@
         "language": "es-ES",
         "gender": "Male",
         "provider": "deepinfra",
-        "isPremium": false
+        "isPremium": true
       },
       {
         "id": "bf_emma",
@@ -250,7 +250,7 @@
         "language": "en-GB",
         "gender": "Female",
         "provider": "deepinfra",
-        "isPremium": false
+        "isPremium": true
       },
       {
         "id": "bm_fable",
@@ -259,7 +259,7 @@
         "language": "en-GB",
         "gender": "Male",
         "provider": "deepinfra",
-        "isPremium": false
+        "isPremium": true
       },
       {
         "id": "bm_george",
@@ -268,7 +268,7 @@
         "language": "en-GB",
         "gender": "Male",
         "provider": "deepinfra",
-        "isPremium": false
+        "isPremium": true
       },
       {
         "id": "bm_lewis",
@@ -277,7 +277,7 @@
         "language": "en-GB",
         "gender": "Male",
         "provider": "deepinfra",
-        "isPremium": false
+        "isPremium": true
       },
       {
         "id": "bf_alice",
@@ -286,7 +286,7 @@
         "language": "en-GB",
         "gender": "Female",
         "provider": "deepinfra",
-        "isPremium": false
+        "isPremium": true
       },
       {
         "id": "bf_lily",
@@ -295,7 +295,7 @@
         "language": "en-GB",
         "gender": "Female",
         "provider": "deepinfra",
-        "isPremium": false
+        "isPremium": true
       },
       {
         "id": "bm_daniel",
@@ -304,7 +304,7 @@
         "language": "en-GB",
         "gender": "Male",
         "provider": "deepinfra",
-        "isPremium": false
+        "isPremium": true
       },
       {
         "id": "af_heart",
@@ -393,7 +393,7 @@
         "country": "USA",
         "gender": "female",
         "provider": "deepinfra",
-        "isPremium": false
+        "isPremium": true
       },
       {
         "id": "af_nova",
@@ -401,7 +401,7 @@
         "country": "USA",
         "gender": "female",
         "provider": "deepinfra",
-        "isPremium": false
+        "isPremium": true
       },
       {
         "id": "af_sky",
@@ -409,7 +409,7 @@
         "country": "USA",
         "gender": "female",
         "provider": "deepinfra",
-        "isPremium": false
+        "isPremium": true
       },
       {
         "id": "af_jessica",
@@ -417,7 +417,7 @@
         "country": "USA",
         "gender": "female",
         "provider": "deepinfra",
-        "isPremium": false
+        "isPremium": true
       },
       {
         "id": "af_river",
@@ -425,7 +425,7 @@
         "country": "USA",
         "gender": "female",
         "provider": "deepinfra",
-        "isPremium": false
+        "isPremium": true
       },
       {
         "id": "am_echo",
@@ -433,7 +433,7 @@
         "country": "USA",
         "gender": "male",
         "provider": "deepinfra",
-        "isPremium": false
+        "isPremium": true
       },
       {
         "id": "am_eric",
@@ -441,7 +441,7 @@
         "country": "USA",
         "gender": "male",
         "provider": "deepinfra",
-        "isPremium": false
+        "isPremium": true
       },
       {
         "id": "am_liam",
@@ -449,7 +449,7 @@
         "country": "USA",
         "gender": "male",
         "provider": "deepinfra",
-        "isPremium": false
+        "isPremium": true
       },
       {
         "id": "am_onyx",
@@ -457,7 +457,7 @@
         "country": "USA",
         "gender": "male",
         "provider": "deepinfra",
-        "isPremium": false
+        "isPremium": true
       },
       {
         "id": "am_santa",
@@ -465,7 +465,7 @@
         "country": "USA",
         "gender": "male",
         "provider": "deepinfra",
-        "isPremium": false
+        "isPremium": true
       },
       {
         "id": "am_adam",
@@ -473,7 +473,7 @@
         "country": "USA",
         "gender": "male",
         "provider": "deepinfra",
-        "isPremium": false
+        "isPremium": true
       },
       {
         "id": "browser_default",

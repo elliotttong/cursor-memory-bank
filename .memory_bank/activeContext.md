@@ -15,11 +15,11 @@
 - [x] Refactor ProviderManager for config-driven voice management
 - [x] Refactor UI to use ProviderManager for all voice data
 - [x] Refactor playback and background logic for composite key routing
-- [ ] Add defensive/fallback logic
-- [ ] Test all flows and edge cases
+- [x] Add defensive/fallback logic (robust handling of missing voices/providers, object URL revocation)
+- [x] Test all flows and edge cases (no critical bugs remain)
 
 **Status:**
-* Code now uses the new, robust, config-driven, composite-key-based flow. Next: test all flows and add defensive/fallback logic if needed.
+* All core refactor tasks are complete. The system is robust, defensive, and future-proof. Prefetching and memory management are working as designed. Audio caching and advanced UI polish are next-level optimizations.
 
 **Composite Key Update:**
 * All voice lookups, selection, and storage use composite keys (provider:id) to ensure uniqueness and future-proof the system against provider/voice id collisions. This is now a core part of the architecture and implementation plan.
@@ -36,6 +36,12 @@
 
 🟢 **Step 3: Update playback and highlighting routing to use composite key for provider/voice lookup.**
 - [x] Refactor playback and highlight sync logic to use the selected composite key for provider/voice lookup and routing.
+
+🟢 **Step 4: Add defensive/fallback logic.**
+- [x] Defensive handling for missing voices/providers and memory leaks (object URL revocation).
+
+🟢 **Step 5: Test all flows and edge cases.**
+- [x] All major flows tested; no critical bugs remain. Prefetching is robust. Audio caching is a future optimization.
 
 📋 **Overview of Changes**
 - Voice selection and UI will be provider-agnostic: all voices are shown in a single list (grouped by country, not provider).
@@ -102,11 +108,12 @@
     * Actual UI implementation is the next step
 
 **Next Steps:**
-1. Implement the voice selector UI component that integrates with the widget
-2. Complete the speed control UI (T20)
-3. Implement audio caching (T22)
-4. Add estimated time remaining display (T18)
-5. Refactor all voice selection, lookup, and storage to use composite keys (provider:id)
+- (Optional) Implement audio caching for pre-fetched audio.
+- Polish UI (premium lockout, avatars, etc.)
+- Add advanced features as per roadmap.
+
+**Summary:**
+- The provider abstraction, composite key routing, and config-driven voice management are complete and robust. The system is ready for polish and advanced features.
 
 **Architecture:**
 * **Provider Interface:** Defines common voice structure and provider methods
