@@ -5,8 +5,7 @@ import { useState } from "react"
 import { ArrowRight, Headphones, Brain, Coffee, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { toast } from "@/components/ui/use-toast"
-import { Toaster } from "@/components/ui/toaster"
+import { toast } from "sonner"
 
 export default function Home() {
   const [email, setEmail] = useState("")
@@ -18,9 +17,8 @@ export default function Home() {
 
     // Simulate API call
     setTimeout(() => {
-      toast({
-        title: "You're in! 🎉",
-        description: "I'll DM you when it's ready. - Jake",
+      toast.success("You're in! 🎉", {
+        description: "I'll DM you when it's ready. - Elliott",
       })
       setEmail("")
       setIsSubmitting(false)
@@ -34,15 +32,15 @@ export default function Home() {
         <header className="mb-8 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Headphones className="h-5 w-5 text-rose-500" />
-            <span className="font-medium">audioReader</span>
+            <span className="font-medium">FlowRead</span>
           </div>
           <a
-            href="https://twitter.com/jakeaudioguy"
+            href="https://twitter.com/elliottinpublic"
             target="_blank"
             rel="noopener noreferrer"
             className="text-sm text-zinc-500 hover:text-rose-500"
           >
-            @jakeaudioguy
+            @elliottinpublic
           </a>
         </header>
 
@@ -132,7 +130,7 @@ export default function Home() {
         {/* Personal note */}
         <div className="mb-10 rounded-xl bg-zinc-100 p-6">
           <div className="mb-4 flex items-center gap-3">
-            <img src="/placeholder.svg?height=40&width=40" alt="Jake" className="h-10 w-10 rounded-full object-cover" />
+            <img src="https://pbs.twimg.com/profile_images/1769737695339839488/3R01GAtX_400x400.jpg" alt="Elliott" className="h-10 w-10 rounded-full object-cover" />
             <div>
               <p className="font-medium">why I'm making this</p>
               <p className="text-sm text-zinc-500">the honest truth</p>
@@ -257,19 +255,15 @@ export default function Home() {
 
         {/* Footer */}
         <footer className="mt-16 border-t border-zinc-200 pt-6 text-center text-sm text-zinc-500">
-          <p>© {new Date().getFullYear()} audioReader • Made by Jake with ☕ in Brooklyn</p>
+          <p>FlowRead &copy; {new Date().getFullYear()} &bull; Made by <a href="https://twitter.com/elliottinpublic" target="_blank" rel="noopener noreferrer" className="hover:text-rose-500">@elliottinpublic</a> with ❤️ in public</p>
           <div className="mt-2 flex justify-center gap-4">
-            <a href="https://twitter.com/jakeaudioguy" className="hover:text-rose-500">
-              Twitter
+            <a href="https://twitter.com/elliottinpublic" target="_blank" rel="noopener noreferrer" className="hover:text-rose-500">
+              Follow @elliottinpublic on X
             </a>
-            <span>•</span>
-            <a href="mailto:jake@audioreader.xyz" className="hover:text-rose-500">
-              Email me
-            </a>
+            {/* Optional: Add other links here if you want, e.g., a contact email or different social media */}
           </div>
         </footer>
       </main>
-      <Toaster />
     </div>
   )
 }
