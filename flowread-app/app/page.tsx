@@ -1,17 +1,18 @@
 "use client"
 
 import type React from "react"
-import { ArrowRight, Headphones, Brain, Coffee, Sparkles } from "lucide-react"
+import { ArrowRight, Headphones, Brain, Coffee, Sparkles, Twitter, Instagram, Linkedin } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import Image from 'next/image'
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-zinc-50 font-sans text-zinc-900">
       <header className="container mx-auto mb-8 flex max-w-2xl items-center justify-between px-4 py-8">
         <div className="flex items-center gap-2">
-          <Headphones className="h-5 w-5 text-rose-500" />
-          <span className="font-medium">FlowRead</span>
+          <Image src="/flowread-logo.png" alt="FlowRead Logo" width={32} height={32} className="h-8 w-8" />
+          <span className="font-semibold text-lg">FlowRead</span>
         </div>
         <a
           href="https://twitter.com/elliottinpublic"
@@ -31,7 +32,7 @@ export default function Home() {
           Too Much Text? Just Listen to It.
         </h1>
         <p className="mb-8 text-lg text-zinc-700 md:text-xl">
-          Finally, a way to actually get through that reading list.
+          Finally, a way to actually get through your reading list.
         </p>
         <form
           className="launchlist-form flex w-full max-w-md flex-col items-center gap-3 sm:flex-row"
@@ -133,23 +134,55 @@ export default function Home() {
         {/* Personal note */}
         <div className="mb-10 rounded-xl bg-zinc-100 p-6">
           <div className="mb-4 flex items-center gap-3">
-            <img src="https://pbs.twimg.com/profile_images/1769737695339839488/3R01GAtX_400x400.jpg" alt="Elliott" className="h-10 w-10 rounded-full object-cover" />
+            <Image src="/ElliottTong.png" alt="Elliott Tong" width={48} height={48} className="h-12 w-12 rounded-full object-cover" />
             <div>
               <p className="font-medium">why I'm making this</p>
               <p className="text-sm text-zinc-500">the honest truth</p>
             </div>
           </div>
-          <p className="mb-4 text-zinc-700">
-            I was paying for like 3 different apps to do this stuff and it was still a pain. Plus I kept forgetting
-            everything I read.
+          <p className="mb-6 text-zinc-700 font-bold">
+            I was drowning in information...
           </p>
-          <p className="mb-4 text-zinc-700">
-            Started building this for myself, showed some friends, and they were like "dude I need this yesterday" so
-            here we are.
+          <p className="mb-6 text-zinc-700">
+            Between work articles, tech docs, and interesting reads, I was paying for multiple apps trying to keep up - but nothing quite worked.
           </p>
-          <p className="text-zinc-700">
-            Not trying to build some massive startup, just want to make something useful that doesn't suck.
+          <p className="mb-6 text-zinc-700">
+            I'd read something, think "this is important," and then... poof. Gone from my brain.
           </p>
+          
+          <p className="mb-6 text-zinc-700 font-bold">
+            So I started building FlowRead for myself.
+          </p>
+          <p className="mb-6 text-zinc-700">
+            When I showed it to friends, their reaction was immediate: "Why doesn't this exist already?" and "I need this yesterday."
+          </p>
+          <p className="mb-6 text-zinc-700">
+            That's when I knew I wasn't alone in this struggle.
+          </p>
+          
+          <p className="mb-6 text-zinc-700">
+            I'm not here to build the next unicorn.
+          </p>
+          <p className="mb-6 text-zinc-700">
+            I just want to solve a real problem in a way that actually works.
+          </p>
+          <p className="mb-6 text-zinc-700 font-bold">
+            No fluff, no BS - just a tool that helps you learn and remember more of what matters.
+          </p>
+
+          {/* Option 3: Integrated Social Links in Personal Note */}
+          <div className="mt-6 mb-6 border-t border-zinc-200 pt-4">
+            <p className="mb-3 text-sm text-zinc-600 font-bold"> Elliott Tong, creator of FlowRead</p>
+            <p className="mb-3 text-sm text-zinc-600">Follow my progress (and occasional meltdowns):</p>
+            <div className="flex items-center justify-left gap-4">
+              <a href="https://x.com/ElliottInPublic" target="_blank" rel="noopener noreferrer" className="text-zinc-500 hover:text-rose-500"><Twitter className="h-5 w-5" /></a>
+              <a href="https://www.instagram.com/elliott.tong/" target="_blank" rel="noopener noreferrer" className="text-zinc-500 hover:text-rose-500"><Instagram className="h-5 w-5" /></a>
+              <a href="https://www.linkedin.com/in/elliott-tong/" target="_blank" rel="noopener noreferrer" className="text-zinc-500 hover:text-rose-500"><Linkedin className="h-5 w-5" /></a>
+              <a href="https://www.tiktok.com/@elliott.tong" target="_blank" rel="noopener noreferrer" className="text-sm text-zinc-500 hover:text-rose-500">TikTok</a>
+            </div>
+          </div>
+          
+
         </div>
 
         {/* Progress */}
@@ -196,41 +229,6 @@ export default function Home() {
           </p>
         </div>
 
-        {/* Waitlist */}
-        <div className="mb-10 rounded-xl bg-rose-50 p-6">
-          <div className="mb-4 flex items-center gap-2">
-            <Coffee className="h-5 w-5 text-rose-500" />
-            <h2 className="text-xl font-semibold">wanna try it?</h2>
-          </div>
-          <p className="mb-4 text-zinc-700">
-            drop your email below and I'll hit you up when the beta is ready (and give you 50% off for life if you
-            stick around).
-          </p>
-          <form
-            className="launchlist-form flex items-center gap-2"
-            action="https://getlaunchlist.com/s/bexITC"
-            method="POST"
-          >
-            <Input
-              type="email"
-              name="email"
-              placeholder="your@email.com"
-              className="flex-grow bg-white focus:border-rose-500 focus:ring-rose-500"
-              required
-            />
-            <Button
-              type="submit"
-              className="bg-rose-500 text-white hover:bg-rose-600"
-            >
-              join the waitlist
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          </form>
-          <p className="mt-2 text-xs text-zinc-500">
-            <span className="font-medium">183 people</span> already on the waitlist. You're in good company.
-          </p>
-        </div>
-
         {/* Social proof */}
         <div className="mb-10">
           <h2 className="mb-4 text-xl font-semibold">what early testers are saying:</h2>
@@ -256,7 +254,16 @@ export default function Home() {
             That's it. No fancy marketing BS. Just a useful tool I think you'll like.
           </p>
           <Button
-            onClick={() => document.querySelector('div.bg-rose-50 input[name="email"]')?.scrollIntoView({ behavior: "smooth" })}
+            onClick={() => {
+              window.scrollTo({ top: 0, behavior: "smooth" });
+              // Slight delay to ensure scrolling has initiated before focus
+              setTimeout(() => {
+                const heroEmailInput = document.querySelector('section.flex input[name="email"]');
+                if (heroEmailInput) {
+                  (heroEmailInput as HTMLInputElement).focus();
+                }
+              }, 300); // Adjust delay if needed, or use a promise with scrollend event if browsers support it widely
+            }}
             className="bg-rose-500 text-white hover:bg-rose-600"
           >
             Get on the waitlist
@@ -277,7 +284,13 @@ export default function Home() {
               @elliottinpublic
             </a>
           </p>
-          <p className="mt-1 text-xs text-zinc-500">
+          {/* Option 1: Enhanced Footer Links */}
+          <div className="mt-4 flex items-center justify-center gap-4">
+            <a href="https://www.instagram.com/elliott.tong/" target="_blank" rel="noopener noreferrer" className="text-zinc-500 hover:text-rose-500"><Instagram className="h-5 w-5" /></a>
+            <a href="https://www.linkedin.com/in/elliott-tong/" target="_blank" rel="noopener noreferrer" className="text-zinc-500 hover:text-rose-500"><Linkedin className="h-5 w-5" /></a>
+            <a href="https://www.tiktok.com/@elliott.tong" target="_blank" rel="noopener noreferrer" className="text-sm text-zinc-500 hover:text-rose-500">TikTok</a>
+          </div>
+          <p className="mt-4 text-xs text-zinc-500">
             FlowRead - Helping you conquer your reading list, one audio at a time.
           </p>
         </div>
