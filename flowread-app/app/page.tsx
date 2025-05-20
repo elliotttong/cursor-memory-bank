@@ -1,12 +1,19 @@
 "use client"
 
-import type React from "react"
+import React, { useEffect } from "react"
 import { ArrowRight, Headphones, Brain, Coffee, Sparkles, Twitter, Instagram, Linkedin } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Image from 'next/image'
 
 export default function Home() {
+  useEffect(() => {
+    const heroEmailInput = document.querySelector('section.flex input[name="email"]');
+    if (heroEmailInput) {
+      (heroEmailInput as HTMLInputElement).focus();
+    }
+  }, []);
+
   return (
     <div className="min-h-screen bg-zinc-50 font-sans text-zinc-900">
       <header className="container mx-auto mb-8 flex max-w-2xl items-center justify-between px-4 py-8">
