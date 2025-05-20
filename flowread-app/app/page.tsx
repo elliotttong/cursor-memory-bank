@@ -1,103 +1,275 @@
-import Image from "next/image";
+"use client"
+
+import type React from "react"
+import { useState } from "react"
+import { ArrowRight, Headphones, Brain, Coffee, Sparkles } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { toast } from "@/components/ui/use-toast"
+import { Toaster } from "@/components/ui/toaster"
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [email, setEmail] = useState("")
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+
+    // Simulate API call
+    setTimeout(() => {
+      toast({
+        title: "You're in! 🎉",
+        description: "I'll DM you when it's ready. - Jake",
+      })
+      setEmail("")
+      setIsSubmitting(false)
+    }, 1000)
+  }
+
+  return (
+    <div className="min-h-screen bg-zinc-50 font-sans text-zinc-900">
+      <main className="container mx-auto max-w-2xl px-4 py-8">
+        {/* Header */}
+        <header className="mb-8 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Headphones className="h-5 w-5 text-rose-500" />
+            <span className="font-medium">audioReader</span>
+          </div>
           <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+            href="https://twitter.com/jakeaudioguy"
             target="_blank"
             rel="noopener noreferrer"
+            className="text-sm text-zinc-500 hover:text-rose-500"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
+            @jakeaudioguy
           </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+        </header>
+
+        {/* Hero */}
+        <div className="mb-10">
+          <div className="mb-2 inline-block rounded-full bg-rose-100 px-3 py-1 text-xs font-medium text-rose-800">
+            currently building this instead of touching grass
+          </div>
+          <h1 className="mb-4 text-3xl font-bold leading-tight md:text-4xl">
+            ok so I'm making this thing that turns boring text into audio you can actually listen to
+          </h1>
+          <p className="text-lg text-zinc-700">because who has time to read all that stuff? not me lol</p>
         </div>
+
+        {/* Problem statement */}
+        <div className="mb-10 rounded-xl bg-white p-6 shadow-sm">
+          <h2 className="mb-4 text-xl font-semibold">the problem (we all have it)</h2>
+          <div className="space-y-4">
+            <div className="flex items-start gap-3">
+              <div className="mt-1 text-lg">😩</div>
+              <p className="text-zinc-700">
+                <span className="font-medium">too much to read</span> - articles, docs, reddit threads, newsletters that
+                pile up in your inbox...
+              </p>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="mt-1 text-lg">⏰</div>
+              <p className="text-zinc-700">
+                <span className="font-medium">no time</span> - between work, gym, doom scrolling, and trying to have a
+                life
+              </p>
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="mt-1 text-lg">🧠</div>
+              <p className="text-zinc-700">
+                <span className="font-medium">information overload</span> - can't remember half the stuff you read
+                anyway
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Solution */}
+        <div className="mb-10">
+          <h2 className="mb-4 text-xl font-semibold">so I built this chrome extension that:</h2>
+          <div className="space-y-3">
+            <div className="rounded-lg bg-white p-4 shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-rose-100">
+                  <Headphones className="h-4 w-4 text-rose-500" />
+                </div>
+                <div>
+                  <p className="font-medium">turns any text into audio</p>
+                  <p className="text-sm text-zinc-500">articles, blog posts, docs, reddit threads, whatever</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-lg bg-white p-4 shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-rose-100">
+                  <Brain className="h-4 w-4 text-rose-500" />
+                </div>
+                <div>
+                  <p className="font-medium">makes it easy to remember stuff</p>
+                  <p className="text-sm text-zinc-500">AI summaries, highlights, notes you'll actually look at later</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-lg bg-white p-4 shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-rose-100">
+                  <Sparkles className="h-4 w-4 text-rose-500" />
+                </div>
+                <div>
+                  <p className="font-medium">works everywhere</p>
+                  <p className="text-sm text-zinc-500">
+                    queue articles like spotify, listen on your commute, at the gym, wherever
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Personal note */}
+        <div className="mb-10 rounded-xl bg-zinc-100 p-6">
+          <div className="mb-4 flex items-center gap-3">
+            <img src="/placeholder.svg?height=40&width=40" alt="Jake" className="h-10 w-10 rounded-full object-cover" />
+            <div>
+              <p className="font-medium">why I'm making this</p>
+              <p className="text-sm text-zinc-500">the honest truth</p>
+            </div>
+          </div>
+          <p className="mb-4 text-zinc-700">
+            I was paying for like 3 different apps to do this stuff and it was still a pain. Plus I kept forgetting
+            everything I read.
+          </p>
+          <p className="mb-4 text-zinc-700">
+            Started building this for myself, showed some friends, and they were like "dude I need this yesterday" so
+            here we are.
+          </p>
+          <p className="text-zinc-700">
+            Not trying to build some massive startup, just want to make something useful that doesn't suck.
+          </p>
+        </div>
+
+        {/* Progress */}
+        <div className="mb-10">
+          <h2 className="mb-4 text-xl font-semibold">where it's at right now:</h2>
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <div className="h-6 w-6 rounded-full bg-green-100 text-center text-sm font-medium text-green-600">✓</div>
+              <p className="text-zinc-700">text-to-speech that doesn't sound like a robot from 2010</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="h-6 w-6 rounded-full bg-green-100 text-center text-sm font-medium text-green-600">✓</div>
+              <p className="text-zinc-700">highlighting words as they're read (so you can follow along)</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="h-6 w-6 rounded-full bg-green-100 text-center text-sm font-medium text-green-600">✓</div>
+              <p className="text-zinc-700">basic controls (play/pause, skip forward/back)</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="h-6 w-6 rounded-full bg-yellow-100 text-center text-sm font-medium text-yellow-600">
+                ⚡
+              </div>
+              <p className="text-zinc-700">article library & queue system (working on it now)</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="h-6 w-6 rounded-full bg-zinc-100 text-center text-sm font-medium text-zinc-400">...</div>
+              <p className="text-zinc-500">AI summaries & learning tools (coming soon)</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Real talk */}
+        <div className="mb-10 rounded-xl border border-zinc-200 bg-white p-6">
+          <h2 className="mb-4 text-xl font-semibold">real talk</h2>
+          <p className="mb-4 text-zinc-700">
+            I'm aiming to launch the beta in June. It'll be free to try with basic features.
+          </p>
+          <p className="mb-4 text-zinc-700">
+            Premium stuff (like AI summaries, unlimited library) will cost something, but way less than what I was
+            paying for multiple apps.
+          </p>
+          <p className="text-zinc-700">
+            Early supporters get 50% off for life because you're awesome and believe in this thing.
+          </p>
+        </div>
+
+        {/* Waitlist */}
+        <div className="mb-10 rounded-xl bg-rose-50 p-6">
+          <div className="mb-4 flex items-center gap-2">
+            <Coffee className="h-5 w-5 text-rose-500" />
+            <h2 className="text-xl font-semibold">wanna try it?</h2>
+          </div>
+          <p className="mb-4 text-zinc-700">
+            Drop your email and I'll personally let you know when the beta is ready. No spam, I promise.
+          </p>
+          <form className="flex flex-col gap-3 sm:flex-row" onSubmit={handleSubmit}>
+            <Input
+              type="email"
+              placeholder="you@email.com"
+              className="flex-1 border-zinc-300 bg-white text-zinc-900 placeholder:text-zinc-400"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <Button type="submit" className="bg-rose-500 text-white hover:bg-rose-600" disabled={isSubmitting}>
+              {isSubmitting ? "Adding you..." : "Get early access"}
+              {!isSubmitting && <ArrowRight className="ml-2 h-4 w-4" />}
+            </Button>
+          </form>
+          <p className="mt-2 text-xs text-zinc-500">
+            <span className="font-medium">183 people</span> already on the waitlist. You're in good company.
+          </p>
+        </div>
+
+        {/* Social proof */}
+        <div className="mb-10">
+          <h2 className="mb-4 text-xl font-semibold">what early testers are saying:</h2>
+          <div className="space-y-4">
+            <div className="rounded-lg bg-white p-4 shadow-sm">
+              <p className="mb-2 text-zinc-700">
+                "This is exactly what I needed. I have so many articles saved that I never get around to reading."
+              </p>
+              <p className="text-sm font-medium text-zinc-500">- Alex, grad student</p>
+            </div>
+            <div className="rounded-lg bg-white p-4 shadow-sm">
+              <p className="mb-2 text-zinc-700">
+                "The queue feature is a game changer. I listen to articles while walking my dog now."
+              </p>
+              <p className="text-sm font-medium text-zinc-500">- Jamie, software dev</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Final CTA */}
+        <div className="mb-10 rounded-xl border-2 border-dashed border-rose-300 bg-white p-6 text-center">
+          <p className="mb-4 text-lg font-medium">
+            That's it. No fancy marketing BS. Just a useful tool I think you'll like.
+          </p>
+          <Button
+            onClick={() => document.querySelector('input[type="email"]')?.scrollIntoView({ behavior: "smooth" })}
+            className="bg-rose-500 text-white hover:bg-rose-600"
+          >
+            Get on the waitlist
+          </Button>
+        </div>
+
+        {/* Footer */}
+        <footer className="mt-16 border-t border-zinc-200 pt-6 text-center text-sm text-zinc-500">
+          <p>© {new Date().getFullYear()} audioReader • Made by Jake with ☕ in Brooklyn</p>
+          <div className="mt-2 flex justify-center gap-4">
+            <a href="https://twitter.com/jakeaudioguy" className="hover:text-rose-500">
+              Twitter
+            </a>
+            <span>•</span>
+            <a href="mailto:jake@audioreader.xyz" className="hover:text-rose-500">
+              Email me
+            </a>
+          </div>
+        </footer>
       </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      <Toaster />
     </div>
-  );
+  )
 }
