@@ -1,5 +1,5 @@
 # Landing Page System Patterns
-
+ 
 - **Project Structure:** Standard Next.js project structure will be followed.
 - **Component Model:** React components, adhering to Next.js conventions (e.g., pages, components directory).
 - **Deployment:** Automated deployments via Vercel, integrating with a Git repository.

@@ -8,34 +8,56 @@ import { Input } from "@/components/ui/input"
 export default function Home() {
   return (
     <div className="min-h-screen bg-zinc-50 font-sans text-zinc-900">
-      <main className="container mx-auto max-w-2xl px-4 py-8">
-        {/* Header */}
-        <header className="mb-8 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Headphones className="h-5 w-5 text-rose-500" />
-            <span className="font-medium">FlowRead</span>
-          </div>
-          <a
-            href="https://twitter.com/elliottinpublic"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm text-zinc-500 hover:text-rose-500"
-          >
-            @elliottinpublic
-          </a>
-        </header>
-
-        {/* Hero */}
-        <div className="mb-10">
-          <div className="mb-2 inline-block rounded-full bg-rose-100 px-3 py-1 text-xs font-medium text-rose-800">
-            currently building this instead of touching grass
-          </div>
-          <h1 className="mb-4 text-3xl font-bold leading-tight md:text-4xl">
-            ok so I'm making this thing that turns boring text into audio you can actually listen to
-          </h1>
-          <p className="text-lg text-zinc-700">because who has time to read all that stuff? not me lol</p>
+      <header className="container mx-auto mb-8 flex max-w-2xl items-center justify-between px-4 py-8">
+        <div className="flex items-center gap-2">
+          <Headphones className="h-5 w-5 text-rose-500" />
+          <span className="font-medium">FlowRead</span>
         </div>
+        <a
+          href="https://twitter.com/elliottinpublic"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-sm text-zinc-500 hover:text-rose-500"
+        >
+          @elliottinpublic
+        </a>
+      </header>
 
+      <section className="flex min-h-[calc(100vh-120px)] flex-col items-center justify-center text-center container mx-auto max-w-2xl px-4 py-8">
+        <div className="mb-4 inline-block rounded-full bg-rose-100 px-4 py-2 text-sm font-medium text-rose-800 shadow-sm">
+          Nice. You found it.
+        </div>
+        <h1 className="mb-4 text-4xl font-bold leading-tight text-zinc-900 md:text-5xl">
+          Too Much Text? Just Listen to It.
+        </h1>
+        <p className="mb-8 text-lg text-zinc-700 md:text-xl">
+          Finally, a way to actually get through that reading list.
+        </p>
+        <form
+          className="launchlist-form flex w-full max-w-md flex-col items-center gap-3 sm:flex-row"
+          action="https://getlaunchlist.com/s/bexITC"
+          method="POST"
+          // @ts-ignore - Adding raw HTML attribute if not in TS types
+          referrerpolicy="no-referrer-when-downgrade"
+        >
+          <Input
+            type="email"
+            name="email"
+            placeholder="your@email.com"
+            className="w-full flex-grow bg-white focus:border-rose-500 focus:ring-rose-500 sm:w-auto"
+            required
+          />
+          <Button
+            type="submit"
+            variant="default" // Assuming 'default' is your primary button style
+            className="w-full bg-rose-500 text-white hover:bg-rose-600 sm:w-auto"
+          >
+            Lemme Know When It Drops <ArrowRight className="ml-2 h-4 w-4" />
+          </Button>
+        </form>
+      </section>
+
+      <main className="container mx-auto max-w-2xl px-4 py-8">
         {/* Problem statement */}
         <div className="mb-10 rounded-xl bg-white p-6 shadow-sm">
           <h2 className="mb-4 text-xl font-semibold">the problem (we all have it)</h2>
@@ -234,24 +256,32 @@ export default function Home() {
             That's it. No fancy marketing BS. Just a useful tool I think you'll like.
           </p>
           <Button
-            onClick={() => document.querySelector('input[type="email"]')?.scrollIntoView({ behavior: "smooth" })}
+            onClick={() => document.querySelector('div.bg-rose-50 input[name="email"]')?.scrollIntoView({ behavior: "smooth" })}
             className="bg-rose-500 text-white hover:bg-rose-600"
           >
             Get on the waitlist
           </Button>
         </div>
-
-        {/* Footer */}
-        <footer className="mt-16 border-t border-zinc-200 pt-6 text-center text-sm text-zinc-500">
-          <p>FlowRead &copy; {new Date().getFullYear()} &bull; Made by <a href="https://twitter.com/elliottinpublic" target="_blank" rel="noopener noreferrer" className="hover:text-rose-500">@elliottinpublic</a> with ❤️ in public</p>
-          <div className="mt-2 flex justify-center gap-4">
-            <a href="https://twitter.com/elliottinpublic" target="_blank" rel="noopener noreferrer" className="hover:text-rose-500">
-              Follow @elliottinpublic on X
-            </a>
-            {/* Optional: Add other links here if you want, e.g., a contact email or different social media */}
-          </div>
-        </footer>
       </main>
+
+      <footer className="bg-zinc-100 py-8 text-center">
+        <div className="container mx-auto px-4">
+          <p className="text-sm text-zinc-600">
+            made with ❤️ in public by{" "}
+            <a
+              href="https://twitter.com/elliottinpublic"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-rose-500 hover:text-rose-600"
+            >
+              @elliottinpublic
+            </a>
+          </p>
+          <p className="mt-1 text-xs text-zinc-500">
+            FlowRead - Helping you conquer your reading list, one audio at a time.
+          </p>
+        </div>
+      </footer>
     </div>
   )
 }
