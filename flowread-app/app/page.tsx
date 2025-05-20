@@ -216,22 +216,24 @@ export default function Home() {
 
         {/* Real talk */}
         <div className="mb-10 rounded-xl border border-zinc-200 bg-white p-6">
-          <h2 className="mb-4 text-xl font-semibold">real talk</h2>
+          <h2 className="mb-4 text-xl font-semibold">Real Talk on the Beta</h2>
           <p className="mb-4 text-zinc-700">
-            I'm aiming to launch the beta in June. It'll be free to try with basic features.
+            Alright, here's the deal with the FlowRead beta, coming this June: It's gonna be totally free to use.
           </p>
           <p className="mb-4 text-zinc-700">
-            Premium stuff (like AI summaries, unlimited library) will cost something, but way less than what I was
-            paying for multiple apps.
+            This is an early MVP (Minimum Viable Product) release. That means the core text-to-audio will be solid and hopefully make your life easier straight away. But, full disclosure, it won't have all the bells and whistles I'm dreaming up just yet – stuff like AI summaries or a massive built-in library will come later.
+          </p>
+          <p className="mb-4 text-zinc-700">
+            The fancy natural-sounding voices? You'll get to use them, but there'll be a pretty generous weekly limit. Reason being, they cost me a bit to run, and I want to keep the main experience free for as many folks as possible during the beta.
           </p>
           <p className="text-zinc-700">
-            Early supporters get 50% off for life because you're awesome and believe in this thing.
+            My main goal right now is to get this into your hands, see how you use it, and build something genuinely useful based on your feedback. No hype, just a tool I hope you'll love.
           </p>
         </div>
 
         {/* Social proof */}
         <div className="mb-10">
-          <h2 className="mb-4 text-xl font-semibold">what early testers are saying:</h2>
+          <h2 className="mb-4 text-xl font-semibold">hear what early users love</h2>
           <div className="space-y-4">
             <div className="rounded-lg bg-white p-4 shadow-sm">
               <p className="mb-2 text-zinc-700">
