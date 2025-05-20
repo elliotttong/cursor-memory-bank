@@ -21,7 +21,7 @@
 
 ## Phase 3: UI Refinement & Core Features
 
-### Provider-Agnostic, Voice-Centric Architecture Plan (Updated)
+### Provider-Agnostic, Voice-Centric Architecture Plan (Completed)
 
 📋 **Overview of Changes**
 - All voices are loaded from voiceConfig.json at startup by ProviderManager.
@@ -89,6 +89,54 @@
 
 **Summary:**
 - The provider abstraction, composite key routing, and config-driven voice management are complete and robust. The system is ready for polish and advanced features.
+
+## Phase X: Voice Selector UI Revamp (New Focus)
+
+**Goal:** Implement a new, more user-friendly voice selector UI with tabbed navigation (Featured, Recent, All Voices), country-based grouping, and improved voice discovery, taking inspiration from Speechify's UI patterns. Reference `activeContext.md` for UI feature details.
+
+**Files to Modify:**
+- `extension-code/modules/ui/voiceSelector.js` (Primary focus)
+- `extension-code/assets/voices/voiceConfig.json` (For `isFeatured` flag)
+- (Potentially) CSS files for new styles.
+
+**Task Checklist & Implementation Phases:**
+
+**Phase 1: Data & Core Structure**
+- [ ] **T_UI_01:** Add `isFeatured` boolean property to voices in `voiceConfig.json`. Mark a few diverse voices as featured.
+- [ ] **T_UI_02:** Plan for "Recent" Voices: Decide on `localStorage` key and structure (array of last ~5 composite voice keys). (Implementation later)
+- [ ] **T_UI_03:** Implement initial HTML structure in `voiceSelector.js` for the main panel, header (title, close), tab navigation (Featured, Recent, All Voices), and empty tab content panes.
+
+**Phase 2: "All Voices" Tab - Core Functionality**
+- [ ] **T_UI_04:** Grouping & Rendering: In `voiceSelector.js`, fetch voices via `providerManager.getAllVoices()`, group them by `voice.country`.
+- [ ] **T_UI_05:** For each country in "All Voices", render a country header and then a list of voice items (`div.voice-item`) showing name, language, gender. Add `data-voice-key`.
+- [ ] **T_UI_06:** Style voice items with placeholders for avatar/icon, premium tag, and selected state indicator.
+- [ ] **T_UI_07:** Make the `all-voices-pane` scrollable via CSS.
+- [ ] **T_UI_08:** Implement voice selection logic: Attach click listener to `.voice-item`, call `providerManager.setSelectedVoice(voiceKey)`, re-render/update selected state, and update main widget avatar.
+
+**Phase 3: Tab Switching & "Featured" Tab**
+- [ ] **T_UI_09:** Implement tab switching logic: Click listeners on tab buttons to show/hide corresponding panes and update active tab style.
+- [ ] **T_UI_10:** Populate "Featured" Tab: Create function to filter `providerManager.getAllVoices()` for `isFeatured: true`, render voice items (similar to "All Voices") into the `featured-voices-pane`.
+- [ ] **T_UI_11:** Attach voice selection logic to "Featured" tab items.
+
+**Phase 4: "All Voices" - Country Selector & Scroll-to**
+- [ ] **T_UI_12:** Country Selector UI: Add `div#country-selector-button` (e.g., "All Countries") and a hidden `div#country-dropdown-list`.
+- [ ] **T_UI_13:** Populate Country Selector: Get unique country list, create `div.country-dropdown-item` for each with `data-country-name`.
+- [ ] **T_UI_14:** Country Selector Interaction: Click on button toggles dropdown. Click on item updates button text, hides dropdown.
+- [ ] **T_UI_15:** Scroll-to Logic: On country selection, find corresponding country header in voice list (add `data-country-scroll-target`) and use `element.scrollIntoView()`.
+
+**Phase 5: "Recent" Tab (Implement after others)**
+- [ ] **T_UI_16:** Recent Voices Storage: On voice selection, save composite key to `localStorage` array (max N items, newest first).
+- [ ] **T_UI_17:** Populate "Recent" Tab: On tab click, read keys from `localStorage`, fetch full voice objects from `ProviderManager`, render into `recent-voices-pane`. Attach selection logic.
+
+**Phase 6: Styling & Refinements**
+- [ ] **T_UI_18:** Apply CSS iteratively for desired aesthetic (Speechify inspiration).
+- [ ] **T_UI_19:** Ensure basic keyboard accessibility for tabs and lists.
+- [ ] **T_UI_20:** Refine premium tag display and selected voice indicators.
+- [ ] **T_UI_21:** Add simple placeholders for voice avatars/icons.
+
+**Next Steps (Post UI Revamp):**
+- (Optional) Implement audio caching for pre-fetched audio.
+- Add advanced features as per roadmap (speed control, premium lockout details, etc.).
 
 ## Phase 4: Sentence Highlighting & Interaction (Houdini Approach)
 

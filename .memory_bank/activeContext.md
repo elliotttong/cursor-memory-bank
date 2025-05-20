@@ -1,9 +1,38 @@
-# Active Context: Provider Abstraction Implementation (Updated)
+# Active Context: Voice Selector UI Revamp (New Focus)
 
-**Current Mode:** IMPLEMENTATION (Provider Abstraction, TTS Providers)
-**Goal:** Implement scalable, robust, and maintainable TTS provider abstraction and UI/UX.
+**Current Mode:** UI IMPLEMENTATION (Voice Selector Revamp)
+**Goal:** Implement a new, more user-friendly voice selector UI with tabbed navigation (Featured, Recent, All Voices), country-based grouping, and improved voice discovery, taking inspiration from Speechify's UI patterns.
 
-**Key Architecture Principles (Updated):**
+**Key Architecture Principles (UI Revamp):**
+*   **Data-Driven:** UI will be dynamically populated from `voiceConfig.json` via `ProviderManager`.
+*   **Component-Based (Conceptual):** While not using a framework, structure the JS for maintainability, separating rendering logic from event handling where possible.
+*   **User Experience Focus:** Prioritize intuitive navigation and clear presentation of voice options.
+*   **Inspiration, Not Imitation:** Adapt Speechify's successful UX patterns (tabs, grouping) to fit our specific voice data and project structure.
+
+**High-Level UI Features:**
+1.  **Tabbed Interface:**
+    *   "Featured" tab: Showcasing a curated list of voices.
+    *   "Recent" tab: Displaying recently used voices (via `localStorage`).
+    *   "All Voices" tab: Comprehensive list, grouped by country, with a country selection mechanism.
+2.  **"All Voices" Tab Functionality:**
+    *   Voices grouped by country.
+    *   Country selector dropdown to filter/scroll to a specific country.
+    *   Scrollable voice list within each country or for all countries.
+3.  **Voice Items:**
+    *   Display voice name, language/locale, gender.
+    *   Visual indicator for premium voices.
+    *   Visual indicator for currently selected voice.
+    *   (Future) Placeholder for voice avatars/icons.
+
+**Status:**
+*   Core backend (ProviderManager, voiceConfig.json, composite keys) is stable and robust.
+*   Previous UI data issues (undefined names/languages) resolved.
+*   Current task: Implement the new voice selector UI as per the detailed plan in `tasks.md`.
+
+---
+*(Previous content regarding Provider Abstraction remains below for historical context but is now largely complete)*
+
+**Key Architecture Principles (Provider Abstraction - Completed):**
 * All voices are loaded from voiceConfig.json at startup by ProviderManager.
 * ProviderManager builds a flat array and a composite key map of all voices.
 * UI and playback logic always use ProviderManager for voice data (never provider instances).
@@ -11,20 +40,17 @@
 * Provider logic is only used for synthesis (TTS API calls), not for UI or selection.
 * Adding new providers/voices is just a config update and a new provider implementation for synthesis.
 
-**Implementation Steps:**
+**Implementation Steps (Provider Abstraction - Completed):**
 - [x] Refactor ProviderManager for config-driven voice management
 - [x] Refactor UI to use ProviderManager for all voice data
 - [x] Refactor playback and background logic for composite key routing
 - [x] Add defensive/fallback logic (robust handling of missing voices/providers, object URL revocation)
 - [x] Test all flows and edge cases (no critical bugs remain)
 
-**Status:**
-* All core refactor tasks are complete. The system is robust, defensive, and future-proof. Prefetching and memory management are working as designed. Audio caching and advanced UI polish are next-level optimizations.
-
-**Composite Key Update:**
+**Composite Key Update (Completed):**
 * All voice lookups, selection, and storage use composite keys (provider:id) to ensure uniqueness and future-proof the system against provider/voice id collisions. This is now a core part of the architecture and implementation plan.
 
-**Provider-Agnostic, Voice-Centric Architecture Plan**
+**Provider-Agnostic, Voice-Centric Architecture Plan (Completed)**
 
 🟢 **Step 1: Update config and data structures for composite keys.**
 - [x] Ensure each voice in voiceConfig.json has both provider and id fields. (Already present)
@@ -43,76 +69,11 @@
 🟢 **Step 5: Test all flows and edge cases.**
 - [x] All major flows tested; no critical bugs remain. Prefetching is robust. Audio caching is a future optimization.
 
-📋 **Overview of Changes**
-- Voice selection and UI will be provider-agnostic: all voices are shown in a single list (grouped by country, not provider).
-- Voice config is loaded at startup and contains all metadata (id, displayName, country, provider, isPremium, etc).
-- Voice selection is stored by composite key (provider:id).
-- When playing audio or syncing highlights, the selected voice is looked up, its provider is determined, and the correct provider is used for synthesis and timing.
-- No need for per-voice capability flags since all providers support the full feature set.
-
-📁 **Files to Modify**
-- extension-code/modules/providers/providerManager.js
-- extension-code/modules/providers/index.js
-- extension-code/modules/ui/voiceSelector.js
-- extension-code/assets/voices/voiceConfig.json
-- (Possibly) extension-code/modules/providers/deepInfraProvider.js, browserTTSProvider.js (to remove hardcoded voices and ensure they use the config)
-- Any file that handles voice selection, playback, or highlight syncing
-
-🔄 **Implementation Steps**
-1. **Voice Config Loading**
-   - Load all voices from voiceConfig.json at startup (already implemented with async fetch).
-   - Store all voices in a flat array in ProviderManager.
-   - Build a lookup map: compositeKey (provider:id) -> voiceObject.
-2. **UI: Voice Selector**
-   - Show all voices in a single list, grouped by country (not provider).
-   - Show a lock icon for premium voices if quota is reached or user is not premium.
-   - Allow user to select any voice; store the selected composite key.
-3. **Voice Selection Storage**
-   - Store the selected composite key in local storage (or extension storage).
-   - On startup, load the last selected voice or use the default.
-4. **Playback & Highlighting**
-   - When playback or highlight sync is triggered:
-     - Look up the selected voice by composite key.
-     - Determine the provider from the voice object.
-     - Route the request to the correct provider for synthesis and timing.
-   - All providers must implement the full feature set (word timing, speed, etc).
-5. **Provider Logic**
-   - Remove hardcoded voice lists from provider modules.
-   - Providers only handle synthesis logic; voices are passed in or looked up as needed.
-6. **Error Handling**
-   - If a provider is missing or fails, voices from that provider are disabled or hidden.
-   - If a voice is selected but its provider is unavailable, fall back to the default voice.
-7. **Testing**
-   - Test voice selection, playback, and highlighting with all voices.
-   - Test premium lockout logic.
-   - Test fallback logic if a provider is unavailable.
-
-**Implementation Progress:**
-*   **Provider Abstraction Core:** ✅ COMPLETE
-    * Created provider interface/types (`modules/providers/types.js`)
-    * Implemented provider manager (`modules/providers/providerManager.js`)
-    * Created Deep Infra provider (`modules/providers/deepInfraProvider.js`)
-    * Created Browser TTS provider (`modules/providers/browserTTSProvider.js`)
-    * Added provider initialization logic (`modules/providers/index.js`)
-    * Created testing utilities (`modules/providers/tests.js`, `/tests/provider-test.html`)
-
-*   **Background Integration:** ✅ COMPLETE
-    * Updated background.js to use provider abstraction
-    * Added feature flag system for safer rollout
-    * Maintained backward compatibility
-    * Updated manifest.json for module support
-
-*   **UI Components:** 🟡 PARTIALLY COMPLETE
-    * Created placeholder voice selector module (`modules/ui/voiceSelector.js`)
-    * Prepared for voice avatar images (`assets/voices/`)
-    * Actual UI implementation is the next step
-
-**Next Steps:**
+**Next Steps (Post UI Revamp):**
 - (Optional) Implement audio caching for pre-fetched audio.
-- Polish UI (premium lockout, avatars, etc.)
-- Add advanced features as per roadmap.
+- Add advanced features as per roadmap (speed control, premium lockout details, etc.).
 
-**Summary:**
+**Summary (Provider Abstraction - Completed):**
 - The provider abstraction, composite key routing, and config-driven voice management are complete and robust. The system is ready for polish and advanced features.
 
 **Architecture:**

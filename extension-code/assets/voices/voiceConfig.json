@@ -7,7 +7,8 @@
         "language": "pt-BR",
         "gender": "Female",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "pm_alex",
@@ -16,7 +17,8 @@
         "language": "pt-BR",
         "gender": "Male",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "pm_santa",
@@ -25,7 +27,8 @@
         "language": "pt-BR",
         "gender": "Male",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "zf_xiaobei",
@@ -34,7 +37,8 @@
         "language": "zh-CN",
         "gender": "Female",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": true
       },
       {
         "id": "zf_xiaoni",
@@ -43,7 +47,8 @@
         "language": "zh-CN",
         "gender": "Female",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "zf_xiaoxiao",
@@ -52,7 +57,8 @@
         "language": "zh-CN",
         "gender": "Female",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "zf_xiaoyi",
@@ -61,7 +67,8 @@
         "language": "zh-CN",
         "gender": "Female",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "zm_yunjian",
@@ -70,7 +77,8 @@
         "language": "zh-CN",
         "gender": "Male",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "zm_yunxia",
@@ -79,7 +87,8 @@
         "language": "zh-CN",
         "gender": "Male",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "zm_yunxi",
@@ -88,7 +97,8 @@
         "language": "zh-CN",
         "gender": "Male",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "zm_yunyang",
@@ -97,7 +107,8 @@
         "language": "zh-CN",
         "gender": "Male",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "ff_siwis",
@@ -106,7 +117,8 @@
         "language": "fr-FR",
         "gender": "Female",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "hf_alpha",
@@ -115,7 +127,8 @@
         "language": "hi-IN",
         "gender": "Female",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "hf_beta",
@@ -124,7 +137,8 @@
         "language": "hi-IN",
         "gender": "Female",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "hm_omega",
@@ -133,7 +147,8 @@
         "language": "hi-IN",
         "gender": "Male",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "hm_psi",
@@ -142,7 +157,8 @@
         "language": "hi-IN",
         "gender": "Male",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "if_sara",
@@ -151,7 +167,8 @@
         "language": "it-IT",
         "gender": "Female",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "im_nicola",
@@ -160,7 +177,8 @@
         "language": "it-IT",
         "gender": "Male",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "jf_alpha",
@@ -169,7 +187,8 @@
         "language": "ja-JP",
         "gender": "Female",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": true
       },
       {
         "id": "jf_gongitsune",
@@ -178,7 +197,8 @@
         "language": "ja-JP",
         "gender": "Female",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "jf_tebukuro",
@@ -187,7 +207,8 @@
         "language": "ja-JP",
         "gender": "Female",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "jf_nezumi",
@@ -196,7 +217,8 @@
         "language": "ja-JP",
         "gender": "Female",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "jm_kumo",
@@ -205,7 +227,8 @@
         "language": "ja-JP",
         "gender": "Male",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "ef_dora",
@@ -214,7 +237,8 @@
         "language": "es-ES",
         "gender": "Female",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "em_alex",
@@ -223,7 +247,8 @@
         "language": "es-ES",
         "gender": "Male",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "em_santa",
@@ -232,7 +257,8 @@
         "language": "es-ES",
         "gender": "Male",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "bf_emma",
@@ -241,7 +267,8 @@
         "language": "en-GB",
         "gender": "Female",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "bf_isabella",
@@ -250,7 +277,8 @@
         "language": "en-GB",
         "gender": "Female",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "bm_fable",
@@ -259,7 +287,8 @@
         "language": "en-GB",
         "gender": "Male",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "bm_george",
@@ -268,7 +297,8 @@
         "language": "en-GB",
         "gender": "Male",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": true
       },
       {
         "id": "bm_lewis",
@@ -277,7 +307,8 @@
         "language": "en-GB",
         "gender": "Male",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "bf_alice",
@@ -286,7 +317,8 @@
         "language": "en-GB",
         "gender": "Female",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "bf_lily",
@@ -295,7 +327,8 @@
         "language": "en-GB",
         "gender": "Female",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "bm_daniel",
@@ -304,7 +337,8 @@
         "language": "en-GB",
         "gender": "Male",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "af_heart",
@@ -313,7 +347,8 @@
         "language": "en-US",
         "gender": "Female",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "af_bella",
@@ -322,7 +357,8 @@
         "language": "en-US",
         "gender": "Female",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": true
       },
       {
         "id": "af_nicole",
@@ -331,7 +367,8 @@
         "language": "en-US",
         "gender": "Female",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "af_aoede",
@@ -340,7 +377,8 @@
         "language": "en-US",
         "gender": "Female",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "af_kore",
@@ -349,7 +387,8 @@
         "language": "en-US",
         "gender": "Female",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "af_sarah",
@@ -358,7 +397,8 @@
         "language": "en-US",
         "gender": "Female",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "am_fenrir",
@@ -367,7 +407,8 @@
         "language": "en-US",
         "gender": "Male",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "am_michael",
@@ -376,7 +417,8 @@
         "language": "en-US",
         "gender": "Male",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "am_puck",
@@ -385,103 +427,128 @@
         "language": "en-US",
         "gender": "Male",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "af_alloy",
-        "displayName": "Alloy",
+        "name": "Alloy",
         "country": "USA",
-        "gender": "female",
+        "language": "en-US",
+        "gender": "Female",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "af_nova",
-        "displayName": "Nova",
+        "name": "Nova",
         "country": "USA",
-        "gender": "female",
+        "language": "en-US",
+        "gender": "Female",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "af_sky",
-        "displayName": "Sky",
+        "name": "Sky",
         "country": "USA",
-        "gender": "female",
+        "language": "en-US",
+        "gender": "Female",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "af_jessica",
-        "displayName": "Jessica",
+        "name": "Jessica",
         "country": "USA",
-        "gender": "female",
+        "language": "en-US",
+        "gender": "Female",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "af_river",
-        "displayName": "River",
+        "name": "River",
         "country": "USA",
-        "gender": "female",
+        "language": "en-US",
+        "gender": "Female",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "am_echo",
-        "displayName": "Echo",
+        "name": "Echo",
         "country": "USA",
-        "gender": "male",
+        "language": "en-US",
+        "gender": "Male",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "am_eric",
-        "displayName": "Eric",
+        "name": "Eric",
         "country": "USA",
-        "gender": "male",
+        "language": "en-US",
+        "gender": "Male",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "am_liam",
-        "displayName": "Liam",
+        "name": "Liam",
         "country": "USA",
-        "gender": "male",
+        "language": "en-US",
+        "gender": "Male",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "am_onyx",
-        "displayName": "Onyx",
+        "name": "Onyx",
         "country": "USA",
-        "gender": "male",
+        "language": "en-US",
+        "gender": "Male",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "am_santa",
-        "displayName": "Santa",
+        "name": "Santa",
         "country": "USA",
-        "gender": "male",
+        "language": "en-US",
+        "gender": "Male",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "am_adam",
-        "displayName": "Adam",
+        "name": "Adam",
         "country": "USA",
-        "gender": "male",
+        "language": "en-US",
+        "gender": "Male",
         "provider": "deepinfra",
-        "isPremium": true
+        "isPremium": true,
+        "isFeatured": false
       },
       {
         "id": "browser_default",
-        "displayName": "Browser Default",
+        "name": "Browser Default",
         "country": "N/A",
-        "gender": "unknown",
+        "language": "en-US",
+        "gender": "Unknown",
         "provider": "browser",
-        "isPremium": false
+        "isPremium": false,
+        "isFeatured": false
       }
     ],
     "defaults": {

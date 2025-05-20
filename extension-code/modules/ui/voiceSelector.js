@@ -28,12 +28,11 @@ let voiceAvatarElement = null;
 export function createVoiceSelectorPanel(parentElement) {
   console.log('[VoiceSelector] Creating voice selector panel');
   
-  // Create the main panel container
   const panel = document.createElement('div');
   panel.className = 'kokoro-voice-selector';
   panel.style.display = 'none';
   
-  // Create the panel structure with the same styling variables as the widget
+  // New structure: Header, Tabs, Tab Content Panes
   panel.innerHTML = `
     <div class="kokoro-selector-header">
       <div class="kokoro-selector-title">Select Voice</div>
@@ -42,13 +41,34 @@ export function createVoiceSelectorPanel(parentElement) {
       </button>
     </div>
     
-    <div class="kokoro-provider-tabs">
-      <!-- Provider tabs will be populated dynamically -->
+    <div class="kokoro-tabs-navigation">
+      <button class="kokoro-tab-button active" data-tab-target="featured">Featured</button>
+      <button class="kokoro-tab-button" data-tab-target="recent">Recent</button>
+      <button class="kokoro-tab-button" data-tab-target="all-voices">All Voices</button>
+    </div>
+
+    <div id="kokoro-country-selector-container">
+      <button id="kokoro-country-selector-button">All Countries</button>
+      <div id="kokoro-country-dropdown-list" class="hidden">
+        <!-- Country items will be populated here -->
+      </div>
     </div>
     
-    <div class="kokoro-voice-list">
-      <!-- Voice options will be populated dynamically -->
-      <div class="kokoro-voice-loading">Loading voices...</div>
+    <div class="kokoro-tab-content">
+      <div class="kokoro-tab-pane active" id="kokoro-featured-pane">
+        <!-- Featured voices will be populated here -->
+        <div class="kokoro-voice-loading">Loading featured voices...</div>
+      </div>
+      <div class="kokoro-tab-pane" id="kokoro-recent-pane">
+        <!-- Recent voices will be populated here -->
+        <div class="kokoro-voice-loading">Loading recent voices...</div>
+      </div>
+      <div class="kokoro-tab-pane" id="kokoro-all-voices-pane">
+        <div id="kokoro-all-voices-list-container">
+            <!-- All voices (grouped by country) will be populated here -->
+            <div class="kokoro-voice-loading">Loading all voices...</div>
+        </div>
+      </div>
     </div>
     
     <div class="kokoro-quota-status">
@@ -64,11 +84,42 @@ export function createVoiceSelectorPanel(parentElement) {
     });
   }
   
+  // Prevent clicks inside the panel from bubbling up TO the document listener (for "outside" check)
+  // AND attempt to stop capture-phase listeners on ancestors from misinterpreting internal clicks.
+  // Running this in CAPTURE phase (true) attempts to stop the event early.
+  panel.addEventListener('click', (event) => {
+    // console.log('[VoiceSelector PanelClick CAPTURE] Click inside panel. Stopping propagation. Target:', event.target);
+    event.stopPropagation();
+  }, false);
+  
   // Add click outside handler to close panel
   document.addEventListener('click', (event) => {
-    if (isVisible && panel && !panel.contains(event.target) && 
-        voiceAvatarElement && !voiceAvatarElement.contains(event.target)) {
-      toggleVoiceSelector(false);
+    // console.log('[VoiceSelector DocClick] Document click listener fired. Target:', event.target, 'isVisible:', isVisible);
+    if (isVisible && selectorPanel && voiceAvatarElement) {
+      const countryDropdown = selectorPanel.querySelector('#kokoro-country-dropdown-list');
+
+      // If the click reached this document listener, it means it was NOT inside selectorPanel
+      // (because clicks inside selectorPanel have their propagation stopped by the listener above).
+      //
+      // Now, we only need to check if the click was on the voiceAvatarElement itself.
+      // - If it WAS on voiceAvatarElement, its own click handler is responsible for toggling the panel.
+      // - If it was NOT on voiceAvatarElement (and thus also not in selectorPanel), then close the panel.
+      if (!voiceAvatarElement.contains(event.target)) {
+        // console.log('[VoiceSelector ClickOutside] Closing panel. Target:', event.target);
+        toggleVoiceSelector(false); // This will also hide the panel
+         // Also ensure country dropdown is hidden if it was open
+        if (countryDropdown && !countryDropdown.classList.contains('hidden')) {
+            countryDropdown.classList.add('hidden');
+        }
+      } else {
+        // console.log('[VoiceSelector ClickOutside] Click was on avatar, its handler will toggle. Target:', event.target);
+        // If the click was on the avatar, we still want to ensure the country dropdown closes if it was open
+        // and the click wasn't on the country button itself (which handles its own dropdown toggle).
+        const countryButton = selectorPanel.querySelector('#kokoro-country-selector-button');
+        if (countryDropdown && !countryDropdown.classList.contains('hidden') && !countryButton.contains(event.target)) {
+             countryDropdown.classList.add('hidden');
+        }
+      }
     }
   });
   
@@ -79,7 +130,111 @@ export function createVoiceSelectorPanel(parentElement) {
   // Init voice avatar reference
   voiceAvatarElement = document.getElementById('kokoro-voice-button');
   
+  // Initialize tab navigation
+  initializeTabNavigation(panel);
+
+  // Initialize Country Selector Interactions
+  initializeCountrySelectorInteraction(panel);
+  
   return panel;
+}
+
+/**
+ * Initialize tab navigation logic
+ * @param {HTMLElement} panelElement - The main voice selector panel
+ */
+function initializeTabNavigation(panelElement) {
+  const tabButtons = panelElement.querySelectorAll('.kokoro-tab-button');
+  const tabPanes = panelElement.querySelectorAll('.kokoro-tab-pane');
+
+  tabButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const targetPaneId = button.dataset.tabTarget;
+      // console.log(`[VoiceSelector Tabs] Clicked tab: ${targetPaneId}`);
+
+      // Deactivate all tabs and panes
+      tabButtons.forEach(btn => btn.classList.remove('active'));
+      tabPanes.forEach(pane => pane.classList.remove('active'));
+
+      // Activate clicked tab and corresponding pane
+      button.classList.add('active');
+      const targetPane = panelElement.querySelector(`#kokoro-${targetPaneId}-pane`);
+      if (targetPane) {
+        targetPane.classList.add('active');
+        // console.log(`[VoiceSelector Tabs] Activated pane: #kokoro-${targetPaneId}-pane`);
+      } else {
+        // console.warn(`[VoiceSelector Tabs] Target pane #kokoro-${targetPaneId}-pane not found`);
+      }
+
+      // Update UI based on the new active tab
+      // TODO: This will need to be more sophisticated to load specific content for each tab.
+      // For now, it will clear all panes and re-render based on its current logic (which focuses on all voices).
+      updateVoiceSelectorUI(); 
+    });
+  });
+}
+
+/**
+ * Initialize country selector dropdown interaction logic
+ * @param {HTMLElement} panelElement - The main voice selector panel
+ */
+function initializeCountrySelectorInteraction(panelElement) {
+  const countryButton = panelElement.querySelector('#kokoro-country-selector-button');
+  const countryDropdown = panelElement.querySelector('#kokoro-country-dropdown-list');
+
+  if (!countryButton || !countryDropdown) {
+    console.warn('[VoiceSelector] Country selector button or dropdown not found.');
+    return;
+  }
+
+  countryButton.addEventListener('click', (event) => {
+    event.stopPropagation(); // Prevent this click from immediately closing via document listener
+    countryDropdown.classList.toggle('hidden');
+    // console.log('[VoiceSelector] Toggled country dropdown visibility.');
+  });
+
+  countryDropdown.addEventListener('click', (event) => {
+    const targetItem = event.target.closest('.kokoro-country-dropdown-item');
+    if (targetItem) {
+      event.stopPropagation(); // Prevent this click from immediately closing via document listener (if for some reason it wasn't hidden yet)
+      const selectedCountryName = targetItem.dataset.countryName;
+      countryButton.textContent = selectedCountryName || 'All Countries';
+      countryDropdown.classList.add('hidden');
+      console.log(`[VoiceSelector] Selected country: ${selectedCountryName || 'All Countries'}`);
+      
+      // --- Implement T_UI_15: Scroll-to Logic ---
+      const allVoicesListContainer = panelElement.querySelector('#kokoro-all-voices-list-container');
+      if (allVoicesListContainer) {
+        if (selectedCountryName === '' || !selectedCountryName) { // 'All Countries' selected or empty
+          allVoicesListContainer.scrollTop = 0;
+          // console.log('[VoiceSelector] Scrolled to top of all voices list.');
+        } else {
+          const targetCountryHeader = allVoicesListContainer.querySelector(`[data-country-scroll-target="${selectedCountryName}"]`);
+          if (targetCountryHeader) {
+            targetCountryHeader.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // console.log(`[VoiceSelector] Scrolled to country: ${selectedCountryName}`);
+          } else {
+            // console.warn(`[VoiceSelector] Country header for ${selectedCountryName} not found for scrolling.`);
+          }
+        }
+      }
+      // ------------------------------------------
+    }
+  });
+
+  // Clicking anywhere else on the panel (but outside the dropdown itself IF IT'S OPEN) 
+  // should close an open country dropdown.
+  panelElement.addEventListener('click', (event) => {
+    if (!countryDropdown.classList.contains('hidden')) { // Only act if dropdown is visible
+      const isClickOnButton = countryButton.contains(event.target);
+      const isClickInDropdown = countryDropdown.contains(event.target);
+
+      if (!isClickOnButton && !isClickInDropdown) {
+        countryDropdown.classList.add('hidden');
+        // console.log('[VoiceSelector PanelBgClick] Closed country dropdown due to click on panel background.');
+      }
+    }
+  });
 }
 
 /**
@@ -112,70 +267,161 @@ export function toggleVoiceSelector(show) {
  * Update the voice selector UI with current voice information, grouped by country
  */
 export async function updateVoiceSelectorUI() {
-  console.log('[VoiceSelector] Updating voice selector UI');
+  console.log('[VoiceSelector] Updating voice selector UI (tab-aware)');
   
   if (!selectorPanel) return;
+
+  const featuredPane = selectorPanel.querySelector('#kokoro-featured-pane');
+  const recentPane = selectorPanel.querySelector('#kokoro-recent-pane');
+  const allVoicesPane = selectorPanel.querySelector('#kokoro-all-voices-pane');
+  const allVoicesListContainer = allVoicesPane ? allVoicesPane.querySelector('#kokoro-all-voices-list-container') : null;
+
+  // Determine active tab
+  const activeTabButton = selectorPanel.querySelector('.kokoro-tab-button.active');
+  const activeTabTarget = activeTabButton ? activeTabButton.dataset.tabTarget : 'all-voices'; // Default to all-voices if somehow none active
+
+  console.log(`[VoiceSelector] Active tab target: ${activeTabTarget}`);
+
+  // Clear all panes before rendering the active one to prevent stale content
+  if(featuredPane) featuredPane.innerHTML = '<div class="kokoro-voice-loading">Loading featured voices...</div>';
+  if(recentPane) recentPane.innerHTML = '<div class="kokoro-voice-loading">Loading recent voices...</div>'; // Placeholder for now
+  if(allVoicesListContainer) allVoicesListContainer.innerHTML = '<div class="kokoro-voice-loading">Loading all voices...</div>';
   
   try {
-    // Get all voices from ProviderManager (flat array)
     const allVoices = providerManager.getAllVoices();
     console.log('[VoiceSelector] providerManager.getAllVoices() returned:', allVoices);
+
     if (!allVoices || allVoices.length === 0) {
-      const voiceList = selectorPanel.querySelector('.kokoro-voice-list');
-      if (voiceList) voiceList.innerHTML = '<div class="kokoro-voice-empty">No voices available. Please check your voice configuration.</div>';
+      const emptyMessage = '<div class="kokoro-voice-empty">No voices available. Please check your voice configuration.</div>';
+      if(featuredPane) featuredPane.innerHTML = emptyMessage;
+      if(recentPane) recentPane.innerHTML = emptyMessage; // Or "No recent voices"
+      if(allVoicesListContainer) allVoicesListContainer.innerHTML = emptyMessage;
       return;
     }
     const selectedVoice = await providerManager.getSelectedVoice();
     const selectedVoiceKey = selectedVoice ? `${selectedVoice.provider}:${selectedVoice.id}` : null;
     console.log('[VoiceSelector] Selected voice:', selectedVoice, 'Selected key:', selectedVoiceKey);
 
-    // Group voices by country
-    const voicesByCountry = {};
-    for (const voice of allVoices) {
-      const country = voice.country || 'Other';
-      if (!voicesByCountry[country]) voicesByCountry[country] = [];
-      voicesByCountry[country].push(voice);
+    if (activeTabTarget === 'featured' && featuredPane) {
+      renderFeaturedVoiceList(featuredPane, allVoices, selectedVoiceKey);
+    } else if (activeTabTarget === 'all-voices' && allVoicesListContainer) {
+      // Group voices by country for 'All Voices' tab
+      const voicesByCountry = {};
+      for (const voice of allVoices) {
+        const country = voice.country || 'Other';
+        if (!voicesByCountry[country]) voicesByCountry[country] = [];
+        voicesByCountry[country].push(voice);
+      }
+      console.log('[VoiceSelector] voicesByCountry (for all-voices tab):', voicesByCountry);
+      renderGroupedVoiceList(allVoicesListContainer, voicesByCountry, selectedVoiceKey);
+      populateCountrySelector(voicesByCountry);
+    } else if (activeTabTarget === 'recent' && recentPane) {
+      // Placeholder for recent voices - T_UI_17
+      recentPane.innerHTML = '<div class="kokoro-voice-empty">Recent voices will appear here.</div>';
     }
-    console.log('[VoiceSelector] voicesByCountry:', voicesByCountry);
-
-    // Render grouped voice list
-    renderGroupedVoiceList(voicesByCountry, selectedVoiceKey);
-    // Hide provider tabs (no longer needed)
-    const tabsContainer = selectorPanel.querySelector('.kokoro-provider-tabs');
-    if (tabsContainer) tabsContainer.style.display = 'none';
-    // Update quota status as before
+    
     updateQuotaStatus();
   } catch (error) {
     console.error('[VoiceSelector] Error updating UI:', error);
-    // Show error in voice list
-    const voiceList = selectorPanel.querySelector('.kokoro-voice-list');
-    if (voiceList) {
-      voiceList.innerHTML = '<div class="kokoro-voice-error">Error loading voices. Please check your configuration.</div>';
+    const errorMessage = '<div class="kokoro-voice-error">Error loading voices. Please check your configuration.</div>';
+    // Display error in the currently active pane or all panes as a fallback
+    if (activeTabTarget === 'featured' && featuredPane) featuredPane.innerHTML = errorMessage;
+    else if (activeTabTarget === 'all-voices' && allVoicesListContainer) allVoicesListContainer.innerHTML = errorMessage;
+    else if (activeTabTarget === 'recent' && recentPane) recentPane.innerHTML = errorMessage;
+    else { // Fallback if no specific pane or unknown
+        if(featuredPane) featuredPane.innerHTML = errorMessage;
+        if(allVoicesListContainer) allVoicesListContainer.innerHTML = errorMessage;
+        if(recentPane) recentPane.innerHTML = errorMessage;
     }
   }
 }
 
 /**
- * Render the voice list grouped by country
+ * Populate the country selector dropdown list
+ * @param {Object} voicesByCountry - Map of country to array of voices
+ */
+function populateCountrySelector(voicesByCountry) {
+  const dropdownList = selectorPanel.querySelector('#kokoro-country-dropdown-list');
+  if (!dropdownList) {
+    console.warn('[VoiceSelector] Country dropdown list element not found.');
+    return;
+  }
+
+  dropdownList.innerHTML = ''; // Clear existing items
+
+  // Add "All Countries" option
+  const allCountriesItem = document.createElement('div');
+  allCountriesItem.className = 'kokoro-country-dropdown-item';
+  allCountriesItem.textContent = 'All Countries';
+  allCountriesItem.dataset.countryName = ''; // Use empty string to signify all countries
+  dropdownList.appendChild(allCountriesItem);
+
+  const countryNames = Object.keys(voicesByCountry).sort();
+
+  if (countryNames.length > 0) {
+    countryNames.forEach(countryName => {
+      const countryItem = document.createElement('div');
+      countryItem.className = 'kokoro-country-dropdown-item';
+      countryItem.textContent = countryName;
+      countryItem.dataset.countryName = countryName;
+      dropdownList.appendChild(countryItem);
+    });
+  }
+  // console.log('[VoiceSelector] Populated country selector dropdown.', dropdownList);
+}
+
+/**
+ * Render the list of featured voices into a specific pane
+ * @param {HTMLElement} targetPane - The tab pane to render into
+ * @param {Array<Object>} allVoices - Array of all voice objects
+ * @param {string} selectedVoiceKey - Currently selected voice composite key
+ */
+function renderFeaturedVoiceList(targetPane, allVoices, selectedVoiceKey) {
+  if (!targetPane) return;
+  targetPane.innerHTML = ''; // Clear loading message
+
+  const featuredVoices = allVoices.filter(voice => voice.isFeatured === true);
+  console.log('[VoiceSelector] Filtered featured voices:', featuredVoices);
+
+  if (featuredVoices.length === 0) {
+    targetPane.innerHTML = '<div class="kokoro-voice-empty">No featured voices available at the moment.</div>';
+    return;
+  }
+
+  for (const voice of featuredVoices) {
+    const voiceItem = createVoiceItem(voice, selectedVoiceKey);
+    targetPane.appendChild(voiceItem);
+  }
+}
+
+/**
+ * Render the voice list grouped by country into a specific pane
+ * @param {HTMLElement} targetPane - The tab pane to render into
  * @param {Object} voicesByCountry - Map of country to array of voices
  * @param {string} selectedVoiceKey - Currently selected voice composite key
  */
-function renderGroupedVoiceList(voicesByCountry, selectedVoiceKey) {
-  const voiceListContainer = selectorPanel.querySelector('.kokoro-voice-list');
-  if (!voiceListContainer) return;
-  voiceListContainer.innerHTML = '';
+function renderGroupedVoiceList(targetPane, voicesByCountry, selectedVoiceKey) {
+  if (!targetPane) return;
+  targetPane.innerHTML = ''; // Clear loading message or previous list
 
   const countryNames = Object.keys(voicesByCountry).sort();
   if (countryNames.length === 0) {
-    voiceListContainer.innerHTML = '<div class="kokoro-voice-empty">No voices available</div>';
+    targetPane.innerHTML = '<div class="kokoro-voice-empty">No voices available</div>';
     return;
   }
 
   for (const country of countryNames) {
     const groupSection = document.createElement('div');
     groupSection.className = 'kokoro-voice-section';
-    groupSection.innerHTML = `<div class="kokoro-voice-section-title">${country}</div>`;
-    voiceListContainer.appendChild(groupSection);
+    
+    const sectionTitle = document.createElement('div');
+    sectionTitle.className = 'kokoro-voice-section-title';
+    sectionTitle.textContent = country;
+    sectionTitle.dataset.countryScrollTarget = country; // Add data attribute for scrolling
+    groupSection.appendChild(sectionTitle);
+
+    // groupSection.innerHTML = `<div class="kokoro-voice-section-title" data-country-scroll-target="${country}">${country}</div>`; // Old way
+    targetPane.appendChild(groupSection);
     for (const voice of voicesByCountry[country]) {
       const voiceItem = createVoiceItem(voice, selectedVoiceKey);
       groupSection.appendChild(voiceItem);
@@ -198,21 +444,18 @@ function createVoiceItem(voice, selectedVoiceKey) {
   if (compositeKey === selectedVoiceKey) {
     voiceItem.classList.add('kokoro-voice-item-selected');
   }
-  
-  // Get the avatar URL or use default
-  const avatarUrl = voice.avatarUrl || 'assets/icon48.png';
-  
+
+  // Basic structure for a voice item - can be expanded with icons, etc.
   voiceItem.innerHTML = `
-    <div class="kokoro-voice-avatar" style="background-image: url('${avatarUrl}')"></div>
-    <div class="kokoro-voice-details">
-      <div class="kokoro-voice-name">${voice.name}</div>
-      <div class="kokoro-voice-lang">${voice.language}</div>
+    <div class="kokoro-voice-item-avatar"></div> <!-- Placeholder for avatar/icon -->
+    <div class="kokoro-voice-item-details">
+      <div class="kokoro-voice-item-name">${voice.name || 'Unknown Name'}</div>
+      <div class="kokoro-voice-item-meta">${voice.language || 'N/A'} - ${voice.gender || 'N/A'}</div>
     </div>
-    <div class="kokoro-voice-gender">${voice.gender}</div>
-    ${voice.isPremium ? '<div class="kokoro-voice-premium-badge">Premium</div>' : ''}
+    ${voice.isPremium ? '<div class="kokoro-voice-item-premium">Premium</div>' : ''}
+    ${compositeKey === selectedVoiceKey ? '<div class="kokoro-voice-item-checkmark">&#10003;</div>' : ''}
   `;
-  
-  // Add click handler to select voice
+
   voiceItem.addEventListener('click', async () => {
     await selectVoice(compositeKey);
   });
@@ -265,23 +508,14 @@ async function updateQuotaStatus() {
  */
 async function selectVoice(voiceKey) {
   console.log(`[VoiceSelector] Selecting voice: ${voiceKey}`);
-  
+  if (!voiceKey) return;
   try {
-    // Set the selected voice in provider manager
     await providerManager.setSelectedVoice(voiceKey);
-    
-    // Update the voice selector UI
-    await updateVoiceSelectorUI();
-    
-    // Update the voice avatar
-    if (voiceAvatarElement) {
-      updateVoiceAvatar(voiceAvatarElement);
-    }
-    
-    // Hide the selector after selection
-    toggleVoiceSelector(false);
-    
-    console.log(`[VoiceSelector] Voice selected: ${voiceKey}`);
+    // Re-render the UI to show new selection (or more targeted update)
+    updateVoiceSelectorUI(); 
+    // Update main widget avatar too
+    const avatarElement = document.getElementById('kokoro-voice-button');
+    if (avatarElement) updateVoiceAvatar(avatarElement);
   } catch (error) {
     console.error('[VoiceSelector] Error selecting voice:', error);
   }
