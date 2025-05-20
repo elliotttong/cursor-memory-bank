@@ -1,30 +1,11 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
 import { ArrowRight, Headphones, Brain, Coffee, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { toast } from "sonner"
 
 export default function Home() {
-  const [email, setEmail] = useState("")
-  const [isSubmitting, setIsSubmitting] = useState(false)
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
-
-    // Simulate API call
-    setTimeout(() => {
-      toast.success("You're in! 🎉", {
-        description: "I'll DM you when it's ready. - Elliott",
-      })
-      setEmail("")
-      setIsSubmitting(false)
-    }, 1000)
-  }
-
   return (
     <div className="min-h-screen bg-zinc-50 font-sans text-zinc-900">
       <main className="container mx-auto max-w-2xl px-4 py-8">
@@ -200,20 +181,27 @@ export default function Home() {
             <h2 className="text-xl font-semibold">wanna try it?</h2>
           </div>
           <p className="mb-4 text-zinc-700">
-            Drop your email and I'll personally let you know when the beta is ready. No spam, I promise.
+            drop your email below and I'll hit you up when the beta is ready (and give you 50% off for life if you
+            stick around).
           </p>
-          <form className="flex flex-col gap-3 sm:flex-row" onSubmit={handleSubmit}>
+          <form
+            className="launchlist-form flex items-center gap-2"
+            action="https://getlaunchlist.com/s/bexITC"
+            method="POST"
+          >
             <Input
               type="email"
-              placeholder="you@email.com"
-              className="flex-1 border-zinc-300 bg-white text-zinc-900 placeholder:text-zinc-400"
+              name="email"
+              placeholder="your@email.com"
+              className="flex-grow bg-white focus:border-rose-500 focus:ring-rose-500"
               required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
             />
-            <Button type="submit" className="bg-rose-500 text-white hover:bg-rose-600" disabled={isSubmitting}>
-              {isSubmitting ? "Adding you..." : "Get early access"}
-              {!isSubmitting && <ArrowRight className="ml-2 h-4 w-4" />}
+            <Button
+              type="submit"
+              className="bg-rose-500 text-white hover:bg-rose-600"
+            >
+              join the waitlist
+              <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </form>
           <p className="mt-2 text-xs text-zinc-500">

@@ -1,6 +1,7 @@
 import type React from "react"
 import "@/app/globals.css"
 import { Inter } from "next/font/google"
+import Script from "next/script"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/sonner"
 // import { Analytics } from "@vercel/analytics/next" // Removed Vercel Analytics
@@ -22,6 +23,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <Script src="https://getlaunchlist.com/js/widget-diy.js" strategy="lazyOnload" />
+      </head>
       <body className={inter.className}>
         <PostHogProvider> {/* Added PostHogProvider wrapper */}
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
