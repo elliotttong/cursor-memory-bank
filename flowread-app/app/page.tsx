@@ -31,7 +31,7 @@ export default function Home() {
         </a>
       </header>
 
-      <section className="flex min-h-[calc(100vh-120px)] flex-col items-center justify-start pt-40 text-center container mx-auto max-w-2xl px-4">
+      <section className="flex min-h-[calc(100vh-120px)] flex-col items-center justify-start pt-20 text-center container mx-auto max-w-2xl px-4">
         <div className="mb-6 inline-block rounded-full bg-rose-100 px-4 py-2 text-sm font-medium text-rose-800 shadow-sm">
           Nice. You found it.
         </div>
@@ -160,13 +160,11 @@ export default function Home() {
             </div>
           </div>
           <p className="mb-6 text-zinc-700 font-bold">
-            I was drowning in information...
+            I was drowning in information... and it put me off reading.
           </p>
+
           <p className="mb-6 text-zinc-700">
-            Between work articles, tech docs, and interesting reads, I was paying for multiple apps trying to keep up - but nothing quite worked.
-          </p>
-          <p className="mb-6 text-zinc-700">
-            I'd read something, think "this is important," and then... poof. Gone from my brain.
+            and when I did read something, I'd think "this is important," and then... poof. Gone from my brain.
           </p>
           
           <p className="mb-6 text-zinc-700 font-bold">
@@ -180,7 +178,7 @@ export default function Home() {
           </p>
           
           <p className="mb-6 text-zinc-700">
-            I'm not here to build the next unicorn.
+            I'm not here to become a billionaire.
           </p>
           <p className="mb-6 text-zinc-700">
             I just want to solve a real problem in a way that actually works.
@@ -214,17 +212,31 @@ export default function Home() {
             </div>
             <div className="flex items-center gap-2">
               <div className="h-6 w-6 rounded-full bg-green-100 text-center text-sm font-medium text-green-600">✓</div>
-              <p className="text-zinc-700">highlighting words as they're read (so you can follow along)</p>
+              <p className="text-zinc-700">highlighting words/sentences as they're read (so you can follow along)</p>
             </div>
             <div className="flex items-center gap-2">
               <div className="h-6 w-6 rounded-full bg-green-100 text-center text-sm font-medium text-green-600">✓</div>
               <p className="text-zinc-700">basic controls (play/pause, skip forward/back)</p>
             </div>
             <div className="flex items-center gap-2">
-              <div className="h-6 w-6 rounded-full bg-yellow-100 text-center text-sm font-medium text-yellow-600">
-                ⚡
-              </div>
-              <p className="text-zinc-700">article library & queue system (working on it now)</p>
+            <div className="h-6 w-6 rounded-full bg-green-100 text-center text-sm font-medium text-green-600">✓</div>
+            <p className="text-zinc-700">change playback speed (so you can read faster)</p>
+            </div>
+            <div className="flex items-center gap-2">
+            <div className="h-6 w-6 rounded-full bg-green-100 text-center text-sm font-medium text-green-600">✓</div>
+            <p className="text-zinc-700">playback time estimates (to show how long it will take)</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="h-6 w-6 rounded-full bg-green-100 text-center text-sm font-medium text-green-600">✓</div>
+              <p className="text-zinc-700">53 voices. 8 languages. 25+ English voices (all sounding beautiful)</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="h-6 w-6 rounded-full bg-yellow-100 text-center text-sm font-medium text-yellow-600">⚡</div>
+              <p className="text-zinc-700">accurate text extraction from most popular sites (working on now)</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="h-6 w-6 rounded-full bg-zinc-100 text-center text-sm font-medium text-zinc-400">...</div>
+              <p className="text-zinc-500">article library & queue system (coming soon)</p>
             </div>
             <div className="flex items-center gap-2">
               <div className="h-6 w-6 rounded-full bg-zinc-100 text-center text-sm font-medium text-zinc-400">...</div>
@@ -256,15 +268,21 @@ export default function Home() {
           <div className="space-y-4">
             <div className="rounded-lg bg-white p-4 shadow-sm">
               <p className="mb-2 text-zinc-700">
-                "This is exactly what I needed. I have so many articles saved that I never get around to reading."
+                "FlowRead already saves me hours every week."
               </p>
-              <p className="text-sm font-medium text-zinc-500">- Alex, grad student</p>
+              <p className="text-sm font-medium text-zinc-500">- Sam, sales manager</p>
             </div>
             <div className="rounded-lg bg-white p-4 shadow-sm">
               <p className="mb-2 text-zinc-700">
-                "The queue feature is a game changer. I listen to articles while walking my dog now."
+                "It sound so natural, like listening to a real person."
               </p>
-              <p className="text-sm font-medium text-zinc-500">- Jamie, software dev</p>
+              <p className="text-sm font-medium text-zinc-500">- Priya, grad student</p>
+            </div>
+            <div className="rounded-lg bg-white p-4 shadow-sm">
+              <p className="mb-2 text-zinc-700">
+                "I actually finish articles now. FlowRead makes it so easy to keep up with everything I want to read."
+              </p>
+              <p className="text-sm font-medium text-zinc-500">- Alex, software engineer</p>
             </div>
           </div>
         </div>
