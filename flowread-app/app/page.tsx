@@ -31,12 +31,12 @@ export default function Home() {
         </a>
       </header>
 
-      <section className="flex min-h-[calc(100vh-120px)] flex-col items-center justify-center text-center container mx-auto max-w-2xl px-4 py-8">
-        <div className="mb-4 inline-block rounded-full bg-rose-100 px-4 py-2 text-sm font-medium text-rose-800 shadow-sm">
+      <section className="flex min-h-[calc(100vh-120px)] flex-col items-center justify-start pt-40 text-center container mx-auto max-w-2xl px-4">
+        <div className="mb-6 inline-block rounded-full bg-rose-100 px-4 py-2 text-sm font-medium text-rose-800 shadow-sm">
           Nice. You found it.
         </div>
-        <h1 className="mb-4 text-4xl font-bold leading-tight text-zinc-900 md:text-5xl">
-          Too Much Text? Just Listen to It.
+        <h1 className="mb-6 text-4xl font-bold leading-tight text-zinc-900 md:text-5xl">
+          Too Much Text? <br /> Just Listen to It.
         </h1>
         <p className="mb-8 text-lg text-zinc-700 md:text-xl">
           Finally, a way to actually get through your reading list.
@@ -63,6 +63,18 @@ export default function Home() {
             Lemme Know When It Drops <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </form>
+      </section>
+
+      <section className="container mx-auto max-w-2xl px-4 py-16">
+        <div className="mb-4 inline-block rounded-full bg-rose-100 px-4 py-2 text-sm font-medium text-rose-800 shadow-sm">
+          currently building this instead of touching grass
+        </div>
+        <h2 className="mb-4 text-3xl font-bold leading-tight text-zinc-800 md:text-4xl">
+          ok so i'm making this thing that turns <br /> boring text into audio you can <br /> actually listen to
+        </h2>
+        <p className="text-lg text-zinc-600 md:text-xl">
+          because who has time to read all that stuff? not me lol
+        </p>
       </section>
 
       <main className="container mx-auto max-w-2xl px-4 py-8">
@@ -181,7 +193,7 @@ export default function Home() {
           <div className="mt-6 mb-6 border-t border-zinc-200 pt-4">
             <p className="mb-3 text-sm text-zinc-600 font-bold"> Elliott Tong, creator of FlowRead</p>
             <p className="mb-3 text-sm text-zinc-600">Follow my progress (and occasional meltdowns):</p>
-            <div className="flex items-center justify-left gap-4">
+            <div className="flex items-center gap-4">
               <a href="https://x.com/ElliottInPublic" target="_blank" rel="noopener noreferrer" className="text-zinc-500 hover:text-rose-500"><Twitter className="h-5 w-5" /></a>
               <a href="https://www.instagram.com/elliott.tong/" target="_blank" rel="noopener noreferrer" className="text-zinc-500 hover:text-rose-500"><Instagram className="h-5 w-5" /></a>
               <a href="https://www.linkedin.com/in/elliott-tong/" target="_blank" rel="noopener noreferrer" className="text-zinc-500 hover:text-rose-500"><Linkedin className="h-5 w-5" /></a>
