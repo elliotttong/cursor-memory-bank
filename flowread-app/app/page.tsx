@@ -1,18 +1,33 @@
 "use client"
 
-import React, { useEffect } from "react"
-import { ArrowRight, Headphones, Brain, Coffee, Sparkles, Twitter, Instagram, Linkedin } from "lucide-react"
+import React, { useEffect, useRef } from "react"
+import { ArrowRight, Headphones, Brain, Coffee, Sparkles, Twitter, Instagram, Linkedin, Quote } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Image from 'next/image'
+import posthog from 'posthog-js'
 
 export default function Home() {
+  const emailRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     const heroEmailInput = document.querySelector('section.flex input[name="email"]');
     if (heroEmailInput) {
       (heroEmailInput as HTMLInputElement).focus();
     }
   }, []);
+
+  // Waitlist form submit handler
+  function handleWaitlistSubmit(e: React.FormEvent<HTMLFormElement>) {
+    const form = e.currentTarget;
+    const email = emailRef.current?.value;
+    if (email) {
+      // Identify user in PostHog
+      posthog.identify(email, { email });
+    }
+    // Let the form submit as normal (to LaunchList)
+    // No e.preventDefault() so the POST proceeds
+  }
 
   return (
     <div className="min-h-screen bg-zinc-50 font-sans text-zinc-900">
@@ -31,7 +46,7 @@ export default function Home() {
         </a>
       </header>
 
-      <section className="flex min-h-[calc(100vh-120px)] flex-col items-center justify-start pt-20 text-center container mx-auto max-w-2xl px-4">
+      <section className="flex min-h-[calc(100vh-120px)] flex-col items-center justify-start pt-40 text-center container mx-auto max-w-2xl px-4">
         <div className="mb-6 inline-block rounded-full bg-rose-100 px-4 py-2 text-sm font-medium text-rose-800 shadow-sm">
           Nice. You found it.
         </div>
@@ -41,28 +56,63 @@ export default function Home() {
         <p className="mb-8 text-lg text-zinc-700 md:text-xl">
           Finally, a way to actually get through your reading list.
         </p>
-        <form
-          className="launchlist-form flex w-full max-w-md flex-col items-center gap-3 sm:flex-row"
-          action="https://getlaunchlist.com/s/bexITC"
-          method="POST"
-          // @ts-ignore - Adding raw HTML attribute if not in TS types
-          referrerpolicy="no-referrer-when-downgrade"
-        >
-          <Input
-            type="email"
-            name="email"
-            placeholder="your@email.com"
-            className="w-full flex-grow bg-white focus:border-rose-500 focus:ring-rose-500 sm:w-auto"
-            required
-          />
-          <Button
-            type="submit"
-            variant="default" // Assuming 'default' is your primary button style
-            className="w-full bg-rose-500 text-white hover:bg-rose-600 sm:w-auto"
+        <div className="w-full max-w-3xl rounded-3xl bg-rose-50/80 p-8">
+          <form
+            className="launchlist-form mb-3 flex w-full flex-col items-center gap-3 sm:flex-row"
+            action="https://getlaunchlist.com/s/bexITC"
+            method="POST"
+            // @ts-ignore - Adding raw HTML attribute if not in TS types
+            referrerpolicy="no-referrer-when-downgrade"
+            onSubmit={handleWaitlistSubmit}
           >
-            Lemme Know When It Drops <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
-        </form>
+            <Input
+              type="email"
+              name="email"
+              placeholder="you@email.com"
+              className="w-full flex-grow bg-white focus:border-rose-500 focus:ring-rose-500 sm:w-auto"
+              required
+              ref={emailRef}
+            />
+            <Button
+              type="submit"
+              variant="default"
+              className="w-full bg-rose-500 text-white hover:bg-rose-600 sm:w-auto"
+            >
+              Get Priority Access <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+          </form>
+          <div className="flex items-center justify-center gap-2">
+            <div className="flex -space-x-2">
+              <div className="h-6 w-6 rounded-full bg-rose-200 border-2 border-white"></div>
+              <div className="h-6 w-6 rounded-full bg-rose-300 border-2 border-white"></div>
+              <div className="h-6 w-6 rounded-full bg-rose-400 border-2 border-white"></div>
+            </div>
+            <p className="text-sm text-zinc-600">
+              Join <span className="font-semibold text-zinc-800">183 early users</span> getting first access in June 2025.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Social proof - upgraded UI for higher impact */}
+      <section className="container mx-auto max-w-2xl px-4 mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="relative rounded-xl bg-white p-4 shadow-sm">
+            <Quote className="absolute -left-2 top-2 h-6 w-6 text-rose-200" />
+            <p className="mb-3 text-sm italic text-zinc-800">"FlowRead already saves me hours every week."</p>
+            <p className="text-sm font-semibold text-rose-600">Sam, sales manager</p>
+          </div>
+          <div className="relative rounded-xl bg-white p-4 shadow-sm">
+            <Quote className="absolute -left-2 top-2 h-6 w-6 text-rose-200" />
+            <p className="mb-3 text-sm italic text-zinc-800">"It sounds so natural, like listening to a real person."</p>
+            <p className="text-sm font-semibold text-rose-600">Priya, grad student</p>
+          </div>
+          <div className="relative rounded-xl bg-white p-4 shadow-sm">
+            <Quote className="absolute -left-2 top-2 h-6 w-6 text-rose-200" />
+            <p className="mb-3 text-sm italic text-zinc-800">"I actually finish articles now. FlowRead makes it so easy."</p>
+            <p className="text-sm font-semibold text-rose-600">Alex, software engineer</p>
+          </div>
+        </div>
       </section>
 
       <section className="container mx-auto max-w-2xl px-4 py-16">
@@ -262,50 +312,34 @@ export default function Home() {
           </p>
         </div>
 
-        {/* Social proof */}
-        <div className="mb-10">
-          <h2 className="mb-4 text-xl font-semibold">hear what early users love</h2>
-          <div className="space-y-4">
-            <div className="rounded-lg bg-white p-4 shadow-sm">
-              <p className="mb-2 text-zinc-700">
-                "FlowRead already saves me hours every week."
-              </p>
-              <p className="text-sm font-medium text-zinc-500">- Sam, sales manager</p>
-            </div>
-            <div className="rounded-lg bg-white p-4 shadow-sm">
-              <p className="mb-2 text-zinc-700">
-                "It sound so natural, like listening to a real person."
-              </p>
-              <p className="text-sm font-medium text-zinc-500">- Priya, grad student</p>
-            </div>
-            <div className="rounded-lg bg-white p-4 shadow-sm">
-              <p className="mb-2 text-zinc-700">
-                "I actually finish articles now. FlowRead makes it so easy to keep up with everything I want to read."
-              </p>
-              <p className="text-sm font-medium text-zinc-500">- Alex, software engineer</p>
-            </div>
-          </div>
-        </div>
-
         {/* Final CTA */}
         <div className="mb-10 rounded-xl border-2 border-dashed border-rose-300 bg-white p-6 text-center">
+          <div className="mb-6 flex justify-center">
+            <div className="flex items-center gap-2">
+              <div className="flex -space-x-2">
+                <div className="h-6 w-6 rounded-full bg-rose-200"></div>
+                <div className="h-6 w-6 rounded-full bg-rose-300"></div>
+                <div className="h-6 w-6 rounded-full bg-rose-400"></div>
+              </div>
+              <span className="text-sm text-zinc-600">183 people waiting for access</span>
+            </div>
+          </div>
           <p className="mb-4 text-lg font-medium">
             That's it. No fancy marketing BS. Just a useful tool I think you'll like.
           </p>
           <Button
             onClick={() => {
               window.scrollTo({ top: 0, behavior: "smooth" });
-              // Slight delay to ensure scrolling has initiated before focus
               setTimeout(() => {
                 const heroEmailInput = document.querySelector('section.flex input[name="email"]');
                 if (heroEmailInput) {
                   (heroEmailInput as HTMLInputElement).focus();
                 }
-              }, 300); // Adjust delay if needed, or use a promise with scrollend event if browsers support it widely
+              }, 300);
             }}
             className="bg-rose-500 text-white hover:bg-rose-600"
           >
-            Get on the waitlist
+            Join the Waitlist <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </div>
       </main>
