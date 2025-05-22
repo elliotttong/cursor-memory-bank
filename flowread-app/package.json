@@ -48,6 +48,7 @@
     "posthog-js": "^1.245.0",
     "posthog-node": "^4.17.1",
     "react": "^19",
+    "react-audio-visualize": "^1.2.0",
     "react-dom": "^19",
     "react-hook-form": "^7.54.1",
     "sonner": "^1.7.4",

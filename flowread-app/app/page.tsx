@@ -1,21 +1,83 @@
 "use client"
 
-import React, { useEffect, useRef } from "react"
-import { ArrowRight, Headphones, Brain, Coffee, Sparkles, Twitter, Instagram, Linkedin, Quote } from "lucide-react"
+import React, { useEffect, useRef, useState } from "react"
+import { ArrowRight, Headphones, Brain, Coffee, Sparkles, Twitter, Instagram, Linkedin, Quote, Play, Pause, RotateCcw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Image from 'next/image'
 import posthog from 'posthog-js'
+import { cn } from "@/lib/utils"
+
+// Add Google Fonts Caveat in <head> (for Next.js, this is typically in app/layout.tsx, but for demo, add as a comment here)
+// <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@700&display=swap" rel="stylesheet">
+
+// VoiceWave component
+function VoiceWave({ isActive }: { isActive: boolean }) {
+  // 20 bars, each with a unique delay and height
+  return (
+    <div className="flex items-end h-7 w-32 mx-auto mb-4">
+      {Array.from({ length: 20 }).map((_, i) => (
+        <div
+          key={i}
+          className={cn(
+            "w-1 mx-0.5 rounded bg-rose-400 transition-all duration-300",
+            isActive ? `animate-voicewave${i}` : "h-2"
+          )}
+          style={{
+            animationPlayState: isActive ? "running" : "paused",
+          }}
+        />
+      ))}
+      <style jsx global>{`
+        ${Array.from({ length: 20 })
+          .map((_, i) => `
+            @keyframes voicewave${i} {
+              0%,100%{height:${6 + (i % 4) * 4}px;}
+              50%{height:${18 + ((i * 7) % 10)}px;}
+            }
+            .animate-voicewave${i} { animation: voicewave${i} 1s infinite ${(i * 0.04).toFixed(2)}s; }
+          `)
+          .join('')}
+      `}</style>
+    </div>
+  );
+}
 
 export default function Home() {
   const emailRef = useRef<HTMLInputElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     const heroEmailInput = document.querySelector('section.flex input[name="email"]');
     if (heroEmailInput) {
       (heroEmailInput as HTMLInputElement).focus();
     }
+
+    // Attempt to autoplay the welcome audio
+    if (audioRef.current) {
+      audioRef.current.play()
+        .then(() => {
+          setIsPlaying(true);
+        })
+        .catch(error => {
+          // Autoplay was prevented, common in modern browsers
+          console.error("Welcome audio autoplay prevented:", error);
+          setIsPlaying(false); // Ensure UI reflects that audio is not playing
+        });
+    }
   }, []);
+
+  // Ensure isPlaying is set to false when audio ends
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    const handleEnded = () => setIsPlaying(false);
+    audio.addEventListener('ended', handleEnded);
+    return () => {
+      audio.removeEventListener('ended', handleEnded);
+    };
+  }, [audioRef]);
 
   // Waitlist form submit handler
   function handleWaitlistSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -29,24 +91,48 @@ export default function Home() {
     // No e.preventDefault() so the POST proceeds
   }
 
+  // Function to toggle play/pause
+  const togglePlayPause = () => {
+    if (audioRef.current) {
+      audioRef.current.muted = false; // Unmute on user interaction
+      if (isPlaying) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+      } else {
+        audioRef.current.play();
+        setIsPlaying(true);
+      }
+    }
+  };
+
+  // Function to replay audio
+  const replayAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-zinc-50 font-sans text-zinc-900">
+      <audio ref={audioRef} src="/landingpage-intro.wav" preload="auto" muted />
       <header className="container mx-auto mb-8 flex max-w-2xl items-center justify-between px-4 py-8">
-        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2">
           <Image src="/flowread-logo.png" alt="FlowRead Logo" width={32} height={32} className="h-8 w-8" />
           <span className="font-semibold text-lg">FlowRead</span>
-        </div>
-        <a
+          </div>
+          <a
           href="https://twitter.com/elliottinpublic"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-sm text-zinc-500 hover:text-rose-500"
-        >
+            target="_blank"
+            rel="noopener noreferrer"
+          className="text-sm text-zinc-500 hover:text-rose-500 ml-2"
+          >
           @elliottinpublic
-        </a>
-      </header>
+          </a>
+        </header>
 
-      <section className="flex min-h-[calc(100vh-120px)] flex-col items-center justify-start pt-40 text-center container mx-auto max-w-2xl px-4">
+      <section className="flex min-h-[calc(100vh-120px)] flex-col items-center justify-start pt-12 text-center container mx-auto max-w-2xl px-4">
         <div className="mb-6 inline-block rounded-full bg-rose-100 px-4 py-2 text-sm font-medium text-rose-800 shadow-sm">
           Nice. You found it.
         </div>
@@ -56,6 +142,60 @@ export default function Home() {
         <p className="mb-8 text-lg text-zinc-700 md:text-xl">
           Finally, a way to actually get through your reading list.
         </p>
+        <div className="relative flex flex-col items-center justify-center mb-4">
+          {/* Handwritten PLAY text */}
+          <span
+            className="absolute -left-20 -top-4"
+            style={{
+              fontFamily: "'Caveat', cursive",
+              color: "#f43f5e",
+              fontSize: "1rem",
+              fontWeight: 700,
+              zIndex: 2,
+              transform: "rotate(5deg)",
+            }}
+          >
+            Try me!
+          </span>
+          {/* SVG Arrow */}
+          <svg
+            className="absolute -left-20 -top-2 w-24 h-16 pointer-events-none"
+            fill="#F43F5F"
+            viewBox="-59.07 -59.07 540.08 540.08"
+            xmlns="http://www.w3.org/2000/svg"
+            stroke="#F43F5F"
+            strokeWidth="0.0042"
+            style={{ zIndex: 1 }}
+          >
+            <g>
+              <path d="M418.054,273.641c-17.748-11.016-33.66-23.868-48.348-38.556c-4.896-4.896-13.464-1.225-13.464,5.508 c0,5.508-0.612,11.016-0.612,16.523c-53.244,9.792-106.488,14.076-160.957,14.688c-45.9,1.224-107.712,6.12-149.328-15.912 c-31.824-17.136-36.72-56.917-23.256-87.517c5.508-12.852,15.3-23.256,27.54-30.6c14.076-8.568,28.152-3.672,42.84-7.344 c1.836-0.612,2.448-3.06,1.224-4.896c-22.644-23.868-62.424,3.672-77.112,23.256c-20.808,27.54-22.032,67.933-3.672,96.696 c26.928,42.841,91.188,39.78,134.64,41.004c68.544,2.448,140.76,0.612,208.081-14.688c0,6.12,0.612,11.628,2.448,17.748 c0,1.224,0.611,1.836,1.224,2.448c-4.896,4.283-0.612,15.3,7.956,13.464c17.748-3.672,35.496-9.181,52.02-17.136 C423.562,284.657,422.338,276.701,418.054,273.641z M370.93,257.729c8.568,7.344,17.136,14.688,26.928,21.42 c-8.567,3.672-17.748,6.12-26.928,8.568c0-0.612,0-1.225,0-2.448C369.094,276.089,369.706,266.909,370.93,257.729z"></path>
+            </g>
+          </svg>
+          <div className="flex items-center justify-center">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={togglePlayPause} 
+              aria-label={isPlaying ? "Pause welcome audio" : "Play welcome audio"} 
+              className={cn(
+                "text-zinc-600 hover:text-rose-500 hover:bg-rose-50",
+                !isPlaying && "animate-pulse-red"
+              )}
+            >
+              {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
+              <style jsx global>{`
+                @keyframes pulse-red {
+                  0%, 100% { background-color: #fef2f2; }
+                  50% { background-color: #f43f5e33; }
+                }
+                .animate-pulse-red {
+                  animation: pulse-red 2s ease-in-out infinite;
+                }
+              `}</style>
+            </Button>
+            <VoiceWave isActive={isPlaying} />
+          </div>
+        </div>
         <div className="w-full max-w-3xl rounded-3xl bg-rose-50/80 p-8">
           <form
             className="launchlist-form mb-3 flex w-full flex-col items-center gap-3 sm:flex-row"
@@ -283,7 +423,7 @@ export default function Home() {
             <div className="flex items-center gap-2">
               <div className="h-6 w-6 rounded-full bg-yellow-100 text-center text-sm font-medium text-yellow-600">⚡</div>
               <p className="text-zinc-700">accurate text extraction from most popular sites (working on now)</p>
-            </div>
+              </div>
             <div className="flex items-center gap-2">
               <div className="h-6 w-6 rounded-full bg-zinc-100 text-center text-sm font-medium text-zinc-400">...</div>
               <p className="text-zinc-500">article library & queue system (coming soon)</p>
@@ -366,8 +506,8 @@ export default function Home() {
           <p className="mt-4 text-xs text-zinc-500">
             FlowRead - Helping you conquer your reading list, one audio at a time.
           </p>
-        </div>
-      </footer>
+          </div>
+        </footer>
     </div>
   )
 }
